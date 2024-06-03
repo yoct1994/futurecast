@@ -1,26 +1,51 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LoginPage from "./pages/login";
+import MainPage from "./pages/main";
+import { RecoilRoot } from "recoil";
+import Document from "./pages/document";
+import MarkdownPreview from "@uiw/react-markdown-preview";
+import "primereact/resources/themes/lara-light-cyan/theme.css";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <RecoilRoot>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route path="/document/:id" element={<Document />} />
+          <Route path="/test" element={<TestPage />} />
+        </Routes>
+      </BrowserRouter>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+        </Routes>
+      </BrowserRouter>
+    </RecoilRoot>
   );
 }
+
+const TestPage = () => {
+  const test = `
+# test
+
+## test
+
+### test
+
+* test
+  * test
+  *
+---
+  `;
+
+  return (
+    <MarkdownPreview
+      // remarkPlugins={[remarkGfm]}
+      // rehypePlugins={[rehypeHighlight]}
+      source={test}
+    />
+  );
+};
 
 export default App;

@@ -1,0 +1,22 @@
+.mention_style {
+  color: #5661f6;
+  z-index: 1;
+  position: relative;
+  /* background-color: white; */
+  text-shadow: 2px 1px 0px white, 0px 0px 0px white, -1px 1px 0px white,
+    -1px -1px 0px white;
+  transform: translate(-1px, -1px);
+  font-size: 16px;
+  font-family: "LG_Smart_Regular";
+  /* margin-right: 2px; */
+
+  pointer-events: none;
+}
+
+.mention_input_styling > span {
+  visibility: visible !important;
+  color: black !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+  position: relative !important;
+}
