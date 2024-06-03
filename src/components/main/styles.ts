@@ -201,9 +201,11 @@ export const SuggestionsContainer = styled.div`
   max-height: 160px;
   border-radius: 16px;
   overflow-y: scroll;
-  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
   scrollbar-width: none;
-  -webkit-scrollbar: none;
 
   li {
     width: 100%;

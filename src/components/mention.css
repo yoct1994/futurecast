@@ -13,10 +13,16 @@
   pointer-events: none;
 }
 
-.mention_input_styling > span {
+.mention_input_styling {
   visibility: visible !important;
   color: black !important;
   pointer-events: none !important;
   z-index: 1 !important;
   position: relative !important;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.mention_input_styling::-webkit-scrollbar {
+  display: none;
 }

@@ -380,9 +380,11 @@ export const DndArea = styled.div`
     margin-left: 0px;
   }
 
-  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
   scrollbar-width: none;
-  -webkit-scrollbar: none;
   /* background: green; */
 `;
 
@@ -393,9 +395,11 @@ export const DndLoadingArea = styled.div`
   flex-direction: column;
   gap: 8px;
 
-  -ms-overflow-style: none; /* IE and Edge */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
   scrollbar-width: none;
-  -webkit-scrollbar: none;
   /* background: green; */
 `;
 

@@ -117,9 +117,11 @@ export const DocumentScrollWrapper = styled.div`
   height: 100%;
   overflow-y: scroll;
   /* overflow-x: hidden; */
+  &::-webkit-scrollbar {
+    display: none;
+  }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  -webkit-scrollbar: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -148,9 +150,11 @@ export const DocumentRightBar = styled.div`
   justify-content: flex-start;
   overflow: hidden;
   overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  -webkit-scrollbar: none;
   overflow-x: hidden;
   box-sizing: border-box;
   flex-wrap: nowrap;
@@ -570,6 +574,10 @@ export const MentionItemWrapper = styled.div<{ length: number }>`
   border-top-right-radius: 40px;
   background-color: white;
   overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
   scrollbar-width: none;
 `;
 
