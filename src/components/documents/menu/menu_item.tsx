@@ -11,7 +11,6 @@ import { ReactComponent as Remove } from "../../../assets/Sidebar/Remove.svg";
 import { ReactComponent as Edit } from "../../../assets/Sidebar/Edit_Icon.svg";
 import { MenuItem } from "primereact/menuitem";
 import { Toast } from "primereact/toast";
-import { deletePage } from "../../../server/server";
 import { Cookies } from "react-cookie";
 
 type Props = {

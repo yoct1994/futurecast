@@ -1,16 +1,12 @@
-import React, { SetStateAction, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as S from "./styles";
 import { ReactComponent as Retry } from "../../assets/document_page/tooltop.svg";
 import { ReactComponent as ChevronDown } from "../../assets/document_page/ChevronDown.svg";
 import { ReactComponent as AnswerLogo } from "../../assets/answer_logo.svg";
-import Markdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/a11y-dark.css";
-import remarkGfm from "remark-gfm";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { getReferences } from "../../server/server";
 import { Skeleton } from "primereact/skeleton";
-import { useDrag } from "react-dnd";
 import SubPageItem from "./sub_page/sub_page_item";
 import ReferenceItem from "./reference/refrence_item";
 

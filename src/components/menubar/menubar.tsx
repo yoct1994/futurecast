@@ -8,7 +8,6 @@ import { ReactComponent as Create } from "../../assets/CreateFolder.svg";
 import { ReactComponent as ModalIcon } from "../../assets/ModalIcon.svg";
 import { ReactComponent as Close } from "../../assets/Close.svg";
 import { ReactComponent as Generate } from "../../assets/GenerateDocument.svg";
-import { ReactComponent as GenerateDocument } from "../../assets/Generate Document.svg";
 import { ReactComponent as ArrowUp } from "../../assets/Sidebar/ArrowUp.svg";
 import { ReactComponent as ArrowDown } from "../../assets/Sidebar/ArrowDown.svg";
 import { ReactComponent as ArrowRight } from "../../assets/Sidebar/ArrowRight.svg";
@@ -59,6 +58,7 @@ const Menubar = ({ children }: Props) => {
   const [deleteId, setDeleteId] = useRecoilState(deleteIdValue);
 
   const getNav = async (isRefresh: boolean) => {
+    console.log(deleteId);
     if (isRefresh || treeData.length === 0) {
       await getNavBar()
         .then((res) => {

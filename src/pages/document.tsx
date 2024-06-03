@@ -36,7 +36,6 @@ import * as SS from "../components/main/styles";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { DndProvider, useDrop } from "react-dnd";
 import { Toast } from "primereact/toast";
-import mentionStyle from "../components/documents/mentionStyle";
 import "../components/mention.css";
 
 let container: any;
@@ -77,7 +76,7 @@ const Document = () => {
     useRecoilState(showDeleteModal);
   const [deleteId, setDeleteId] = useRecoilState(deleteIdValue);
 
-  const [{ isOver }, drop] = useDrop(() => ({
+  const [{}, drop] = useDrop(() => ({
     accept: "ITEM",
     drop: (item: any) => {
       const idx = mentionItems.findIndex((i) => i.id === item.id);

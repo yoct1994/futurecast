@@ -1,4 +1,4 @@
-import axios, { Axios } from "axios";
+import { Axios } from "axios";
 import { Cookies } from "react-cookie";
 
 const cookies = new Cookies();

@@ -8,7 +8,7 @@ type Props = {
 };
 
 const ReferenceItem = ({ index, item }: Props) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{}, drag] = useDrag(() => ({
     type: "ITEM",
     item: item,
     collect: (monitor) => ({

@@ -1,6 +1,4 @@
-import React from "react";
 import * as S from "../styles";
-import { useDrag } from "react-dnd";
 import { Link } from "react-router-dom";
 
 type Props = {
@@ -10,14 +8,6 @@ type Props = {
 };
 
 const SubPageItem = ({ index, item, uniqueReferences }: Props) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: "ITEM",
-    item: item,
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-  }));
-
   return (
     <S.SubDocumentItem key={index} as={Link} to={`/document/${item.page_id}`}>
       <S.SubDocumentQuery>{item.document_query.full_text}</S.SubDocumentQuery>

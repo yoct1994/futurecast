@@ -13,7 +13,6 @@ import {
 } from "../server/server";
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
-import mentionStyle from "../components/documents/mentionStyle";
 import "../components/mention.css";
 
 let container: any;
