@@ -6,7 +6,7 @@ import { Menu } from "primereact/menu";
 import { ReactComponent as ArrowUp } from "../../../assets/Sidebar/ArrowUp.svg";
 import { ReactComponent as ArrowDown } from "../../../assets/Sidebar/ArrowDown.svg";
 import { ReactComponent as FolderIcon } from "../../../assets/Sidebar/FolderIcon.svg";
-import { ReactComponent as Meatball } from "../../../assets/Sidebar/meatball.svg";
+import { ReactComponent as Meatball } from "../../../assets/Sidebar/meatball_folder.svg";
 import { ReactComponent as Remove } from "../../../assets/Sidebar/Remove.svg";
 import { ReactComponent as Edit } from "../../../assets/Sidebar/Edit_Icon.svg";
 import { MenuItem } from "primereact/menuitem";
@@ -26,9 +26,10 @@ type Props = {
   allNodes: NodeModel<any>[];
 };
 
-const PopupMenuItem = ({
+const FolderItem = ({
   depth,
   node,
+  allNodes,
   toggles,
   setToggles,
   isOpen,
@@ -36,20 +37,21 @@ const PopupMenuItem = ({
   toast,
   setDeleteId,
   showDialog,
-  allNodes,
 }: Props) => {
   const menuRef = useRef<Menu>(null);
   const deviderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // {
-    //   /* {toggles.includes(node.parent) &&
-    //     } */
-    // }
+    {
+      /* {(!toggles.includes(node.id) ||
+        allNodes.filter((item) => item.parent === node.id).length === 0) && (
+        
+      )} */
+    }
     console.log("is open!", isOpen);
     if (
-      toggles.includes(node.parent) &&
-      allNodes.indexOf(node) === allNodes.length - 1
+      !toggles.includes(node.id) ||
+      allNodes.filter((item) => item.parent === node.id).length === 0
     ) {
       deviderRef.current?.classList.add("isOpen");
     } else {
@@ -75,50 +77,21 @@ const PopupMenuItem = ({
       icon: <Remove />,
       command: async () => {
         console.log("=======document delete=======", node.data?.id);
-        setDeleteId(`${node.data?.id}`);
-        new Cookies().set("deleteId", node.data?.id);
-        showDialog(true);
+        // setDeleteId(`${node.data?.id}`);
+        // new Cookies().set("deleteId", node.data?.id);
+        // showDialog(true);
       },
     },
   ];
 
   return (
     <>
-      <S.FolderNodeWrapper
-        depth={depth}
-        className={`depth${depth}`}
-        as={Link}
-        to={`/document/${node.data?.id}`}
-        style={{
-          textDecoration: "none",
-        }}
-      >
-        <S.PageDividerWrapper
-          idx={allNodes.indexOf(node)}
-          length={allNodes.length - 1}
-        >
-          <S.PageDivider parent={`${node.parent}`} />
-        </S.PageDividerWrapper>
+      <S.FolderNodeWrapper depth={depth} className={`depth${depth}`}>
+        <S.FolderIconWrapper>
+          <FolderIcon />
+        </S.FolderIconWrapper>
         <S.FolderNodeText depth={depth}>{node.text}</S.FolderNodeText>
-        {node.parent === 0 ? (
-          <div
-            onClick={() => {
-              if (toggles.includes(node.id)) {
-                var copy = [...toggles];
-                copy = copy.filter((n) => n !== node.id);
-                setToggles(copy);
-              } else {
-                setToggles([...toggles, node.id]);
-              }
-              onToggle();
-            }}
-          >
-            {isOpen ? <ArrowUp /> : <ArrowDown />}
-          </div>
-        ) : (
-          <></>
-        )}
-        <S.HoveringButton
+        <S.FolderHoveringButton
           className="hovering_button"
           aria-controls="item_menu_popup"
           aria-haspopup
@@ -146,12 +119,26 @@ const PopupMenuItem = ({
               width: 160,
             }}
           />
-          <Meatball />
-        </S.HoveringButton>
+          <Meatball width={24} height={24} />
+        </S.FolderHoveringButton>
+        <div
+          onClick={() => {
+            if (toggles.includes(node.id)) {
+              var copy = [...toggles];
+              copy = copy.filter((n) => n !== node.id);
+              setToggles(copy);
+            } else {
+              setToggles([...toggles, node.id]);
+            }
+            onToggle();
+          }}
+        >
+          {isOpen ? <ArrowUp /> : <ArrowDown />}
+        </div>
       </S.FolderNodeWrapper>
       <S.FolderDivider ref={deviderRef} />
     </>
   );
 };
 
-export default PopupMenuItem;
+export default FolderItem;

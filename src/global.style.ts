@@ -1,10 +1,9 @@
 import { createGlobalStyle } from "styled-components";
-import LgSmartBold from "./fonts/LG_Smart_Bold.ttf";
-import LgSmartBoldItalic from "./fonts/LG_Smart_Bold_Italic.ttf";
-import LgSmartLight from "./fonts/LG_Smart_Light.ttf";
-import LgSmartRegular from "./fonts/LG_Smart_Regular.ttf";
-import LgSmartRegularItalic from "./fonts/LG_Smart_Regular_Italic.ttf";
-import LgSmartSemiBold from "./fonts/LG_Smart_SemiBold.ttf";
+import LgSmartBold from "./fonts/Pretendard-Bold.woff";
+import LgSmartLight from "./fonts/Pretendard-Light.woff";
+import LgSmartThin from "./fonts/Pretendard-Thin.woff";
+import LgSmartRegular from "./fonts/Pretendard-Regular.woff";
+import LgSmartSemiBold from "./fonts/Pretendard-SemiBold.woff";
 
 export const Global = createGlobalStyle`
     * {
@@ -13,7 +12,8 @@ export const Global = createGlobalStyle`
     body { 
         margin: 0px;
         background-color: white;
-        font-family: "LG_Smart_Regular";
+        font-family: "Pretendard-Regular";
+        /* font-family: "Pretendard"; */
         /* position: fixed;
         overflow: hidden;
         touch-action: none;
@@ -25,44 +25,37 @@ export const Global = createGlobalStyle`
     }
 
     @font-face {
-        font-family: "LG_Smart_Bold";
-        src: local('LG_Smart_Bold'), local('LG_Smart_Bold');
+        font-family: "Pretendard-Bold";
+        src: local('Pretendard-Bold'), local('Pretendard-Bold');
         font-style: normal;
-        src: url(${LgSmartBold}) format('truetype');
+        src: url(${LgSmartBold}) format('woff');
     }
 
     @font-face {
-        font-family: "LG_Smart_Bold_Italic";
-        src: local('LG_Smart_Bold_Italic'), local('LG_Smart_Bold_Italic');
+        font-family: "Pretendard-Thin";
+        src: local('Pretendard-Thin'), local('Pretendard-Thin');
         font-style: normal;
-        src: url(${LgSmartBoldItalic}) format('truetype');
+        src: url(${LgSmartThin}) format('woff');
     }
 
     @font-face {
-        font-family: "LG_Smart_Light";
-        src: local('LG_Smart_Light'), local('LG_Smart_Light');
+        font-family: "Pretendard-Light";
+        src: local('Pretendard-Light'), local('Pretendard-Light');
         font-style: normal;
-        src: url(${LgSmartLight}) format('truetype');
+        src: url(${LgSmartLight}) format('woff');
     }
 
     @font-face {
-        font-family: "LG_Smart_Regular";
-        src: local('LG_Smart_Regular'), local('LG_Smart_Regular');
+        font-family: "Pretendard-Regular";
+        src: local('Pretendard-Regular'), local('Pretendard-Regular');
         font-style: normal;
-        src: url(${LgSmartRegular}) format('truetype');
+        src: url(${LgSmartRegular}) format('woff');
     }
 
     @font-face {
-        font-family: "LG_Smart_Regular_Italic";
-        src: local('LG_Smart_Regular_Italic'), local('LG_Smart_Regular_Italic');
+        font-family: "Pretendard-SemiBold";
+        src: local('Pretendard-SemiBold'), local('Pretendard-SemiBold');
         font-style: normal;
-        src: url(${LgSmartRegularItalic}) format('truetype');
-    }
-
-    @font-face {
-        font-family: "LG_Smart_SemiBold";
-        src: local('LG_Smart_SemiBold'), local('LG_Smart_SemiBold');
-        font-style: normal;
-        src: url(${LgSmartSemiBold}) format('truetype');
+        src: url(${LgSmartSemiBold}) format('woff');
     }
 `;

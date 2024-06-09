@@ -4,7 +4,7 @@ import styled from "styled-components";
 export const MenuWrapper = styled.div`
   width: 100vw;
   height: 100vh;
-  padding-left: 280px;
+  padding-left: 0px;
   box-sizing: border-box;
   /* background: green; */
   transition: width ease-in-out 0.3s;
@@ -12,6 +12,11 @@ export const MenuWrapper = styled.div`
 
   &.close {
     padding-left: 0px;
+    transition: width ease-in-out 0.3s;
+  }
+
+  &.open {
+    padding-left: 280px;
     transition: width ease-in-out 0.3s;
   }
 `;
@@ -43,7 +48,9 @@ export const NewFolderPopupContainer = styled.div`
 
 export const NewFolderTitleContainer = styled.div`
   width: 100%;
-  height: 64px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -56,7 +63,7 @@ export const NewFolderTitleText = styled.div`
   justify-content: flex-start;
   align-items: center;
   font-size: 20px;
-  font-family: "LG_Smart_Bold";
+  font-family: "Pretendard-Bold";
   color: #191919;
 `;
 
@@ -161,7 +168,7 @@ export const MenubarWrapper = styled.div`
 
 export const MenubarContainer = styled.div`
   height: 100%;
-  width: 280px;
+  width: 0px;
   display: flex;
   background-color: #f7f7f7;
   padding: 16px;
@@ -169,12 +176,18 @@ export const MenubarContainer = styled.div`
   z-index: 100;
   gap: 16px;
   flex-direction: column;
-  opacity: 1;
+  opacity: 0;
 
   &.close {
     width: 0px;
     opacity: 0;
-    transition: 0.4s ease-in-out;
+    transition: 0.2s ease-in;
+  }
+
+  &.open {
+    width: 280px;
+    opacity: 1;
+    transition: 0.2s ease-out;
   }
 `;
 
@@ -234,6 +247,20 @@ export const MenuLogoContainer = styled.div`
   height: 36px;
 `;
 
+export const IconHoverContainer = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+`;
+
 export const NewFolderButton = styled.div`
   width: 100%;
   height: 45px;
@@ -252,6 +279,48 @@ export const NewFolderButton = styled.div`
   }
 `;
 
+export const FolderIconWrapper = styled.div`
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const FolderDivider = styled.div`
+  width: 100%;
+  box-sizing: border-box;
+  border-bottom: none;
+  height: 0px;
+  margin-bottom: 0px;
+
+  &.isOpen {
+    height: 8px;
+    border-bottom: 1px solid var(--Border, rgba(233, 233, 233, 1));
+    margin-bottom: 8px;
+  }
+`;
+
+export const PageDividerWrapper = styled.div<{ idx: number; length: number }>`
+  width: 21px;
+  height: 100%;
+  display: flex;
+  box-sizing: border-box;
+  padding-top: ${(props) => (props.idx === 0 ? "10px" : "0px")};
+  padding-bottom: ${(props) => (props.idx === props.length ? "10px" : "0px")};
+`;
+
+export const PageDivider = styled.div<{
+  parent: string;
+}>`
+  width: 1px;
+  height: 100%;
+  background-color: ${(props) =>
+    props.parent === "1" ? "transparent" : "rgba(233, 233, 233, 1)"};
+
+  margin-right: 20px;
+`;
+
 export const FolderNodeWrapper = styled.div<{ depth: number }>`
   height: 45px;
   /* width: calc(280px - 32px - ${(props) => props.depth} * 32px); */
@@ -267,8 +336,12 @@ export const FolderNodeWrapper = styled.div<{ depth: number }>`
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  padding-left: ${(props) => (props.depth === 0 ? "0px" : `32px`)};
+  /* padding-left: ${(props) => (props.depth === 0 ? "0px" : `32px`)}; */
   /* background: green; */
+
+  &.depth1 {
+    padding-left: 12px;
+  }
 
   &.depth0 {
     -webkit-user-select: none;
@@ -276,6 +349,9 @@ export const FolderNodeWrapper = styled.div<{ depth: number }>`
     -moz-user-select: none;
     -o-user-select: none;
     user-select: none;
+    /* margin-top: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--Border, rgba(233, 233, 233, 1)); */
   }
 
   & > .hovering_button {
@@ -288,12 +364,10 @@ export const FolderNodeWrapper = styled.div<{ depth: number }>`
   }
 
   &:hover {
-    &.depth1 {
-      background-color: #e7e7e7;
+    background-color: #e7e7e7;
 
-      & > .hovering_button {
-        display: flex;
-      }
+    & > .hovering_button {
+      display: flex;
     }
   }
 `;
@@ -304,6 +378,16 @@ export const HoveringButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
+`;
+
+export const FolderHoveringButton = styled.div`
+  width: 16px;
+  height: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 `;
 
 export const FolderNodeText = styled.div<{ depth: number }>`
@@ -467,6 +551,7 @@ export const FolderAddButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 30px;
 
   &:hover {
     background-color: #e7e7e7;

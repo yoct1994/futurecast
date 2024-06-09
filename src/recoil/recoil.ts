@@ -20,3 +20,8 @@ export const deleteIdValue = atom<string>({
   default: "",
   key: "show_delete_modal_state",
 });
+
+export const isLoadingNavState = atom<boolean>({
+  default: false,
+  key: "is_loading_nav_state",
+});

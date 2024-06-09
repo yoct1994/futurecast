@@ -4,6 +4,7 @@ import Input from "../components/login/input";
 import { auth } from "../utils/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Cookies } from "react-cookie";
+import { ReactComponent as Logo } from "../assets/Logo.svg";
 
 const LoginPage = () => {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -22,17 +23,13 @@ const LoginPage = () => {
 
   return (
     <S.LoginWrapper>
-      <S.LogoImg>LOGO</S.LogoImg>
+      <S.LogoImg>
+        <Logo />
+      </S.LogoImg>
       <S.WelcomeText>Welcome!</S.WelcomeText>
       <S.LoginContainer>
-        <S.InputGroupContainer>
-          <Input placeholder="Email address" type="email" inputRef={emailRef} />
-          <Input
-            placeholder="Password"
-            type="password"
-            inputRef={passwordRef}
-          />
-        </S.InputGroupContainer>
+        <Input placeholder="Email address" type="email" inputRef={emailRef} />
+        <Input placeholder="Password" type="password" inputRef={passwordRef} />
         <S.ButtonContainer>
           <S.LoginExplainText>
             By continuing, you agree to Futurecast’s Consumer Terms and

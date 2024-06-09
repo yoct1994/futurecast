@@ -1,11 +1,22 @@
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Link, useParams } from "react-router-dom";
 import Menubar from "../components/menubar/menubar";
 import * as S from "../components/documents/styles";
 import { ReactComponent as Divider } from "../assets/Devider.svg";
+import { ReactComponent as Bar } from "../assets/graph/NodeChart.svg";
+import { ReactComponent as Candle } from "../assets/graph/BarChart.svg";
+import { ReactComponent as Node } from "../assets/graph/CandleChart.svg";
+import { ReactComponent as Fan } from "../assets/graph/FanChart.svg";
 import { ReactComponent as Delete } from "../assets/delete.svg";
 import { ReactComponent as Export } from "../assets/export.svg";
 import { ReactComponent as Option } from "../assets/option.svg";
+import { ReactComponent as ItemOption } from "../assets/document_page/ItemOption.svg";
 import { ReactComponent as Add } from "../assets/document_page/Add.svg";
 import { ReactComponent as Edit } from "../assets/document_page/Edit.svg";
 import { ReactComponent as Close } from "../assets/document_page/Close.svg";
@@ -13,22 +24,27 @@ import { ReactComponent as ArrowUp } from "../assets/UpArrow.svg";
 import { ReactComponent as ArrowUpDisable } from "../assets/ArrowUpDisable.svg";
 import { Mention, MentionsInput } from "react-mentions";
 import { Cookies } from "react-cookie";
+import generatePDF, { Margin, Resolution, usePDF } from "react-to-pdf";
 import {
   generateAI,
   getDocument,
   getDocumentInfo,
   getDocumentTreeData,
+  getNavBar,
   getSuggetion,
   makeNewDocument,
   makePage,
+  moveCollectionItem,
 } from "../server/server";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip } from "react-tooltip";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   deleteIdValue,
+  isLoadingNavState,
   menubarOpenState,
   showDeleteModal,
+  treeDataState,
 } from "../recoil/recoil";
 import DocumentItem from "../components/documents/document_item";
 import { Skeleton } from "primereact/skeleton";
@@ -37,6 +53,8 @@ import { ProgressSpinner } from "primereact/progressspinner";
 import { DndProvider, useDrop } from "react-dnd";
 import { Toast } from "primereact/toast";
 import "../components/mention.css";
+import { Menu } from "primereact/menu";
+import { MenuItem, MenuItemCommandEvent } from "primereact/menuitem";
 
 let container: any;
 
@@ -52,6 +70,7 @@ const Document = () => {
   const scrollRefs = useRef<React.RefObject<HTMLDivElement>[]>([]);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<Menu>(null);
 
   const [isLoadingToc, setIsLoadingToc] = useState<boolean>(false);
 
@@ -72,14 +91,84 @@ const Document = () => {
   const [pollId, setPollId] = useState<string>("");
   const [pollIdx, setPollIdx] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isOpenView, setIsOpenView] = useState(false);
   const [showIsDeleteModal, setShowIsDeleteModal] =
     useRecoilState(showDeleteModal);
-  const [deleteId, setDeleteId] = useRecoilState(deleteIdValue);
+  const [collections, setCollections] = useState<MenuItem[]>([]);
+  const [treeData, setTreeData] = useRecoilState(treeDataState);
+  const [isLoadingNav, setIsLoadingNav] = useRecoilState(isLoadingNavState);
 
-  const [{}, drop] = useDrop(() => ({
-    accept: "ITEM",
-    drop: (item: any) => {
+  useEffect(() => {
+    const getCollections = async () => {
+      const items: MenuItem[] = [];
+
+      for (var collection of treeData.filter(
+        (item) => item.data.type === "FOLDER"
+      )) {
+        items.push({
+          label: collection.text,
+          data: collection,
+          template: (item, option) => {
+            return (
+              <S.CollectionItem
+                onClick={async () => {
+                  await moveCollectionItem(item.data?.data?.id, id ?? "").then(
+                    (res) => {
+                      const data = JSON.parse(res.data);
+
+                      toast.current?.show({
+                        severity:
+                          res.status === 200 || res.status === 201
+                            ? "success"
+                            : "error",
+                        summary:
+                          res.status === 200 || res.status === 201
+                            ? "Success"
+                            : "Error",
+                        detail:
+                          res.status === 200 || res.status === 201
+                            ? "Success to move collection"
+                            : data.detail,
+                        life: 3000,
+                      });
+
+                      if (res.status === 200 || res.status === 201) {
+                        setIsLoadingNav(true);
+                      }
+                      console.log(res.data);
+                    }
+                  );
+                }}
+              >
+                <ItemOption />
+                <S.CollectionName>{item.label}</S.CollectionName>
+              </S.CollectionItem>
+            );
+          },
+        });
+      }
+
+      setCollections(items);
+    };
+
+    getCollections();
+  }, [treeData]);
+
+  const { toPDF, targetRef } = usePDF({
+    method: "save",
+    page: {
+      margin: Margin.MEDIUM,
+    },
+    filename: `${id}.pdf`,
+  });
+
+  const [isLoadingPDF, setIsLoadingPDF] = useState(false);
+
+  const handleDrop = useCallback(
+    (item: any) => {
       const idx = mentionItems.findIndex((i) => i.id === item.id);
+
+      console.log("mention items drop :::: ", item, idx, mentionItems);
 
       if (idx !== -1) {
         toast.current?.show({
@@ -90,8 +179,6 @@ const Document = () => {
         });
         return;
       }
-
-      console.log("drop :::: ", item);
       setMentionItems((list) => {
         list.push(item);
         return list;
@@ -99,10 +186,20 @@ const Document = () => {
 
       console.log("DROP END :::: ", mentionItems);
     },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
+    [mentionItems]
+  );
+
+  const [_, drop] = useDrop(
+    () => ({
+      accept: "ITEM",
+      drop: handleDrop,
+      // hover: handleDrop,
+      collect: (monitor) => ({
+        isOver: !!monitor.isOver(),
+      }),
     }),
-  }));
+    [mentionItems]
+  );
 
   useEffect(() => {
     console.log("check value", pollId, pollIdx, isPolling);
@@ -326,7 +423,7 @@ const Document = () => {
       paddingBottom: "calc((55px - 18px) / 2)",
       boxSizing: "border-box",
       fontSize: 16,
-      fontFamily: "LG_Smart_Regular",
+      fontFamily: "Pretendard-Regular",
     },
   };
 
@@ -369,15 +466,51 @@ const Document = () => {
               {isEdit ? "SAVE" : "EDIT"}
             </S.SaveAndEditButton>
             <S.DocumentHeaderButtonContainer>
-              <Option
-                data-tooltip-id={"tooltip_id"}
-                data-tooltip-content="Save to Folder"
-                data-tooltip-place="bottom"
-              />
+              <S.HeaderButton
+                aria-controls="option_menu_popup"
+                aria-haspopup
+                onClick={(e) => {
+                  menuRef.current?.toggle(e);
+                }}
+              >
+                <Menu
+                  model={collections}
+                  popup
+                  ref={menuRef}
+                  id="option_menu_popup"
+                  color="rgba(25, 25, 25, 1)"
+                  style={{
+                    fontFamily: "Pretendard-Regular",
+                    fontSize: 16,
+                    gap: 4,
+                    color: "rgba(25, 25, 25, 1)",
+                    boxShadow: "0px -8px 36px 0px rgba(0, 0, 0, 0.17)",
+                    borderRadius: 16,
+                    width: 160,
+                    padding: 0,
+                  }}
+                />
+                <Option
+                  data-tooltip-id={"tooltip_id"}
+                  data-tooltip-content="Save to Folder"
+                  data-tooltip-place="bottom"
+                />
+              </S.HeaderButton>
               <Export
                 data-tooltip-id={"tooltip_id"}
                 data-tooltip-content="Export to PDF"
                 data-tooltip-place="bottom"
+                onClick={async () => {
+                  setIsLoadingPDF(true);
+                  setIsOpenView(true);
+                  setTimeout(() => {
+                    toPDF();
+                  }, 3000);
+                  setTimeout(() => {
+                    setIsLoadingPDF(false);
+                    setIsOpenView(false);
+                  }, 4000);
+                }}
               />
               <Delete
                 data-tooltip-id={"tooltip_id"}
@@ -385,13 +518,23 @@ const Document = () => {
                 data-tooltip-place="bottom"
                 onClick={(e) => {
                   // setDeleteId(documents.id);
-                  cookies.set("deleteId", documents.id);
-                  console.log(
-                    "=====document id=====",
-                    documents.id,
-                    typeof deleteId
-                  );
-                  setShowIsDeleteModal(true);
+                  if (documents) {
+                    // console.log(
+                    //   "=====document id=====",
+                    //   documents.id,
+                    //   typeof deleteId
+                    // );
+                    cookies.set("deleteId", documents.id);
+                    setShowIsDeleteModal(true);
+                  } else {
+                    toast.current?.show({
+                      severity: "error",
+                      summary: "Failed",
+                      detail:
+                        "The document is still loading. Please wait a moment.",
+                      life: 3000,
+                    });
+                  }
                 }}
               />
             </S.DocumentHeaderButtonContainer>
@@ -399,7 +542,16 @@ const Document = () => {
         </S.DocumentHeader>
         <S.DocumentContentWrapper isOpen={isOpen}>
           <S.DocumentContentContianer ref={scrollRef}>
-            <S.DocumentScrollWrapper>
+            <S.DocumentScrollWrapper
+              ref={targetRef}
+              style={
+                isLoadingPDF
+                  ? {
+                      overflow: "visible",
+                    }
+                  : {}
+              }
+            >
               <S.DocumentContents>
                 {!documents ? (
                   <DocumentItem
@@ -414,6 +566,7 @@ const Document = () => {
                     console.log(item);
                     return (
                       <DocumentItem
+                        isOpenView={isOpenView}
                         key={index}
                         index={index}
                         refs={scrollRefs}
@@ -432,7 +585,7 @@ const Document = () => {
               <S.QueryInputContainer>
                 <S.InputContainer ref={drop}>
                   <SS.QueryInputBorder
-                    className="mention_input_styling"
+                    // className="mention_input_styling"
                     ref={(el) => {
                       queryBorderRef.current = el;
                       container = el;
@@ -448,6 +601,8 @@ const Document = () => {
                                   ? item.data.title
                                   : item.result
                                   ? item.result.title
+                                  : item.description
+                                  ? item.description
                                   : ""}
                               </S.MentionItemTitle>
                             </S.MentionItemContainer>
@@ -458,11 +613,32 @@ const Document = () => {
                                 }
                               />
                             )}
+                            {item.type !== "news" && item.type !== "search" && (
+                              <S.IconMentionsItemImage
+                                color={
+                                  item.type === "bar-chart"
+                                    ? "rgba(222, 222, 227, 0.8)"
+                                    : item.type === "candle-chart"
+                                    ? "rgba(219, 200, 221, 0.8)"
+                                    : item.type === "causal-graph"
+                                    ? "rgba(236, 227, 222, 0.8)"
+                                    : item.type === "fan-chart"
+                                    ? "rgba(240, 234, 232, 0.8)"
+                                    : "rgba(222, 222, 227, 0.8)"
+                                }
+                              >
+                                {item.type === "bar-chart" && <Bar />}
+                                {item.type === "fan-chart" && <Fan />}
+                                {item.type === "causal-graph" && <Node />}
+                                {item.type === "candle-chart" && <Candle />}
+                              </S.IconMentionsItemImage>
+                            )}
                             <Close
                               style={{
                                 position: "absolute",
                                 top: 0,
                                 right: 0,
+                                cursor: "pointer",
                               }}
                               onClick={() => {
                                 // setMentionItems(items);
@@ -477,8 +653,8 @@ const Document = () => {
                     </S.MentionItemWrapper>
                     <MentionsInput
                       customSuggestionsContainer={suggestions}
-                      disabled={isLoading}
-                      className="mention_input_styling"
+                      disabled={false}
+                      // className="mention_input_styling"
                       singleLine={false}
                       classNames={["mentions"]}
                       allowSpaceInQuery={true}
@@ -535,7 +711,8 @@ const Document = () => {
                   </SS.QueryInputBorder>
                   <S.QuerySendButton
                     query={query}
-                    onClick={async () => {
+                    onClick={async (e) => {
+                      e.stopPropagation();
                       console.log(mentionItems);
                       let q = `${query}`;
                       const m = [...mentions];
@@ -656,7 +833,6 @@ const Document = () => {
                                 });
                               }}
                             >
-                              <div>•</div>
                               {/* {item?.nodeValue} */}
                               {item.current?.id}
                             </S.DocumentRightBarText>
@@ -681,7 +857,6 @@ const Document = () => {
                                 }}
                               >
                                 {/* {item?.nodeValue} */}
-                                <div>•</div>
                                 <div>{`${
                                   scrollRefs.current[4 * index + 1].current?.id
                                 }`}</div>
@@ -708,7 +883,6 @@ const Document = () => {
                                 }}
                               >
                                 {/* {item?.nodeValue} */}
-                                <div>•</div>
                                 <div>{`${scrollRefs.current[
                                   4 * index + 2
                                 ].current?.id
@@ -735,7 +909,6 @@ const Document = () => {
                                 }}
                               >
                                 {/* {item?.nodeValue} */}
-                                <div>•</div>
                                 <div>{`${
                                   scrollRefs.current[4 * index + 3].current?.id
                                 }`}</div>
@@ -752,7 +925,7 @@ const Document = () => {
       </S.DocumentWrapper>
       <Tooltip
         style={{
-          fontFamily: "LG_Smart_SemiBold",
+          fontFamily: "Pretendard-SemiBold",
           color: "white",
           background: "rgba(117, 117, 117, 1)",
           borderRadius: 8,

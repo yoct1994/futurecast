@@ -37,16 +37,34 @@ export const MainPageContainer = styled.div`
 `;
 
 export const AssetContianer = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
   /* justify-content: center; */
   width: 100%;
   /* background-color: green; */
 `;
 
+export const AssetImageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  /* background-color: grey; */
+`;
+
+export const AssetText = styled.div`
+  font-size: 12px;
+  color: #757575;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  line-height: 20px;
+`;
+
 export const AssetImage = styled.video`
   box-shadow: 0px -8px 36px 0px rgba(0, 0, 0, 0.08);
-  width: calc(100% / 3);
+  width: 100%;
   border-radius: 30px;
   object-fit: cover;
 `;
@@ -56,14 +74,14 @@ export const HowToUse = styled.div`
   color: black;
   display: flex;
   flex-direction: row;
-  font-family: "LG_Smart_Light";
+  font-family: "Pretendard-Light";
   gap: 10px;
   margin-top: 64px;
   margin-bottom: 64px;
 `;
 
 export const Futurecast = styled.div`
-  font-family: "LG_Smart_SemiBold";
+  font-family: "Pretendard-SemiBold";
 `;
 
 export const ExampleQueryGrid = styled.div`
@@ -221,12 +239,12 @@ export const SuggestionsContainer = styled.div`
 export const Mention = styled.div`
   font-size: 16px;
   color: rgba(25, 25, 25, 1);
-  font-family: "LG_Smart_Regular_Italic";
+  font-family: "Pretendard-Regular";
   width: 100%;
   /* background-color: green; */
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  /* font-family: "LG_Smart_SemiBold"; */
+  /* font-family: "Pretendard-SemiBold"; */
   /* background-color: rgba(86, 97, 246, 1); */
 `;

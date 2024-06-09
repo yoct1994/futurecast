@@ -9,16 +9,20 @@ import { getReferences } from "../../server/server";
 import { Skeleton } from "primereact/skeleton";
 import SubPageItem from "./sub_page/sub_page_item";
 import ReferenceItem from "./reference/refrence_item";
+import BarChart from "./graph/bar-chart";
+import { AgChartsReact } from "ag-charts-react";
+import { getData } from "./graph/testData";
 
 type Props = {
   item: any;
   refs: React.MutableRefObject<React.RefObject<HTMLDivElement>[]>;
   index: number;
+  isOpenView?: boolean;
   // setScrollRefs: React.Dispatch<SetStateAction<(HTMLDivElement | null)[]>>;
   // scrollRefs: (HTMLDivElement | null)[];
 };
 
-const DocumentItem = ({ item, refs, index }: Props) => {
+const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
   const viewMoreRef = useRef<HTMLDivElement | null>(null);
   const refViewMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -26,6 +30,22 @@ const DocumentItem = ({ item, refs, index }: Props) => {
   const [refMoreNum, setRefMoreNum] = useState<number>(6);
   const [resources, setResources] = useState<any[]>([]);
   const [isLoadingRef, setIsLoadingRef] = useState(false);
+
+  useEffect(() => {
+    if (isOpenView) {
+      viewMoreRef.current?.classList.add("view_more");
+      setMoreNum(item.children.length);
+
+      viewMoreRef.current?.classList.add("view_more");
+      setRefMoreNum(resources.length);
+    } else {
+      viewMoreRef.current?.classList.remove("view_more");
+      setMoreNum(4);
+
+      viewMoreRef.current?.classList.add("view_more");
+      setRefMoreNum(6);
+    }
+  }, [isOpenView]);
 
   const getResources = async () => {
     const refs = [];
@@ -66,11 +86,22 @@ const DocumentItem = ({ item, refs, index }: Props) => {
         <S.DocumentQueryContainer>
           {item ? item.query.full_text : <Skeleton height={"24px"} />}
         </S.DocumentQueryContainer>
-        <Retry
-          data-tooltip-id={"tooltip_id"}
-          data-tooltip-content="Retry"
-          data-tooltip-place="bottom"
-        />
+        <S.DocumentStatusWrapper status={item ? item.status : ""}>
+          {item
+            ? item.status === "completed"
+              ? "SUCCESS"
+              : item.status === "failed"
+              ? "FAIL"
+              : "LOADING"
+            : "LOADING"}
+        </S.DocumentStatusWrapper>
+        <div style={{ width: 48, height: 48 }}>
+          <Retry
+            data-tooltip-id={"tooltip_id"}
+            data-tooltip-content="Retry"
+            data-tooltip-place="bottom"
+          />
+        </div>
       </S.DocumentContainer>
       {item && item.status !== "submitted" && item.children.length === 0 && (
         <S.EmptyWrapper>
@@ -277,6 +308,17 @@ const DocumentItem = ({ item, refs, index }: Props) => {
           )}
         </S.AnswerContainer>
       </S.AnswerWrapper>
+      {resources
+        .filter(
+          (item) =>
+            item.type === "bar-chart" ||
+            item.type === "causal-graph" ||
+            item.type === "candle-chart" ||
+            item.type === "fan-chart"
+        )
+        .map((item, index) => {
+          return <BarChart item={item} key={index} />;
+        })}
       <S.NewsWrapper>
         <S.NewsTitleWrapper
           id={`References`}

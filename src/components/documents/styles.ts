@@ -27,12 +27,13 @@ export const DocumentTreeContainer = styled.div`
   flex-direction: row;
   gap: 4px;
   justify-content: flex-start;
+  align-items: center;
 `;
 
 export const DocumentTreeText = styled.div`
   font-size: 16px;
   color: rgba(25, 25, 25, 1);
-  font-family: "LG_Smart_Regular_Italic";
+  font-family: "Pretendard-Regular";
   max-width: 200px;
   overflow: hidden;
   white-space: nowrap;
@@ -73,7 +74,7 @@ export const SaveAndEditButton = styled.div`
   align-items: center;
 
   font-size: 14px;
-  font-family: "LG_Smart_SemiBold";
+  font-family: "Pretendard-SemiBold";
 
   cursor: pointer;
 
@@ -114,7 +115,8 @@ export const DocumentContentContianer = styled.div`
 
 export const DocumentScrollWrapper = styled.div`
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
+  flex: 1;
   overflow-y: scroll;
   /* overflow-x: hidden; */
   &::-webkit-scrollbar {
@@ -171,7 +173,7 @@ export const DocumentRightBarTitle = styled.div`
   display: flex;
   align-items: center;
   font-size: 18px;
-  font-family: "LG_Smart_SemiBold";
+  font-family: "Pretendard-SemiBold";
   color: rgba(25, 25, 25, 1);
   margin-bottom: 24px;
 `;
@@ -183,7 +185,7 @@ export const DocumentRightBarText = styled.li<{ isInterect: boolean }>`
   /* background-color: grey; */
   font-size: 16px;
   font-family: ${(props) =>
-    props.isInterect ? "LG_Smart_Bold" : "LG_Smart_Regular"};
+    props.isInterect ? "Pretendard-Bold" : "Pretendard-Regular"};
   overflow: hidden;
   text-overflow: ellipsis;
   max-lines: 1;
@@ -196,6 +198,40 @@ export const DocumentRightBarText = styled.li<{ isInterect: boolean }>`
   display: flex;
   flex-direction: row;
   gap: 10px;
+  cursor: pointer;
+`;
+
+export const HeaderButton = styled.div``;
+
+export const CollectionItem = styled.div`
+  width: 100%;
+  height: 40px;
+  display: flex;
+  gap: 4px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f7f7f7;
+  }
+`;
+
+export const CollectionName = styled.div`
+  width: calc(160px - 40px - 16px);
+  font-size: 16px;
+  font-family: "Pretendard-Regular";
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  max-lines: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; // 원하는 라인수
+  -webkit-box-orient: vertical;
 `;
 
 export const DocumentRightOl = styled.ol`
@@ -203,9 +239,9 @@ export const DocumentRightOl = styled.ol`
   padding-left: 0px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 15px;
   li {
-    margin-left: 16px;
+    margin-left: 24px;
     padding-left: 0px;
     /* margin-bottom: 16px; */
   }
@@ -219,7 +255,7 @@ export const DocumentRightBarListContainer = styled.ul`
   /* gap: 24px; */
   padding-left: 0px;
   margin-left: 0px;
-  gap: 24px;
+  gap: 15px;
 `;
 
 export const DocumentQueryWrapper = styled.div`
@@ -254,18 +290,51 @@ export const DocumentContainer = styled.div`
   /* background-color: white; */
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
+  /* justify-content: center; */
   margin-bottom: 40px;
 `;
 
 export const DocumentQueryContainer = styled.div`
   width: 100%;
   display: flex;
+  line-height: 1;
   /* background-color: ; */
   font-size: 28px;
   color: rgba(25, 25, 25, 1);
-  font-family: "LG_Smart_Bold";
-  margin-top: 16px;
+  font-family: "Pretendard-Bold";
+  padding-top: 16px;
+  padding-bottom: 16px;
+`;
+
+export const DocumentStatusWrapper = styled.div<{ status: string }>`
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5.5px;
+  padding-bottom: 5.5px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  margin-left: 16px;
+  font-size: 13px;
+  font-family: "Pretendard-SemiBold";
+  color: ${(props) => {
+    if (props.status === "completed") {
+      return "rgba(48, 195, 158, 1)";
+    } else if (props.status === "Failed") {
+      return "rgba(253, 49, 46, 1)";
+    } else {
+      return "rgba(252, 175, 69, 1)";
+    }
+  }};
+  background-color: ${(props) => {
+    if (props.status === "completed") {
+      return "rgba(48, 195, 158, 0.2)";
+    } else if (props.status === "Failed") {
+      return "rgba(253, 49, 46, 0.2)";
+    } else {
+      return "rgba(255, 200, 69, 0.2)";
+    }
+  }};
 `;
 
 export const SubDocumentGrid = styled.div`
@@ -316,24 +385,30 @@ export const QuerySendButton = styled.div<{ query: string }>`
     props.query !== "" ? "rgba(86, 97, 246, 1)" : "rgba(0, 0, 0, 0.1)"};
   display: flex;
   justify-content: center;
+  z-index: 1000;
   align-items: center;
+  cursor: pointer;
 `;
 
 export const SubDocumentQuery = styled.div`
   width: calc((812px - 16px) / 2 - 48px);
   font-size: 18px;
   color: rgba(25, 25, 25, 1);
-  font-family: "LG_Smart_SemiBold";
-  white-space: nowrap;
+  font-family: "Pretendard-SemiBold";
   overflow: hidden;
   text-overflow: ellipsis;
+  max-lines: 3;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; // 원하는 라인수
+  -webkit-box-orient: vertical;
 `;
 
 export const SubDocumentContent = styled.div`
   color: rgba(117, 117, 117, 1);
   width: calc((812px - 16px) / 2 - 48px);
   font-size: 16px;
-  font-family: "LG_Smart_Regular";
+  font-family: "Pretendard-Regular";
   overflow: hidden;
   text-overflow: ellipsis;
   max-lines: 2;
@@ -356,7 +431,7 @@ export const SubDocumentTag = styled.div<{ index: number; type: string }>`
   padding-top: 7.5px;
   padding-bottom: 7.5px;
   font-size: 14px;
-  font-family: "LG_Smart_Regular";
+  font-family: "Pretendard-Regular";
   background-color: rgba(119, 119, 119, 0.1);
   border-radius: 4px;
   display: flex;
@@ -407,7 +482,7 @@ export const SubDocumentViewMoreButton = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 16px;
-  font-family: "LG_Smart_SemiBold";
+  font-family: "Pretendard-SemiBold";
   cursor: pointer;
   /* 
   &:hover {
@@ -440,7 +515,7 @@ export const AnswerContainer = styled.div`
 `;
 
 export const CustomFontMarkDown = styled(Markdown)`
-  /* font-family: "LG_Smart_Regular"; */
+  /* font-family: "Pretendard-Regular"; */
   /* font-family: "Noto Sans"; */
   font-family: "Pretendard", "Malgun Gothic", sans-serif;
 `;
@@ -453,7 +528,7 @@ export const NewsWrapper = styled.div`
 
 export const NewsTitleWrapper = styled.div`
   font-size: 28px;
-  font-family: "LG_Smart_Bold";
+  font-family: "Pretendard-Bold";
   color: rgba(25, 25, 25, 1);
   padding-top: 80px;
   padding-bottom: 24px;
@@ -492,7 +567,7 @@ export const NewsContentContainer = styled.div`
 export const NewsTitleText = styled.div`
   width: calc(((812px - 16px) / 2) - 168px);
   font-size: 16px;
-  font-family: "LG_Smart_SemiBold";
+  font-family: "Pretendard-SemiBold";
   max-lines: 2;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -501,7 +576,7 @@ export const NewsTitleText = styled.div`
 export const NewsContentText = styled.div`
   width: calc(((812px - 16px) / 2) - 168px);
   font-size: 16px;
-  font-family: "LG_Smart_Regular";
+  font-family: "Pretendard-Regular";
   max-lines: 2;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -563,12 +638,12 @@ export const MentionItemWrapper = styled.div<{ length: number }>`
   width: 100%;
   background-color: red;
   height: ${(props) => (props.length === 0 ? "0px" : "84px")};
-  display: flex;
   padding-top: ${(props) => (props.length === 0 ? "0px" : "24px")};
   padding-left: ${(props) => (props.length === 0 ? "0px" : "32px")};
   padding-right: ${(props) => (props.length === 0 ? "0px" : "32px")};
   box-sizing: border-box;
   gap: 8px;
+  display: flex;
   padding-right: 64px;
   border-top-left-radius: 40px;
   border-top-right-radius: 40px;
@@ -606,7 +681,7 @@ export const MentionItemTitle = styled.div`
   width: calc(232px - 56px - 16px);
   display: -webkit-box;
   font-size: 12px;
-  font-family: "LG_Smart_SemiBold";
+  font-family: "Pretendard-SemiBold";
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 20px;
@@ -624,14 +699,23 @@ export const MentionsItemImage = styled.img`
   border-bottom-right-radius: 8px;
 `;
 
+export const IconMentionsItemImage = styled.div<{
+  color: string;
+}>`
+  width: 56px;
+  height: 56px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${(props) => props.color};
+`;
+
 export const EmptyWrapper = styled.div`
   width: 100%;
-  height: 240px;
+  height: 130px;
   display: flex;
-  padding-left: 40px;
-  padding-right: 40px;
-  padding-top: 56px;
-  padding-bottom: 56px;
   box-sizing: border-box;
 `;
 
@@ -639,10 +723,56 @@ export const EmptyContainer = styled.div`
   background: var(--SubBG, #f7f7f7);
   width: 100%;
   height: 100%;
+  border-radius: 8px;
   border: 1px solid var(--Border, #e9e9e9);
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #000000;
+  color: rgba(117, 117, 117, 1);
   font-size: 14px;
+`;
+
+export const BarChartWrapper = styled.div`
+  width: 100%;
+  padding-top: 40px;
+  box-sizing: border-box;
+  display: flex;
+  gap: 24px;
+  flex-direction: column;
+  cursor: pointer;
+`;
+
+export const BarChart = styled.div`
+  width: 100%;
+  height: 512px;
+  border: 1px solid var(--Border, #e9e9e9);
+  box-sizing: border-box;
+  border-radius: 8px;
+  overflow: hidden;
+
+  & > canvas {
+    border-radius: 8px;
+  }
+`;
+
+export const Cover = styled.div`
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  position: absolute;
+  /* background-color: white; */
+`;
+
+export const CausalChart = styled.div`
+  width: 100%;
+  height: 620px;
+  border: 1px solid var(--Border, #e9e9e9);
+  box-sizing: border-box;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+
+  &:focus {
+    outline: none;
+  }
 `;

@@ -91,15 +91,16 @@ const MainPage = () => {
     paddingLeft: 32,
     paddingRight: 64,
     maxHeight: 200,
-    color: "transparent",
+    // color: "transparent",
     paddingTop: "calc((55px - 18px) / 2)",
     paddingBottom: "calc((55px - 18px) / 2)",
-    fontFamily: "LG_Smart_Regular",
+    fontFamily: "Pretendard-Regular",
     input: {
       scrollbarWidth: "none",
       overflowY: "scroll",
       borderRadius: "40px",
-      fontFamily: "LG_Smart_Regular",
+      fontFamily: "Pretendard-Regular",
+      // fontFamily: "Pretendard",
       boxShadow: "none",
       // color: "transparent",
       // lineHeight: 1,
@@ -120,15 +121,36 @@ const MainPage = () => {
       <S.MainPageWrapper>
         <S.MainPageContainer>
           <S.AssetContianer>
-            <S.AssetImage muted autoPlay loop>
-              <source src={"video1.mp4"} type="video/mp4" />
-            </S.AssetImage>
-            <S.AssetImage muted autoPlay loop>
-              <source src={"video2.mp4"} type="video/mp4" />
-            </S.AssetImage>
-            <S.AssetImage muted autoPlay loop>
-              <source src={"video3.mp4"} type="video/mp4" />
-            </S.AssetImage>
+            <S.AssetImageContainer>
+              <S.AssetImage muted autoPlay loop>
+                <source src={"video1.mp4"} type="video/mp4" />
+              </S.AssetImage>
+              <S.AssetText>
+                @ 를 입력한 뒤 예측하고 싶은 대상을
+                <br />
+                검색하고 선택합니다.
+              </S.AssetText>
+            </S.AssetImageContainer>
+            <S.AssetImageContainer>
+              <S.AssetImage muted autoPlay loop>
+                <source src={"video2.mp4"} type="video/mp4" />
+              </S.AssetImage>
+              <S.AssetText>
+                예측상황을 AI에게 설명하고
+                <br />
+                AI의 분석 결과를 기다리세요
+              </S.AssetText>
+            </S.AssetImageContainer>
+            <S.AssetImageContainer>
+              <S.AssetImage muted autoPlay loop>
+                <source src={"video3.mp4"} type="video/mp4" />
+              </S.AssetImage>
+              <S.AssetText>
+                추가 질문이 있다면
+                <br />
+                검색창으로 드래그앤 드롭 하세요
+              </S.AssetText>
+            </S.AssetImageContainer>
           </S.AssetContianer>
           <S.HowToUse>
             {`How to use `}
@@ -233,7 +255,12 @@ const MainPage = () => {
             </S.QueryInputBorder>
             <S.QuerySendButton
               query={query}
-              onClick={async () => {
+              onClick={async (e) => {
+                e.stopPropagation();
+                console.log("test");
+                if (query === "") {
+                  return;
+                }
                 let q = `${query}`;
                 const m = [...mentions];
                 console.log(m);

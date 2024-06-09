@@ -11,13 +11,6 @@ const SubPageItem = ({ index, item, uniqueReferences }: Props) => {
   return (
     <S.SubDocumentItem key={index} as={Link} to={`/document/${item.page_id}`}>
       <S.SubDocumentQuery>{item.document_query.full_text}</S.SubDocumentQuery>
-      <S.SubDocumentContent>
-        {`${
-          item.document_content
-            ? item.document_content.full_text
-            : "No Contents"
-        }`}
-      </S.SubDocumentContent>
       <S.SubDocumentTagContainer>
         {uniqueReferences.map((value, index) => {
           return (

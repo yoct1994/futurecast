@@ -8,6 +8,7 @@ import { ReactComponent as Create } from "../../assets/CreateFolder.svg";
 import { ReactComponent as ModalIcon } from "../../assets/ModalIcon.svg";
 import { ReactComponent as Close } from "../../assets/Close.svg";
 import { ReactComponent as Generate } from "../../assets/GenerateDocument.svg";
+import { ReactComponent as GenerateIcon } from "../../assets/Generate.svg";
 import { ReactComponent as ArrowUp } from "../../assets/Sidebar/ArrowUp.svg";
 import { ReactComponent as ArrowDown } from "../../assets/Sidebar/ArrowDown.svg";
 import { ReactComponent as ArrowRight } from "../../assets/Sidebar/ArrowRight.svg";
@@ -28,6 +29,7 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { useRecoilState } from "recoil";
 import {
   deleteIdValue,
+  isLoadingNavState,
   menubarOpenState,
   showDeleteModal,
   treeDataState,
@@ -35,6 +37,8 @@ import {
 import { Link, useParams } from "react-router-dom";
 import { Toast } from "primereact/toast";
 import PopupMenuItem from "../documents/menu/menu_item";
+import { auth } from "../../utils/firebase";
+import FolderItem from "../documents/menu/folder_item";
 
 type Props = {
   children: any;
@@ -56,6 +60,7 @@ const Menubar = ({ children }: Props) => {
 
   const [treeData, setTreeData] = useRecoilState(treeDataState);
   const [deleteId, setDeleteId] = useRecoilState(deleteIdValue);
+  const [isLoadingNav, setIsLoadingNav] = useRecoilState(isLoadingNavState);
 
   const getNav = async (isRefresh: boolean) => {
     console.log(deleteId);
@@ -148,6 +153,13 @@ const Menubar = ({ children }: Props) => {
     getNav(false);
   }, []);
 
+  useEffect(() => {
+    if (isLoadingNav) {
+      getNav(isLoadingNav);
+      setIsLoadingNav(false);
+    }
+  }, [isLoadingNav]);
+
   const handleDrop = async (newTree: NodeModel<any>[]) => {
     const checkTree = newTree.filter((node: any) => {
       return node.data?.type === "PAGE" && node.parent === 0;
@@ -207,22 +219,29 @@ const Menubar = ({ children }: Props) => {
   };
 
   return (
-    <S.MenuWrapper ref={menubar} className={isOpen ? "" : "close"}>
+    <S.MenuWrapper ref={menubar} className={isOpen ? "open" : "close"}>
       <S.MenubarWrapper>
-        <S.MenubarContainer ref={menu} className={isOpen ? "" : "close"}>
+        <S.MenubarContainer ref={menu} className={isOpen ? "open" : "close"}>
           <S.MenuLogoContainer>
-            <Logo />
-            <Create
-              onClick={() => {
-                setShowCreateModal(true);
-              }}
-            />
+            <Link to={"/"}>
+              <Logo />
+            </Link>
+            <S.IconHoverContainer>
+              <Create
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  setShowCreateModal(true);
+                }}
+              />
+            </S.IconHoverContainer>
           </S.MenuLogoContainer>
           <S.NewFolderButton
             as={Link}
             to={"/"}
-            onClick={() => {
-              // setShowCreatePage(true);
+            style={{
+              cursor: "pointer",
             }}
           >
             <Generate />
@@ -247,18 +266,15 @@ const Menubar = ({ children }: Props) => {
                 initialOpen={toggles}
                 render={(node, { depth, isOpen, onToggle }) => {
                   if (node.data?.type === "PAGES") {
-                    return (
-                      <S.LatestDocumentsWrapper depth={depth} key={node.id}>
-                        <S.LatestDocumentsNodeText>
-                          {node.text}
-                        </S.LatestDocumentsNodeText>
-                      </S.LatestDocumentsWrapper>
-                    );
+                    return <></>;
                   }
 
                   if (depth === 1) {
                     return (
                       <PopupMenuItem
+                        allNodes={treeData.filter(
+                          (item) => item.parent === node.parent
+                        )}
                         setDeleteId={setDeleteId}
                         showDialog={setShowCreatePage}
                         key={node.id}
@@ -274,45 +290,19 @@ const Menubar = ({ children }: Props) => {
                   }
 
                   return (
-                    <S.FolderNodeWrapper
+                    <FolderItem
+                      allNodes={treeData}
+                      setDeleteId={setDeleteId}
+                      showDialog={setShowCreatePage}
                       key={node.id}
                       depth={depth}
-                      className={`depth${depth}`}
-                    >
-                      {node.parent === 0 ? <FolderIcon /> : <></>}
-                      <S.FolderNodeText depth={depth}>
-                        {node.text}
-                      </S.FolderNodeText>
-                      {node.parent === 0 ? (
-                        <div
-                          onClick={() => {
-                            if (toggles.includes(node.id)) {
-                              var copy = [...toggles];
-                              copy = copy.filter((n) => n !== node.id);
-                              setToggles(copy);
-                            } else {
-                              setToggles([...toggles, node.id]);
-                            }
-                            onToggle();
-                          }}
-                        >
-                          {isOpen ? <ArrowUp /> : <ArrowDown />}
-                        </div>
-                      ) : (
-                        <></>
-                      )}
-                      {node.parent !== 0 && (
-                        <S.HoveringButton
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                          className="hovering_button"
-                        >
-                          <Meatball />
-                        </S.HoveringButton>
-                      )}
-                    </S.FolderNodeWrapper>
+                      node={node}
+                      toggles={toggles}
+                      setToggles={setToggles}
+                      isOpen={isOpen}
+                      onToggle={onToggle}
+                      toast={toast}
+                    />
                   );
                 }}
                 dragPreviewRender={(monitorProps) => (
@@ -326,11 +316,16 @@ const Menubar = ({ children }: Props) => {
           <S.UserAccountWrapper>
             <S.UserAccountContiner>
               <Logout
-                onClick={() => {
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={async () => {
                   const cookies = new Cookies();
-                  cookies.remove("TOKEN");
+                  await auth.signOut().then((res) => {
+                    cookies.remove("TOKEN");
 
-                  window.location.replace("/login");
+                    window.location.replace("/login");
+                  });
                 }}
               />
               <S.UserEmailText>guest@lgsearch.ai</S.UserEmailText>
@@ -341,11 +336,15 @@ const Menubar = ({ children }: Props) => {
           <S.SmallLogoContainer>
             <SmallLogo />
             <S.FolderAddButton
+              style={{
+                cursor: "pointer",
+              }}
               onClick={() => {
-                setShowCreatePage(true);
+                // setShowCreatePage(true);
+                window.location.href = "/";
               }}
             >
-              <FolderIcon />
+              <GenerateIcon fill="#757575" />
             </S.FolderAddButton>
           </S.SmallLogoContainer>
         )}
@@ -355,8 +354,12 @@ const Menubar = ({ children }: Props) => {
               if (menubar.current.classList.contains("close")) {
                 menubar.current.classList.remove("close");
                 menu.current?.classList.remove("close");
+                menubar.current.classList.add("open");
+                menu.current?.classList.add("open");
                 setIsOpen(true);
               } else {
+                menubar.current.classList.remove("open");
+                menu.current?.classList.remove("open");
                 menubar.current.classList.add("close");
                 menu.current?.classList.add("close");
                 setIsOpen(false);
@@ -381,7 +384,7 @@ const Menubar = ({ children }: Props) => {
             }}
           >
             <S.NewFolderTitleContainer>
-              <ModalIcon color="#000000" />
+              <ModalIcon color="#000000" style={{}} />
               <S.NewFolderTitleText>Create folder</S.NewFolderTitleText>
               <Close
                 onClick={(e) => {
@@ -428,7 +431,7 @@ const Menubar = ({ children }: Props) => {
                     });
 
                     if (res.status === 200 || res.status === 201) {
-                      setTreeData((e) => []);
+                      // setTreeData((e) => []);
                       setShowCreateModal(false);
                       await getNav(true).then((res) => {});
                     }
@@ -526,7 +529,7 @@ const Menubar = ({ children }: Props) => {
       <Toast
         ref={toast}
         style={{
-          fontFamily: "LG_Smart_Regular",
+          fontFamily: "Pretendard-Regular",
           gap: 10,
         }}
       />

@@ -6,51 +6,54 @@ export const LoginWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 80px;
+  gap: 40px;
   flex-direction: column;
   box-sizing: border-box;
 `;
 
 export const LoginContainer = styled.div`
-  width: 500px;
-  height: 400px;
   background-color: #f9f9f9;
   display: flex;
-  justify-content: space-between;
   flex-direction: column;
-  padding-top: 45px;
+  gap: 16px;
+  padding-top: 40px;
   padding-left: 40px;
   padding-right: 40px;
-  padding-bottom: 30px;
+  padding-bottom: 40px;
+  border-radius: 16px;
   box-sizing: border-box;
 `;
 
 export const InputContainer = styled.div`
   position: relative;
+  /* cursor: vertical-text; */
 `;
 
 export const InputGroupContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 16px;
 `;
 
 export const InputIcon = styled.div`
-  width: 22px;
-  height: 22px;
-  background-color: #d9d9d9;
+  width: 16px;
+  height: 16px;
+  /* background-color: #d9d9d9; */
   position: absolute;
   left: 18px;
-  top: 16.5px;
+  top: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 export const InputText = styled.input`
-  border: none;
+  border: 1px solid var(--Border, #e9e9e9);
+  cursor: text;
+  border-radius: 8px;
   box-sizing: border-box;
-  width: 100%;
-  height: 55px;
-  padding-left: 52px;
-  font-size: 16px;
+  width: 318px;
+  height: 40px;
+  padding-left: 40px;
+  font-size: 14px;
   padding-right: 16px;
 
   &::placeholder {
@@ -63,13 +66,13 @@ export const InputText = styled.input`
 `;
 
 export const WelcomeText = styled.div`
-  font-size: 55px;
+  font-size: 52px;
   color: black;
 `;
 
 export const LogoImg = styled.div`
-  top: 30px;
-  left: 50px;
+  top: 10px;
+  left: 16px;
   position: fixed;
   font-size: 42px;
 `;
@@ -81,27 +84,29 @@ export const ButtonContainer = styled.div`
   box-sizing: border-box;
   justify-content: center;
   align-items: center;
-  padding-left: 21px;
-  padding-right: 21px;
 `;
 
 export const LoginExplainText = styled.div`
-  font-size: 12px;
-  color: #555555;
+  width: 318px;
+  font-size: 10px;
+  text-align: center;
+  color: #757575;
 `;
 
 export const Button = styled.div`
   box-sizing: border-box;
-  width: 100%;
-  height: 45px;
+  width: 318px;
+  height: 48px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #ebebeb;
-  font-size: 16px;
+  background-color: #5661f6;
+  font-size: 18px;
   box-sizing: border-box;
+  color: white;
+  border-radius: 8px;
 
   &:active {
-    background-color: grey;
+    background-color: #7981f6;
   }
 `;
