@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import * as Switch from "@radix-ui/react-switch";
 
 export const MenuWrapper = styled.div`
   width: 100vw;
@@ -42,13 +43,12 @@ export const NewFolderPopupContainer = styled.div`
   border-radius: 16px;
   z-index: 120;
   box-sizing: border-box;
-  background-color: white;
+  background-color: ${({ theme }) => theme.color.white};
   box-shadow: 0px -8px 36px 0px rgba(0, 0, 0, 0.17);
 `;
 
 export const NewFolderTitleContainer = styled.div`
   width: 100%;
-  padding-top: 16px;
   padding-bottom: 16px;
   box-sizing: border-box;
   display: flex;
@@ -64,7 +64,7 @@ export const NewFolderTitleText = styled.div`
   align-items: center;
   font-size: 20px;
   font-family: "Pretendard-Bold";
-  color: #191919;
+  color: ${({ theme }) => theme.color.black};
 `;
 
 export const NewFolderInputWrapper = styled.div`
@@ -82,8 +82,9 @@ export const NewFolderInput = styled.input`
   padding-left: 16px;
   font-size: 16px;
   padding-right: 16px;
-  color: black;
-  border: 1px solid #e9e9e9;
+  background-color: ${({ theme }) => theme.color.grey};
+  color: ${({ theme }) => theme.color.black};
+  border: 1px solid ${({ theme }) => theme.color.divider};
 
   &::placeholder {
     color: rgba(117, 117, 117, 1);
@@ -98,12 +99,12 @@ export const NewFolderSaveButton = styled.div`
   width: 150px;
   height: 48px;
   border-radius: 8px;
-  background-color: #000000;
+  background-color: ${({ theme }) => theme.color.black};
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 18px;
-  color: white;
+  color: ${({ theme }) => theme.color.white};
 
   &:active {
     background-color: #404040;
@@ -121,12 +122,12 @@ export const NewPageSaveButton = styled.div`
   width: 100px;
   height: 48px;
   border-radius: 8px;
-  background-color: #000000;
+  background-color: ${({ theme }) => theme.color.black};
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 18px;
-  color: white;
+  color: black;
   margin-top: 8px;
   cursor: pointer;
 
@@ -139,19 +140,19 @@ export const NewPageCancelButton = styled.div`
   width: 100px;
   height: 48px;
   border-radius: 8px;
-  background-color: white;
+  background-color: ${({ theme }) => theme.color.white};
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 18px;
-  color: black;
+  color: ${({ theme }) => theme.color.black};
   margin-top: 8px;
   box-sizing: border-box;
-  border: 1px solid var(--Border, rgba(233, 233, 233, 1));
+  border: 1px solid var(--Border, ${({ theme }) => theme.color.grey2});
   cursor: pointer;
 
   &:active {
-    background-color: var(--Border, rgba(233, 233, 233, 1));
+    background-color: var(--Border, ${({ theme }) => theme.color.grey2});
   }
 `;
 
@@ -170,7 +171,7 @@ export const MenubarContainer = styled.div`
   height: 100%;
   width: 0px;
   display: flex;
-  background-color: #f7f7f7;
+  background-color: ${({ theme }) => theme.color.grey};
   padding: 16px;
   box-sizing: border-box;
   z-index: 100;
@@ -211,11 +212,11 @@ export const MenubarDisableIconWrapper = styled.div`
   }
 
   /* &:active {
-    background-color: black;
+    background-color: ${({ theme }) => theme.color.black};
   } */
 
   &:hover {
-    /* background-color: black; */
+    /* background-color: ${({ theme }) => theme.color.black}; */
     & > .arrow {
       /* transition-delay: 0.4s; */
       transition: opacity ease-in 0.3s;
@@ -257,7 +258,7 @@ export const IconHoverContainer = styled.div`
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: ${({ theme }) => theme.color.divider};
   }
 `;
 
@@ -296,7 +297,7 @@ export const FolderDivider = styled.div`
 
   &.isOpen {
     height: 8px;
-    border-bottom: 1px solid var(--Border, rgba(233, 233, 233, 1));
+    border-bottom: 1px solid ${({ theme }) => theme.color.divider};
     margin-bottom: 8px;
   }
 `;
@@ -310,13 +311,15 @@ export const PageDividerWrapper = styled.div<{ idx: number; length: number }>`
   padding-bottom: ${(props) => (props.idx === props.length ? "10px" : "0px")};
 `;
 
-export const PageDivider = styled.div<{
+type PageDividerProp = {
   parent: string;
-}>`
+};
+
+export const PageDivider = styled.div<PageDividerProp>`
   width: 1px;
   height: 100%;
   background-color: ${(props) =>
-    props.parent === "1" ? "transparent" : "rgba(233, 233, 233, 1)"};
+    props.parent === "1" ? "transparent" : props.theme.color.divider};
 
   margin-right: 20px;
 `;
@@ -336,6 +339,7 @@ export const FolderNodeWrapper = styled.div<{ depth: number }>`
   justify-content: space-between;
   align-items: center;
   gap: 8px;
+  cursor: pointer;
   /* padding-left: ${(props) => (props.depth === 0 ? "0px" : `32px`)}; */
   /* background: green; */
 
@@ -351,7 +355,8 @@ export const FolderNodeWrapper = styled.div<{ depth: number }>`
     user-select: none;
     /* margin-top: 16px;
     margin-bottom: 16px;
-    border-bottom: 1px solid var(--Border, rgba(233, 233, 233, 1)); */
+    border-bottom: 1px solid var(--Border, ${({ theme }) =>
+      theme.color.grey2}); */
   }
 
   & > .hovering_button {
@@ -364,7 +369,7 @@ export const FolderNodeWrapper = styled.div<{ depth: number }>`
   }
 
   &:hover {
-    background-color: #e7e7e7;
+    background-color: ${({ theme }) => theme.color.divider};
 
     & > .hovering_button {
       display: flex;
@@ -400,7 +405,8 @@ export const FolderNodeText = styled.div<{ depth: number }>`
   text-overflow: ellipsis;
   white-space: nowrap;
   /* background-color: green; */
-  color: ${(props) => (props.depth === 0 ? "rgba(25, 25, 25, 1)" : "#757575")};
+  color: ${(props) =>
+    props.depth === 0 ? props.theme.color.black : "#757575"};
 `;
 
 export const PageNodeText = styled(Link)<{ depth: number }>`
@@ -413,7 +419,8 @@ export const PageNodeText = styled(Link)<{ depth: number }>`
   text-overflow: ellipsis;
   white-space: nowrap;
   /* background-color: green; */
-  color: ${(props) => (props.depth === 0 ? "rgba(25, 25, 25, 1)" : "#757575")};
+  color: ${(props) =>
+    props.depth === 0 ? "${({theme}) => theme.color.black}" : "#757575"};
 `;
 
 export const LatestDocumentsWrapper = styled.div<{ depth: number }>`
@@ -501,6 +508,67 @@ export const UserAccountContiner = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
+  justify-content: center;
+`;
+
+export const DarkModeToggleWrapper = styled(Switch.Root)`
+  width: 60px;
+  height: 32px;
+  border-radius: 20px;
+  background-color: ${({ theme }) => theme.color.dim};
+  box-sizing: border-box;
+  padding: 4px;
+  cursor: pointer;
+  position: relative;
+  border: none;
+`;
+
+export const DarkModeToggleThumb = styled(Switch.Thumb)`
+  width: 24px;
+  height: 24px;
+  background-color: ${({ theme }) => theme.color.white};
+  border-radius: 18px;
+  top: 4px;
+  position: absolute;
+  transition: transform 100ms;
+  transform: translateX(-25px);
+
+  &[data-state="checked"] {
+    transform: translateX(0px);
+  }
+`;
+
+type ToggleIconProp = {
+  isDarkMode: boolean;
+  type: string;
+};
+
+export const DarkModeToggleIcon = styled.div<ToggleIconProp>`
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  ${(props) => {
+    if (props.type === "moon") {
+      return "left: 4px";
+    } else {
+      return "right: 4px";
+    }
+  }};
+  ${(props) => {
+    if (props.isDarkMode) {
+      if (props.type === "moon") {
+        return "display: none";
+      } else {
+        return "display: block";
+      }
+    } else {
+      if (props.type === "moon") {
+        return "display: block";
+      } else {
+        return "display: none";
+      }
+    }
+  }}
 `;
 
 export const UserImage = styled.video`
@@ -512,7 +580,7 @@ export const UserImage = styled.video`
 
 export const UserEmailText = styled.div`
   font-size: 16px;
-  color: rgba(25, 25, 25, 1);
+  color: ${({ theme }) => theme.color.black};
 `;
 
 export const NodeDragPreview = styled.div`
@@ -554,6 +622,6 @@ export const FolderAddButton = styled.div`
   border-radius: 30px;
 
   &:hover {
-    background-color: #e7e7e7;
+    background-color: ${({ theme }) => theme.color.grey};
   }
 `;

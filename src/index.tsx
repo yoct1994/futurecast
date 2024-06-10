@@ -6,6 +6,7 @@ import { Global } from "./global.style";
 import { DndProvider } from "react-dnd";
 import { getBackendOptions, MultiBackend } from "@minoru/react-dnd-treeview";
 import { PrimeReactProvider } from "primereact/api";
+import { RecoilRoot } from "recoil";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -13,9 +14,10 @@ const root = ReactDOM.createRoot(
 root.render(
   <PrimeReactProvider>
     <React.StrictMode>
-      <Global />
       <DndProvider backend={MultiBackend} options={getBackendOptions()}>
-        <App />
+        <RecoilRoot>
+          <App />
+        </RecoilRoot>
       </DndProvider>
     </React.StrictMode>
   </PrimeReactProvider>

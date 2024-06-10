@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { Cookies } from "react-cookie";
 import Menubar from "../components/menubar/menubar";
 import * as S from "../components/main/styles";
@@ -14,11 +14,15 @@ import {
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
 import "../components/mention.css";
+import { useRecoilValue } from "recoil";
+import { isDarkModeState } from "../recoil/recoil";
+import { ThemeContext } from "styled-components";
 
 let container: any;
 
 const MainPage = () => {
   const cookies = new Cookies();
+  const theme = useContext(ThemeContext);
 
   const queryRef = useRef<HTMLInputElement | null>(null);
   const queryBorderRef = useRef<HTMLDivElement | null>(null);
@@ -105,8 +109,9 @@ const MainPage = () => {
       // color: "transparent",
       // lineHeight: 1,
       border: "none",
+      color: theme?.color.black,
       outline: "none",
-      background: "white",
+      background: theme?.color.white,
       paddingLeft: 32,
       paddingRight: 64,
       paddingTop: "calc((55px - 18px) / 2)",
@@ -333,7 +338,11 @@ const MainPage = () => {
                   });
               }}
             >
-              {query !== "" ? <ArrowUp /> : <ArrowUpDisable />}
+              {query !== "" ? (
+                <ArrowUp fill={theme?.color.white} />
+              ) : (
+                <ArrowUpDisable />
+              )}
             </S.QuerySendButton>
           </S.InputContainer>
         </S.MainPageContainer>

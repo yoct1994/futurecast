@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import * as S from "./styles";
 import { ReactComponent as Retry } from "../../assets/document_page/tooltop.svg";
 import { ReactComponent as ChevronDown } from "../../assets/document_page/ChevronDown.svg";
@@ -10,8 +10,9 @@ import { Skeleton } from "primereact/skeleton";
 import SubPageItem from "./sub_page/sub_page_item";
 import ReferenceItem from "./reference/refrence_item";
 import BarChart from "./graph/bar-chart";
-import { AgChartsReact } from "ag-charts-react";
-import { getData } from "./graph/testData";
+import { useRecoilValue } from "recoil";
+import { isDarkModeState } from "../../recoil/recoil";
+import { ThemeContext } from "styled-components";
 
 type Props = {
   item: any;
@@ -25,11 +26,14 @@ type Props = {
 const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
   const viewMoreRef = useRef<HTMLDivElement | null>(null);
   const refViewMoreRef = useRef<HTMLDivElement | null>(null);
+  const theme = useContext(ThemeContext);
 
   const [moreNum, setMoreNum] = useState<number>(4);
   const [refMoreNum, setRefMoreNum] = useState<number>(6);
   const [resources, setResources] = useState<any[]>([]);
   const [isLoadingRef, setIsLoadingRef] = useState(false);
+
+  const isDarkMode = useRecoilValue(isDarkModeState);
 
   useEffect(() => {
     if (isOpenView) {
@@ -97,6 +101,7 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
         </S.DocumentStatusWrapper>
         <div style={{ width: 48, height: 48 }}>
           <Retry
+            fill={theme?.color.black}
             data-tooltip-id={"tooltip_id"}
             data-tooltip-content="Retry"
             data-tooltip-place="bottom"
@@ -255,13 +260,15 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
                 </div>
               </S.SkeletonLoadingContainer>
             ) : (
-              <MarkdownPreview
-                wrapperElement={{
-                  "data-color-mode": "light",
-                }}
-                source={item.content ? item.content.full_text : "NO CONTENTS"}
-                // source={testText}
-              />
+              <S.MarkdownTheme>
+                <MarkdownPreview
+                  wrapperElement={{
+                    "data-color-mode": isDarkMode ? "dark" : "light",
+                  }}
+                  source={item.content ? item.content.full_text : "NO CONTENTS"}
+                  // source={testText}
+                />
+              </S.MarkdownTheme>
             )
           ) : (
             <S.SkeletonLoadingContainer>

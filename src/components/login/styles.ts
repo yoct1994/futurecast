@@ -12,7 +12,7 @@ export const LoginWrapper = styled.div`
 `;
 
 export const LoginContainer = styled.div`
-  background-color: #f9f9f9;
+  background-color: ${({ theme }) => theme.color.grey};
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -46,7 +46,8 @@ export const InputIcon = styled.div`
 `;
 
 export const InputText = styled.input`
-  border: 1px solid var(--Border, #e9e9e9);
+  border: 1px solid ${({ theme }) => theme.color.divider};
+  background-color: ${({ theme }) => theme.color.white};
   cursor: text;
   border-radius: 8px;
   box-sizing: border-box;
@@ -67,7 +68,7 @@ export const InputText = styled.input`
 
 export const WelcomeText = styled.div`
   font-size: 52px;
-  color: black;
+  color: ${({ theme }) => theme.color.black};
 `;
 
 export const LogoImg = styled.div`

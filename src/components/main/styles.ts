@@ -71,7 +71,7 @@ export const AssetImage = styled.video`
 
 export const HowToUse = styled.div`
   font-size: 52px;
-  color: black;
+  color: ${({ theme }) => theme.color.black};
   display: flex;
   flex-direction: row;
   font-family: "Pretendard-Light";
@@ -113,11 +113,11 @@ export const ExampleQueryGrid = styled.div`
 
 export const ExampleQueryItem = styled.div`
   border-radius: 16px;
-  background-color: rgba(247, 247, 247, 1);
-  color: black;
+  background-color: ${({ theme }) => theme.color.grey1};
+  color: ${({ theme }) => theme.color.black};
   font-size: 16px;
   height: 100px;
-  border: 1px solid rgba(233, 233, 233, 1);
+  border: 1px solid ${({ theme }) => theme.color.grey2};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -126,7 +126,7 @@ export const ExampleQueryItem = styled.div`
   cursor: pointer;
 
   &:hover {
-    background-color: white;
+    background-color: ${({ theme }) => theme.color.white};
   }
 `;
 
@@ -151,7 +151,7 @@ export const QueryInputBorder = styled.div`
   /* box-sizing: border-box; */
 
   /* &.not_focus { */
-  background-color: rgba(233, 233, 233, 1);
+  background-color: ${({ theme }) => theme.color.grey2};
   /* } */
 
   &.focus {
@@ -206,7 +206,7 @@ export const QuerySendButton = styled.div<{ query: string }>`
   top: 50%;
   transform: translateY(-50%);
   background-color: ${(props) =>
-    props.query !== "" ? "rgba(86, 97, 246, 1)" : "rgba(0, 0, 0, 0.1)"};
+    props.query !== "" ? "rgba(86, 97, 246, 1)" : props.theme.color.grey2};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -238,7 +238,7 @@ export const SuggestionsContainer = styled.div`
 
 export const Mention = styled.div`
   font-size: 16px;
-  color: rgba(25, 25, 25, 1);
+  color: ${({ theme }) => theme.color.black};
   font-family: "Pretendard-Regular";
   width: 100%;
   /* background-color: green; */

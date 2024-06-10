@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import * as S from "../../menubar/styles";
 import { Link } from "react-router-dom";
 import { NodeModel } from "@minoru/react-dnd-treeview";
@@ -12,6 +12,9 @@ import { ReactComponent as Edit } from "../../../assets/Sidebar/Edit_Icon.svg";
 import { MenuItem } from "primereact/menuitem";
 import { Toast } from "primereact/toast";
 import { Cookies } from "react-cookie";
+import { useRecoilValue } from "recoil";
+import { isDarkModeState } from "../../../recoil/recoil";
+import { ThemeContext } from "styled-components";
 
 type Props = {
   depth: number;
@@ -41,6 +44,10 @@ const FolderItem = ({
   const menuRef = useRef<Menu>(null);
   const deviderRef = useRef<HTMLDivElement>(null);
 
+  const isDarkMode = useRecoilValue(isDarkModeState);
+  const cookies = new Cookies();
+  const theme = useContext(ThemeContext);
+
   useEffect(() => {
     {
       /* {(!toggles.includes(node.id) ||
@@ -62,7 +69,11 @@ const FolderItem = ({
   const items: MenuItem[] = [
     {
       label: "Rename",
-      icon: <Edit />,
+      icon: (
+        <div style={{ paddingRight: 4 }}>
+          <Edit fill={theme?.color.black} />
+        </div>
+      ),
       command: () => {
         // toast.current?.show({
         //   severity: "success",
@@ -74,19 +85,37 @@ const FolderItem = ({
     },
     {
       label: "Remove",
-      icon: <Remove />,
+      icon: (
+        <div style={{ paddingRight: 4 }}>
+          <Remove fill={theme?.color.black} />
+        </div>
+      ),
       command: async () => {
         console.log("=======document delete=======", node.data?.id);
-        // setDeleteId(`${node.data?.id}`);
-        // new Cookies().set("deleteId", node.data?.id);
-        // showDialog(true);
+        setDeleteId(`${node.data?.id}`);
+        cookies.set("deleteId", node.data?.id);
+        cookies.set("deleteType", "folder");
+        showDialog(true);
       },
     },
   ];
 
   return (
     <>
-      <S.FolderNodeWrapper depth={depth} className={`depth${depth}`}>
+      <S.FolderNodeWrapper
+        depth={depth}
+        className={`depth${depth}`}
+        onClick={(e) => {
+          if (toggles.includes(node.id)) {
+            var copy = [...toggles];
+            copy = copy.filter((n) => n !== node.id);
+            setToggles(copy);
+          } else {
+            setToggles([...toggles, node.id]);
+          }
+          onToggle();
+        }}
+      >
         <S.FolderIconWrapper>
           <FolderIcon />
         </S.FolderIconWrapper>
@@ -108,18 +137,17 @@ const FolderItem = ({
             popup
             ref={menuRef}
             id="item_menu_popup"
-            color="rgba(25, 25, 25, 1)"
+            color="${({theme}) => theme.color.black}"
             style={{
               fontFamily: "Pretendard-Regular",
               fontSize: 16,
-              gap: 4,
-              color: "rgba(25, 25, 25, 1)",
+              color: "${({theme}) => theme.color.black}",
               boxShadow: "0px -8px 36px 0px rgba(0, 0, 0, 0.17)",
               borderRadius: 16,
-              width: 160,
+              width: 180,
             }}
           />
-          <Meatball width={24} height={24} />
+          <Meatball fill={isDarkMode ? "white" : "black"} />
         </S.FolderHoveringButton>
         <div
           onClick={() => {
@@ -136,7 +164,7 @@ const FolderItem = ({
           {isOpen ? <ArrowUp /> : <ArrowDown />}
         </div>
       </S.FolderNodeWrapper>
-      <S.FolderDivider ref={deviderRef} />
+      <S.FolderDivider ref={deviderRef} className="isOpen" />
     </>
   );
 };

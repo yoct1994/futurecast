@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import * as S from "../../menubar/styles";
 import { Link } from "react-router-dom";
 import { NodeModel } from "@minoru/react-dnd-treeview";
@@ -12,6 +12,9 @@ import { ReactComponent as Edit } from "../../../assets/Sidebar/Edit_Icon.svg";
 import { MenuItem } from "primereact/menuitem";
 import { Toast } from "primereact/toast";
 import { Cookies } from "react-cookie";
+import { useRecoilValue } from "recoil";
+import { isDarkModeState } from "../../../recoil/recoil";
+import { ThemeContext } from "styled-components";
 
 type Props = {
   depth: number;
@@ -41,6 +44,11 @@ const PopupMenuItem = ({
   const menuRef = useRef<Menu>(null);
   const deviderRef = useRef<HTMLDivElement>(null);
 
+  const isDarkMode = useRecoilValue(isDarkModeState);
+  const cookies = new Cookies();
+
+  const theme = useContext(ThemeContext);
+
   useEffect(() => {
     // {
     //   /* {toggles.includes(node.parent) &&
@@ -60,7 +68,11 @@ const PopupMenuItem = ({
   const items: MenuItem[] = [
     {
       label: "Rename",
-      icon: <Edit />,
+      icon: (
+        <div style={{ paddingRight: 4 }}>
+          <Edit fill={theme?.color.black} />
+        </div>
+      ),
       command: () => {
         // toast.current?.show({
         //   severity: "success",
@@ -72,11 +84,16 @@ const PopupMenuItem = ({
     },
     {
       label: "Remove",
-      icon: <Remove />,
+      icon: (
+        <div style={{ paddingRight: 4 }}>
+          <Remove fill={theme?.color.black} />
+        </div>
+      ),
       command: async () => {
         console.log("=======document delete=======", node.data?.id);
         setDeleteId(`${node.data?.id}`);
-        new Cookies().set("deleteId", node.data?.id);
+        cookies.set("deleteId", node.data?.id);
+        cookies.set("deleteType", "page");
         showDialog(true);
       },
     },
@@ -135,18 +152,18 @@ const PopupMenuItem = ({
             popup
             ref={menuRef}
             id="item_menu_popup"
-            color="rgba(25, 25, 25, 1)"
+            color="${({theme}) => theme.color.black}"
             style={{
               fontFamily: "Pretendard-Regular",
               fontSize: 16,
               gap: 4,
-              color: "rgba(25, 25, 25, 1)",
+              color: "${({theme}) => theme.color.black}",
               boxShadow: "0px -8px 36px 0px rgba(0, 0, 0, 0.17)",
               borderRadius: 16,
               width: 160,
             }}
           />
-          <Meatball />
+          <Meatball fill={isDarkMode ? "white" : "black"} />
         </S.HoveringButton>
       </S.FolderNodeWrapper>
       <S.FolderDivider ref={deviderRef} />

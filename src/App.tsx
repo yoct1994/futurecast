@@ -1,19 +1,26 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/login";
 import MainPage from "./pages/main";
-import { RecoilRoot } from "recoil";
+import { RecoilRoot, useRecoilValue } from "recoil";
 import Document from "./pages/document";
-import MarkdownPreview from "@uiw/react-markdown-preview";
-import "primereact/resources/themes/lara-light-cyan/theme.css";
+import { ThemeProvider } from "styled-components";
+import { isDarkModeState } from "./recoil/recoil";
+import { darkTheme, lightTheme } from "./color";
+import { Global } from "./global.style";
+import { useEffect } from "react";
+// import "primereact/resources/themes/vela-blue/theme.css";
+import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 
 function App() {
+  const isDarkMode = useRecoilValue(isDarkModeState);
+
   return (
-    <RecoilRoot>
+    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <Global />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="/document/:id" element={<Document />} />
-          <Route path="/test" element={<TestPage />} />
         </Routes>
       </BrowserRouter>
       <BrowserRouter>
@@ -21,31 +28,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
         </Routes>
       </BrowserRouter>
-    </RecoilRoot>
+    </ThemeProvider>
   );
 }
-
-const TestPage = () => {
-  const test = `
-# test
-
-## test
-
-### test
-
-* test
-  * test
-  *
----
-  `;
-
-  return (
-    <MarkdownPreview
-      // remarkPlugins={[remarkGfm]}
-      // rehypePlugins={[rehypeHighlight]}
-      source={test}
-    />
-  );
-};
 
 export default App;

@@ -32,7 +32,7 @@ export const DocumentTreeContainer = styled.div`
 
 export const DocumentTreeText = styled.div`
   font-size: 16px;
-  color: rgba(25, 25, 25, 1);
+  color: ${({ theme }) => theme.color.black};
   font-family: "Pretendard-Regular";
   max-width: 200px;
   overflow: hidden;
@@ -68,8 +68,8 @@ export const SaveAndEditButton = styled.div`
   padding-top: 4px;
   padding-bottom: 4px;
   border-radius: 8px;
-  border: 1px solid rgba(233, 233, 233, 1);
-  color: rgba(25, 25, 25, 1);
+  border: 1px solid ${({ theme }) => theme.color.grey2};
+  color: ${({ theme }) => theme.color.black};
   gap: 4px;
   align-items: center;
 
@@ -81,14 +81,14 @@ export const SaveAndEditButton = styled.div`
   &:hover {
     background-color: rgba(86, 97, 246, 1);
     border: 1px solid rgba(86, 97, 246, 1);
-    color: white;
+    color: ${({ theme }) => theme.color.white};
     svg {
-      color: white;
-      fill: white;
+      color: ${({ theme }) => theme.color.white};
+      fill: ${({ theme }) => theme.color.white};
     }
     path {
-      color: white;
-      fill: white;
+      color: ${({ theme }) => theme.color.white};
+      fill: ${({ theme }) => theme.color.white};
     }
   }
 `;
@@ -146,7 +146,7 @@ export const DocumentLoadingArea = styled.div`
 export const DocumentRightBar = styled.div`
   width: 400px;
   height: 100%;
-  border-left: 1px solid rgba(233, 233, 233, 1);
+  border-left: 1px solid ${({ theme }) => theme.color.divider};
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -174,7 +174,7 @@ export const DocumentRightBarTitle = styled.div`
   align-items: center;
   font-size: 18px;
   font-family: "Pretendard-SemiBold";
-  color: rgba(25, 25, 25, 1);
+  color: ${({ theme }) => theme.color.black};
   margin-bottom: 24px;
 `;
 
@@ -194,11 +194,17 @@ export const DocumentRightBarText = styled.li<{ isInterect: boolean }>`
   -webkit-box-orient: vertical;
   list-style-type: circle;
   color: ${(props) =>
-    props.isInterect ? "rgba(25, 25, 25, 1)" : "rgba(117, 117, 117, 1)"};
+    props.isInterect
+      ? "${({theme}) => theme.color.black}"
+      : "rgba(117, 117, 117, 1)"};
   display: flex;
   flex-direction: row;
   gap: 10px;
   cursor: pointer;
+
+  &:hover {
+    color: rgba(86, 97, 246, 1);
+  }
 `;
 
 export const HeaderButton = styled.div``;
@@ -287,7 +293,7 @@ export const InputContainer = styled.div`
 
 export const DocumentContainer = styled.div`
   width: 100%;
-  /* background-color: white; */
+  /* background-color: ${({ theme }) => theme.color.white}; */
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -301,7 +307,7 @@ export const DocumentQueryContainer = styled.div`
   line-height: 1;
   /* background-color: ; */
   font-size: 28px;
-  color: rgba(25, 25, 25, 1);
+  color: ${({ theme }) => theme.color.black};
   font-family: "Pretendard-Bold";
   padding-top: 16px;
   padding-bottom: 16px;
@@ -352,7 +358,7 @@ export const SubDocumentGrid = styled.div`
 export const SubDocumentItem = styled.div`
   height: 187px;
   border-radius: 16px;
-  background-color: rgba(247, 247, 247, 1);
+  background-color: ${({ theme }) => theme.color.grey1};
   display: flex;
   padding-top: 24px;
   flex-direction: column;
@@ -361,13 +367,13 @@ export const SubDocumentItem = styled.div`
   padding-left: 24px;
   padding-right: 24px;
   gap: 16px;
-  border: 1px solid rgba(247, 247, 247, 1);
+  border: 1px solid ${({ theme }) => theme.color.grey1};
   cursor: pointer;
   box-sizing: border-box;
 
   &:hover {
-    background-color: white;
-    border: 1px solid rgba(233, 233, 233, 1);
+    background-color: ${({ theme }) => theme.color.white};
+    border: 1px solid ${({ theme }) => theme.color.grey2};
     box-sizing: border-box;
   }
 `;
@@ -382,7 +388,7 @@ export const QuerySendButton = styled.div<{ query: string }>`
   bottom: 50%;
   transform: translateY(-50%);
   background-color: ${(props) =>
-    props.query !== "" ? "rgba(86, 97, 246, 1)" : "rgba(0, 0, 0, 0.1)"};
+    props.query !== "" ? "rgba(86, 97, 246, 1)" : props.theme.color.grey2};
   display: flex;
   justify-content: center;
   z-index: 1000;
@@ -393,7 +399,7 @@ export const QuerySendButton = styled.div<{ query: string }>`
 export const SubDocumentQuery = styled.div`
   width: calc((812px - 16px) / 2 - 48px);
   font-size: 18px;
-  color: rgba(25, 25, 25, 1);
+  color: ${({ theme }) => theme.color.black};
   font-family: "Pretendard-SemiBold";
   overflow: hidden;
   text-overflow: ellipsis;
@@ -463,13 +469,13 @@ export const SubDocumentViewMore = styled.div`
 `;
 
 export const SubDocumentViewMoreLine = styled.div`
-  background-color: rgba(233, 233, 233, 1);
+  background-color: ${({ theme }) => theme.color.grey2};
   width: 100%;
   height: 1px;
 `;
 
 export const SubDocumentViewMoreButton = styled.div`
-  background-color: white;
+  background-color: ${({ theme }) => theme.color.white};
   padding-left: 16px;
   padding-right: 16px;
   padding-top: 8px;
@@ -529,7 +535,7 @@ export const NewsWrapper = styled.div`
 export const NewsTitleWrapper = styled.div`
   font-size: 28px;
   font-family: "Pretendard-Bold";
-  color: rgba(25, 25, 25, 1);
+  color: ${({ theme }) => theme.color.black};
   padding-top: 80px;
   padding-bottom: 24px;
 `;
@@ -544,9 +550,9 @@ export const NewsGrid = styled.div`
 `;
 
 export const NewsItem = styled.div`
-  background-color: white;
+  background-color: ${({ theme }) => theme.color.white};
   height: 122px;
-  border: 1px solid rgba(233, 233, 233, 1);
+  border: 1px solid ${({ theme }) => theme.color.grey2};
   border-radius: 8px;
   gap: 16px;
   display: flex;
@@ -571,6 +577,7 @@ export const NewsTitleText = styled.div`
   max-lines: 2;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: ${({ theme }) => theme.color.black};
 `;
 
 export const NewsContentText = styled.div`
@@ -580,6 +587,7 @@ export const NewsContentText = styled.div`
   max-lines: 2;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: ${({ theme }) => theme.color.black};
 `;
 
 export const NewsImage = styled.img`
@@ -609,7 +617,7 @@ export const DocumentItemDivider = styled.div`
 export const DocumentLine = styled.div`
   width: 100%;
   height: 1px;
-  background-color: rgba(233, 233, 233, 1);
+  background-color: ${({ theme }) => theme.color.grey2};
 `;
 
 export const DocumentDividerCreateAt = styled.div`
@@ -618,7 +626,7 @@ export const DocumentDividerCreateAt = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
+  background-color: ${({ theme }) => theme.color.white};
   font-size: 13px;
   position: absolute;
   color: rgba(175, 175, 175, 1);
@@ -634,6 +642,50 @@ export const SkeletonLoadingContainer = styled.div`
   flex-direction: column;
 `;
 
+export const MarkdownTheme = styled.div`
+  background: ${(props) => props.theme.color.white} !important;
+  background-color: ${({ theme }) => theme.color.white} !important;
+  color: ${(props) => props.theme.color.black};
+
+  div {
+    background: ${(props) => props.theme.color.white} !important;
+    background-color: ${({ theme }) => theme.color.white} !important;
+    color: ${(props) => props.theme.color.black};
+  }
+  ul {
+    background-color: ${({ theme }) => theme.color.white} !important;
+    color: ${(props) => props.theme.color.black};
+  }
+  li {
+    background-color: ${({ theme }) => theme.color.white} !important;
+    color: ${(props) => props.theme.color.black};
+  }
+  h1 {
+    color: ${(props) => props.theme.color.black};
+  }
+  h2 {
+    color: ${(props) => props.theme.color.black};
+  }
+  h3 {
+    color: ${(props) => props.theme.color.black};
+  }
+  h4 {
+    color: ${(props) => props.theme.color.black};
+  }
+  h5 {
+    color: ${(props) => props.theme.color.black};
+  }
+  h6 {
+    color: ${(props) => props.theme.color.black};
+  }
+  p {
+    color: ${(props) => props.theme.color.black};
+  }
+  code {
+    color: ${(props) => props.theme.color.black};
+  }
+`;
+
 export const MentionItemWrapper = styled.div<{ length: number }>`
   width: 100%;
   background-color: red;
@@ -647,7 +699,7 @@ export const MentionItemWrapper = styled.div<{ length: number }>`
   padding-right: 64px;
   border-top-left-radius: 40px;
   border-top-right-radius: 40px;
-  background-color: white;
+  background-color: ${({ theme }) => theme.color.white};
   overflow-x: scroll;
   &::-webkit-scrollbar {
     display: none;
@@ -657,7 +709,7 @@ export const MentionItemWrapper = styled.div<{ length: number }>`
 `;
 
 export const MentionItem = styled.div`
-  border: 1px solid var(--Border, rgba(233, 233, 233, 1));
+  border: 1px solid var(--Border, ${({ theme }) => theme.color.grey2});
   width: 232px;
   height: 56px;
   border-radius: 8px;
@@ -720,11 +772,11 @@ export const EmptyWrapper = styled.div`
 `;
 
 export const EmptyContainer = styled.div`
-  background: var(--SubBG, #f7f7f7);
+  background: ${({ theme }) => theme.color.grey};
   width: 100%;
   height: 100%;
   border-radius: 8px;
-  border: 1px solid var(--Border, #e9e9e9);
+  border: 1px solid ${({ theme }) => theme.color.divider};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -745,7 +797,7 @@ export const BarChartWrapper = styled.div`
 export const BarChart = styled.div`
   width: 100%;
   height: 512px;
-  border: 1px solid var(--Border, #e9e9e9);
+  border: 1px solid ${({ theme }) => theme.color.divider};
   box-sizing: border-box;
   border-radius: 8px;
   overflow: hidden;
@@ -760,13 +812,14 @@ export const Cover = styled.div`
   height: 100%;
   z-index: 100;
   position: absolute;
-  /* background-color: white; */
+  /* background-color: ${({ theme }) => theme.color.white}; */
 `;
 
 export const CausalChart = styled.div`
   width: 100%;
   height: 620px;
-  border: 1px solid var(--Border, #e9e9e9);
+  background-color: ${({ theme }) => theme.color.white};
+  border: 1px solid ${({ theme }) => theme.color.divider};
   box-sizing: border-box;
   border-radius: 8px;
   overflow: hidden;

@@ -9,9 +9,29 @@ export const Global = createGlobalStyle`
     * {
         margin : 0px;
     }
+    * > .p-skeleton {
+        background-color: ${({ theme }) => theme.color.skeleton};
+    }
+    * > .p-skeleton::after {
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0), ${({
+          theme,
+        }) => theme.color.skeleton_gradient}, rgba(255, 255, 255, 0));
+    }
+    * > .p-menu.p-menu-overlay {
+        background: ${({ theme }) => theme.color.white};
+    }
+    * > .p-menuitem-text {
+        color: ${({ theme }) => theme.color.black};
+    }
+    * > .p-focus {
+        background: ${({ theme }) => theme.color.menu} !important;
+    }
+    * > .p-menu .p-menuitem:not(.p-highlight):not(.p-disabled).p-focus > .p-menuitem-content {
+        background: ${({ theme }) => theme.color.menu} !important;
+    }
     body { 
         margin: 0px;
-        background-color: white;
+        background-color: ${({ theme }) => theme.color.white};
         font-family: "Pretendard-Regular";
         /* font-family: "Pretendard"; */
         /* position: fixed;

@@ -178,3 +178,38 @@ export const generateAI = async (
     }
   );
 };
+
+export const renamePage = async (page_id: string, full_text: string) => {
+  return await server.put(
+    `/page/${page_id}/rename`,
+    JSON.stringify({
+      full_text: full_text,
+      mentions: [],
+    }),
+    {
+      headers: {
+        token: getToken(),
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
+
+export const renameFolder = async (
+  collection_id: string,
+  full_text: string
+) => {
+  return await server.put(`/collection/${collection_id}/name`, full_text, {
+    headers: {
+      token: getToken(),
+    },
+  });
+};
+
+export const deleteFolder = async (collection_id: string) => {
+  return await server.delete(`/collection/${collection_id}`, {
+    headers: {
+      token: getToken(),
+    },
+  });
+};

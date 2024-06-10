@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, useContext, useEffect, useRef, useState } from "react";
 import * as S from "./styles";
 import { ReactComponent as Logo } from "../../assets/Logo.svg";
 import { ReactComponent as Arrow } from "../../assets/Arrow.svg";
@@ -9,26 +9,25 @@ import { ReactComponent as ModalIcon } from "../../assets/ModalIcon.svg";
 import { ReactComponent as Close } from "../../assets/Close.svg";
 import { ReactComponent as Generate } from "../../assets/GenerateDocument.svg";
 import { ReactComponent as GenerateIcon } from "../../assets/Generate.svg";
-import { ReactComponent as ArrowUp } from "../../assets/Sidebar/ArrowUp.svg";
-import { ReactComponent as ArrowDown } from "../../assets/Sidebar/ArrowDown.svg";
 import { ReactComponent as ArrowRight } from "../../assets/Sidebar/ArrowRight.svg";
-import { ReactComponent as FolderIcon } from "../../assets/Sidebar/FolderIcon.svg";
-import { ReactComponent as Meatball } from "../../assets/Sidebar/meatball.svg";
 import { ReactComponent as SmallLogo } from "../../assets/logo_small.svg";
 import { ReactComponent as RowDelete } from "../../assets/RowDelete.svg";
+import { ReactComponent as Moon } from "../../assets/toggle/moon.svg";
+import { ReactComponent as Sun } from "../../assets/toggle/sun.svg";
 import { NodeModel, Tree } from "@minoru/react-dnd-treeview";
 import { Cookies } from "react-cookie";
 import {
+  deleteFolder,
   deletePage,
   getNavBar,
   makeCollection,
   moveCollectionItem,
 } from "../../server/server";
 import { Skeleton } from "primereact/skeleton";
-import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { useRecoilState } from "recoil";
 import {
   deleteIdValue,
+  isDarkModeState,
   isLoadingNavState,
   menubarOpenState,
   showDeleteModal,
@@ -39,6 +38,9 @@ import { Toast } from "primereact/toast";
 import PopupMenuItem from "../documents/menu/menu_item";
 import { auth } from "../../utils/firebase";
 import FolderItem from "../documents/menu/folder_item";
+import { User } from "firebase/auth";
+import { Root, Thumb } from "@radix-ui/react-switch";
+import { ThemeContext } from "styled-components";
 
 type Props = {
   children: any;
@@ -46,6 +48,8 @@ type Props = {
 
 const Menubar = ({ children }: Props) => {
   const { id } = useParams();
+
+  const theme = useContext(ThemeContext);
 
   const cookies = new Cookies();
   const menubar = useRef<HTMLDivElement>(null);
@@ -61,6 +65,9 @@ const Menubar = ({ children }: Props) => {
   const [treeData, setTreeData] = useRecoilState(treeDataState);
   const [deleteId, setDeleteId] = useRecoilState(deleteIdValue);
   const [isLoadingNav, setIsLoadingNav] = useRecoilState(isLoadingNavState);
+
+  const [user, setUser] = useState<User | null>(null);
+  const [isDarkMode, setIsDarkMode] = useRecoilState(isDarkModeState);
 
   const getNav = async (isRefresh: boolean) => {
     console.log(deleteId);
@@ -150,7 +157,15 @@ const Menubar = ({ children }: Props) => {
   };
 
   useEffect(() => {
+    const getUser = async () => {
+      if (!user) {
+        console.log(auth.currentUser);
+        setUser(auth.currentUser);
+      }
+    };
+
     getNav(false);
+    getUser();
   }, []);
 
   useEffect(() => {
@@ -228,6 +243,7 @@ const Menubar = ({ children }: Props) => {
             </Link>
             <S.IconHoverContainer>
               <Create
+                fill={isDarkMode ? "white" : "black"}
                 style={{
                   cursor: "pointer",
                 }}
@@ -249,11 +265,11 @@ const Menubar = ({ children }: Props) => {
           </S.NewFolderButton>
           {treeData.length === 0 ? (
             <S.DndLoadingArea>
-              <Skeleton width="100%" height={"45px"} />
-              <Skeleton width="100%" height={"45px"} />
-              <Skeleton width="100%" height={"45px"} />
-              <Skeleton width="100%" height={"45px"} />
-              <Skeleton width="100%" height={"45px"} />
+              <Skeleton width="100%" height={"45px"} borderRadius="8px" />
+              <Skeleton width="100%" height={"45px"} borderRadius="8px" />
+              <Skeleton width="100%" height={"45px"} borderRadius="8px" />
+              <Skeleton width="100%" height={"45px"} borderRadius="8px" />
+              <Skeleton width="100%" height={"45px"} borderRadius="8px" />
             </S.DndLoadingArea>
           ) : (
             <S.DndArea>
@@ -328,8 +344,31 @@ const Menubar = ({ children }: Props) => {
                   });
                 }}
               />
-              <S.UserEmailText>guest@lgsearch.ai</S.UserEmailText>
+              <S.UserEmailText>{auth.currentUser?.email}</S.UserEmailText>
             </S.UserAccountContiner>
+            <S.DarkModeToggleWrapper
+              // value={isDarkMode ? "on" : "off"}
+              checked={!isDarkMode}
+              className={cookies.get("is_dark_mode") ? "dark_mode" : ""}
+              onCheckedChange={(e) => {
+                console.log("click");
+                if (isDarkMode) {
+                  cookies.set("is_dark_mode", false);
+                  setIsDarkMode(false);
+                } else {
+                  setIsDarkMode(true);
+                  cookies.set("is_dark_mode", true);
+                }
+              }}
+            >
+              <S.DarkModeToggleIcon type="moon" isDarkMode={isDarkMode}>
+                <Moon />
+              </S.DarkModeToggleIcon>
+              <S.DarkModeToggleIcon type="sun" isDarkMode={isDarkMode}>
+                <Sun />
+              </S.DarkModeToggleIcon>
+              <S.DarkModeToggleThumb />
+            </S.DarkModeToggleWrapper>
           </S.UserAccountWrapper>
         </S.MenubarContainer>
         {!isOpen && (
@@ -367,9 +406,14 @@ const Menubar = ({ children }: Props) => {
             }
           }}
         >
-          {isOpen && <Arrow className="arrow" />}
-          <Line className="line" />
-          {!isOpen && <ArrowRight className="close_open_icon" />}
+          {isOpen && <Arrow className="arrow" stroke={theme?.color.black} />}
+          <Line className="line" stroke={theme?.color.black} />
+          {!isOpen && (
+            <ArrowRight
+              className="close_open_icon"
+              stroke={theme?.color.black}
+            />
+          )}
         </S.MenubarDisableIconWrapper>
       </S.MenubarWrapper>
       {showCreateModal && (
@@ -387,6 +431,7 @@ const Menubar = ({ children }: Props) => {
               <ModalIcon color="#000000" style={{}} />
               <S.NewFolderTitleText>Create folder</S.NewFolderTitleText>
               <Close
+                fill={theme?.color.black}
                 onClick={(e) => {
                   setShowCreateModal(false);
                 }}
@@ -458,12 +503,15 @@ const Menubar = ({ children }: Props) => {
             <S.NewFolderTitleContainer>
               <RowDelete />
               <S.NewFolderTitleText>
-                Do you really want to delete the page?
+                Do you really want to delete the{" "}
+                {cookies.get("deleteType") === "folder" ? "folder" : "page"}?
               </S.NewFolderTitleText>
               <Close
+                fill={theme?.color.black}
                 onClick={(e) => {
                   setDeleteId("");
                   cookies.remove("deleteId");
+                  cookies.remove("deleteType");
                   setShowCreatePage(false);
                 }}
               />
@@ -473,6 +521,7 @@ const Menubar = ({ children }: Props) => {
                 onClick={(e) => {
                   setDeleteId("");
                   cookies.remove("deleteId");
+                  cookies.remove("deleteType");
                   setShowCreatePage(false);
                 }}
               >
@@ -483,40 +532,79 @@ const Menubar = ({ children }: Props) => {
                   // console.log("=======document delete=======", deleteId);
 
                   const deleteId = cookies.get("deleteId");
+                  const deleteType = cookies.get("deleteType");
 
-                  await deletePage(deleteId).then((res) => {
-                    const data = JSON.parse(res.data);
+                  if (deleteType === "folder") {
+                    await deleteFolder(deleteId).then((res) => {
+                      const data = JSON.parse(res.data);
 
-                    toast.current?.show({
-                      severity:
-                        res.status === 200 || res.status === 201
-                          ? "success"
-                          : "error",
-                      summary:
-                        res.status === 200 || res.status === 201
-                          ? "Success"
-                          : "Error",
-                      detail:
-                        res.status === 200 || res.status === 201
-                          ? "Success to delete page"
-                          : data.detail,
-                      life: 3000,
-                    });
+                      toast.current?.show({
+                        severity:
+                          res.status === 200 || res.status === 201
+                            ? "success"
+                            : "error",
+                        summary:
+                          res.status === 200 || res.status === 201
+                            ? "Success"
+                            : "Error",
+                        detail:
+                          res.status === 200 || res.status === 201
+                            ? "Success to delete page"
+                            : data.detail,
+                        life: 3000,
+                      });
 
-                    if (res.status === 200 || res.status === 201) {
-                      setShowCreatePage(false);
-                      setTreeData((e) =>
-                        e.filter((item) => item.data.id !== deleteId)
-                      );
-                      setDeleteId("");
-                      setShowCreatePage(false);
-                      if (id === deleteId) {
-                        cookies.remove("deleteId");
-                        window.location.href = "/";
+                      if (res.status === 200 || res.status === 201) {
+                        setShowCreatePage(false);
+                        setTreeData((e) =>
+                          e.filter((item) => item.data.id !== deleteId)
+                        );
+                        setDeleteId("");
+                        setShowCreatePage(false);
+                        if (id === deleteId) {
+                          cookies.remove("deleteId");
+                          cookies.remove("deleteType");
+                          window.location.href = "/";
+                        }
                       }
-                    }
-                    console.log(res.data);
-                  });
+                      console.log(res.data);
+                    });
+                  } else {
+                    await deletePage(deleteId).then((res) => {
+                      const data = JSON.parse(res.data);
+
+                      toast.current?.show({
+                        severity:
+                          res.status === 200 || res.status === 201
+                            ? "success"
+                            : "error",
+                        summary:
+                          res.status === 200 || res.status === 201
+                            ? "Success"
+                            : "Error",
+                        detail:
+                          res.status === 200 || res.status === 201
+                            ? "Success to delete page"
+                            : data.detail,
+                        life: 3000,
+                      });
+
+                      if (res.status === 200 || res.status === 201) {
+                        setShowCreatePage(false);
+                        setTreeData((e) =>
+                          e.filter((item) => item.data.id !== deleteId)
+                        );
+                        setDeleteId("");
+                        setShowCreatePage(false);
+                        if (id === deleteId) {
+                          cookies.remove("deleteId");
+                          cookies.remove("deleteType");
+                          window.location.href = "/";
+                        }
+                      }
+                      console.log(res.data);
+                    });
+                  }
                 }}
               >
                 Yes, I do

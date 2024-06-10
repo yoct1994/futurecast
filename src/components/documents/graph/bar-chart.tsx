@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as S from "../styles";
 import { AgChartsReact } from "ag-charts-react";
 import { AgChartOptions } from "ag-charts-community";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import NodeGraph from "react-vis-graph-wrapper";
-import Chart from "react-apexcharts";
 import { AgCharts } from "ag-charts-enterprise";
-import { getData } from "./testData";
 import { useDrag } from "react-dnd";
+import { useRecoilValue } from "recoil";
+import { isDarkModeState } from "../../../recoil/recoil";
+import { ThemeContext } from "styled-components";
 
 type Props = {
   item: any;
@@ -15,6 +16,8 @@ type Props = {
 
 const BarChart = ({ item }: Props) => {
   const [options, setOptions] = useState<AgChartOptions>();
+  const isDarkMode = useRecoilValue(isDarkModeState);
+  const theme = useContext(ThemeContext);
 
   const [{}, drag] = useDrag(() => ({
     type: "ITEM",
@@ -50,6 +53,9 @@ const BarChart = ({ item }: Props) => {
             volume: 24,
           };
         }),
+        background: {
+          fill: theme?.color.chartBackground,
+        },
         series: [
           {
             type: "candlestick",
@@ -88,7 +94,7 @@ const BarChart = ({ item }: Props) => {
               width: 0.37,
               style: [
                 {
-                  stroke: "#191919",
+                  stroke: theme?.color.divider,
                   lineDash: [0],
                 },
               ],
@@ -102,7 +108,7 @@ const BarChart = ({ item }: Props) => {
               width: 0.37,
               style: [
                 {
-                  stroke: "#191919",
+                  stroke: theme?.color.divider,
                   lineDash: [0],
                 },
               ],
@@ -113,7 +119,9 @@ const BarChart = ({ item }: Props) => {
     } else if (item.type === "bar-chart") {
       setOptions({
         data: item.values as any[],
-        background: {},
+        background: {
+          fill: theme?.color.chartBackground,
+        },
         overlays: {
           loading: {
             text: "Some custom loading message",
@@ -134,9 +142,38 @@ const BarChart = ({ item }: Props) => {
             fill: "#5661F6",
           },
         ],
+        axes: [
+          {
+            type: "number",
+            position: "right",
+            gridLine: {
+              style: [
+                {
+                  stroke: theme?.color.divider,
+                  lineDash: [0],
+                },
+              ],
+            },
+          },
+          {
+            type: "category",
+            position: "bottom",
+            gridLine: {
+              style: [
+                {
+                  stroke: theme?.color.divider,
+                  lineDash: [0],
+                },
+              ],
+            },
+          },
+        ],
       });
     } else if (item.type === "fan-chart") {
       setOptions({
+        background: {
+          fill: theme?.color.chartBackground,
+        },
         data: (item.values as any[]).map((item) => {
           console.log({
             date: new Date(item.timestamp),
@@ -252,25 +289,43 @@ const BarChart = ({ item }: Props) => {
           {
             type: "ordinal-time",
             position: "bottom",
+            gridLine: {
+              style: [
+                {
+                  stroke: theme?.color.divider,
+                  lineDash: [0],
+                },
+              ],
+            },
           },
           {
             type: "number",
             position: "right",
+            gridLine: {
+              style: [
+                {
+                  stroke: theme?.color.divider,
+                  lineDash: [0],
+                },
+              ],
+            },
           },
         ],
       });
     }
-  }, []);
+  }, [isDarkMode]);
 
   return (
     <S.BarChartWrapper>
       <div ref={drag}>
-        <MarkdownPreview
-          wrapperElement={{
-            "data-color-mode": "light",
-          }}
-          source={item.description ? item.description : "NO CONTENTS"}
-        />
+        <S.MarkdownTheme>
+          <MarkdownPreview
+            wrapperElement={{
+              "data-color-mode": "light",
+            }}
+            source={item.description ? item.description : "NO CONTENTS"}
+          />
+        </S.MarkdownTheme>
       </div>
       {options &&
         (item.type === "bar-chart" ||
@@ -289,12 +344,16 @@ const BarChart = ({ item }: Props) => {
         <S.CausalChart>
           <S.Cover />
           <NodeGraph
+            style={{
+              height: "100%",
+              background: theme?.color.chartBackground,
+            }}
             options={{
               layout: {
                 // hierarchical: true,
               },
               edges: {
-                color: "#000000",
+                color: theme?.color.white,
               },
             }}
             graph={{
@@ -303,6 +362,7 @@ const BarChart = ({ item }: Props) => {
                   label: item.label,
                   id: item.id,
                   title: `${item.value}`,
+                  // color: theme?.color.black,
                 };
               }),
               edges: item.edges.map((item: any) => {
@@ -310,6 +370,7 @@ const BarChart = ({ item }: Props) => {
                   label: item.label,
                   to: item.target,
                   from: item.source,
+                  color: theme?.color.black,
                 };
               }),
             }}

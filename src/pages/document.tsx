@@ -1,6 +1,7 @@
 import React, {
   ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -41,6 +42,7 @@ import { Tooltip } from "react-tooltip";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   deleteIdValue,
+  isDarkModeState,
   isLoadingNavState,
   menubarOpenState,
   showDeleteModal,
@@ -55,11 +57,13 @@ import { Toast } from "primereact/toast";
 import "../components/mention.css";
 import { Menu } from "primereact/menu";
 import { MenuItem, MenuItemCommandEvent } from "primereact/menuitem";
+import { ThemeContext } from "styled-components";
 
 let container: any;
 
 const Document = () => {
   const { id } = useParams();
+  const theme = useContext(ThemeContext);
 
   const cookies = new Cookies();
 
@@ -416,12 +420,13 @@ const Document = () => {
       boxShadow: "none",
       border: "none",
       outline: "none",
-      background: "white",
+      background: theme?.color.white,
       paddingLeft: 32,
       paddingRight: 64,
       paddingTop: "calc((55px - 18px) / 2)",
       paddingBottom: "calc((55px - 18px) / 2)",
       boxSizing: "border-box",
+      color: theme?.color.black,
       fontSize: 16,
       fontFamily: "Pretendard-Regular",
     },
@@ -478,12 +483,12 @@ const Document = () => {
                   popup
                   ref={menuRef}
                   id="option_menu_popup"
-                  color="rgba(25, 25, 25, 1)"
+                  color="${({theme}) => theme.color.black}"
                   style={{
                     fontFamily: "Pretendard-Regular",
                     fontSize: 16,
                     gap: 4,
-                    color: "rgba(25, 25, 25, 1)",
+                    color: "${({theme}) => theme.color.black}",
                     boxShadow: "0px -8px 36px 0px rgba(0, 0, 0, 0.17)",
                     borderRadius: 16,
                     width: 160,
@@ -491,12 +496,14 @@ const Document = () => {
                   }}
                 />
                 <Option
+                  fill={theme?.color.black}
                   data-tooltip-id={"tooltip_id"}
                   data-tooltip-content="Save to Folder"
                   data-tooltip-place="bottom"
                 />
               </S.HeaderButton>
               <Export
+                fill={theme?.color.black}
                 data-tooltip-id={"tooltip_id"}
                 data-tooltip-content="Export to PDF"
                 data-tooltip-place="bottom"
@@ -513,6 +520,7 @@ const Document = () => {
                 }}
               />
               <Delete
+                fill={theme?.color.black}
                 data-tooltip-id={"tooltip_id"}
                 data-tooltip-content="Delete"
                 data-tooltip-place="bottom"
@@ -802,7 +810,11 @@ const Document = () => {
                         });
                     }}
                   >
-                    {query !== "" ? <ArrowUp /> : <ArrowUpDisable />}
+                    {query !== "" ? (
+                      <ArrowUp fill={theme?.color.white} />
+                    ) : (
+                      <ArrowUpDisable />
+                    )}
                   </S.QuerySendButton>
                 </S.InputContainer>
               </S.QueryInputContainer>
@@ -926,7 +938,7 @@ const Document = () => {
       <Tooltip
         style={{
           fontFamily: "Pretendard-SemiBold",
-          color: "white",
+          color: "${({theme}) => theme.color.white}",
           background: "rgba(117, 117, 117, 1)",
           borderRadius: 8,
         }}
