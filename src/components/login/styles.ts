@@ -48,6 +48,7 @@ export const InputIcon = styled.div`
 export const InputText = styled.input`
   border: 1px solid ${({ theme }) => theme.color.divider};
   background-color: ${({ theme }) => theme.color.white};
+  color: ${({ theme }) => theme.color.black};
   cursor: text;
   border-radius: 8px;
   box-sizing: border-box;

@@ -39,7 +39,7 @@ import {
 } from "../server/server";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip } from "react-tooltip";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   deleteIdValue,
   isDarkModeState,
@@ -58,6 +58,7 @@ import "../components/mention.css";
 import { Menu } from "primereact/menu";
 import { MenuItem, MenuItemCommandEvent } from "primereact/menuitem";
 import { ThemeContext } from "styled-components";
+import ReferencePopup from "../components/documents/document_refrence/reference_popup";
 
 let container: any;
 
@@ -96,11 +97,10 @@ const Document = () => {
   const [pollIdx, setPollIdx] = useState<number>(-1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isOpenView, setIsOpenView] = useState(false);
-  const [showIsDeleteModal, setShowIsDeleteModal] =
-    useRecoilState(showDeleteModal);
+  const setShowIsDeleteModal = useSetRecoilState(showDeleteModal);
   const [collections, setCollections] = useState<MenuItem[]>([]);
-  const [treeData, setTreeData] = useRecoilState(treeDataState);
-  const [isLoadingNav, setIsLoadingNav] = useRecoilState(isLoadingNavState);
+  const treeData = useRecoilValue(treeDataState);
+  const setIsLoadingNav = useSetRecoilState(isLoadingNavState);
 
   useEffect(() => {
     const getCollections = async () => {
@@ -433,525 +433,539 @@ const Document = () => {
   };
 
   return (
-    <Menubar>
-      <S.DocumentWrapper isOpen={isOpen}>
-        <S.DocumentHeader isOpen={isOpen}>
-          <S.DocumentTreeContainer>
-            {documentTree.length === 0 ? (
-              <>
-                <Skeleton width={"200px"} />
-                <Divider />
-                <Skeleton width={"200px"} />
-                <Divider />
-                <Skeleton width={"200px"} />
-              </>
-            ) : (
-              documentTree.map((item) => {
-                if (item === "#DIVIDER#") {
-                  return <Divider />;
-                }
-                return (
-                  <S.DocumentTreeText
-                    as={Link}
-                    to={`${item.id === "Main" ? "/" : `/document/${item.id}`}`}
-                  >
-                    {item.display}
-                  </S.DocumentTreeText>
-                );
-              })
-            )}
-          </S.DocumentTreeContainer>
-          <S.DocumentHeaderButtonWrapper>
-            <S.SaveAndEditButton
-              onClick={() => {
-                setIsEdit(!isEdit);
-              }}
-            >
-              {isEdit ? <Add /> : <Edit />}
-              {isEdit ? "SAVE" : "EDIT"}
-            </S.SaveAndEditButton>
-            <S.DocumentHeaderButtonContainer>
-              <S.HeaderButton
-                aria-controls="option_menu_popup"
-                aria-haspopup
-                onClick={(e) => {
-                  menuRef.current?.toggle(e);
+    <>
+      <Menubar>
+        <S.DocumentWrapper isOpen={isOpen}>
+          <S.DocumentHeader isOpen={isOpen}>
+            <S.DocumentTreeContainer>
+              {documentTree.length === 0 ? (
+                <>
+                  <Skeleton width={"200px"} />
+                  <Divider />
+                  <Skeleton width={"200px"} />
+                  <Divider />
+                  <Skeleton width={"200px"} />
+                </>
+              ) : (
+                documentTree.map((item) => {
+                  if (item === "#DIVIDER#") {
+                    return <Divider />;
+                  }
+                  return (
+                    <S.DocumentTreeText
+                      as={Link}
+                      to={`${
+                        item.id === "Main" ? "/" : `/document/${item.id}`
+                      }`}
+                    >
+                      {item.display}
+                    </S.DocumentTreeText>
+                  );
+                })
+              )}
+            </S.DocumentTreeContainer>
+            <S.DocumentHeaderButtonWrapper>
+              <S.SaveAndEditButton
+                onClick={() => {
+                  setIsEdit(!isEdit);
                 }}
               >
-                <Menu
-                  model={collections}
-                  popup
-                  ref={menuRef}
-                  id="option_menu_popup"
-                  color="${({theme}) => theme.color.black}"
-                  style={{
-                    fontFamily: "Pretendard-Regular",
-                    fontSize: 16,
-                    gap: 4,
-                    color: "${({theme}) => theme.color.black}",
-                    boxShadow: "0px -8px 36px 0px rgba(0, 0, 0, 0.17)",
-                    borderRadius: 16,
-                    width: 160,
-                    padding: 0,
+                {isEdit ? <Add /> : <Edit />}
+                {isEdit ? "SAVE" : "EDIT"}
+              </S.SaveAndEditButton>
+              <S.DocumentHeaderButtonContainer>
+                <S.HeaderButton
+                  aria-controls="option_menu_popup"
+                  aria-haspopup
+                  onClick={(e) => {
+                    menuRef.current?.toggle(e);
                   }}
-                />
-                <Option
+                >
+                  <Menu
+                    model={collections}
+                    popup
+                    ref={menuRef}
+                    id="option_menu_popup"
+                    color="${({theme}) => theme.color.black}"
+                    style={{
+                      fontFamily: "Pretendard-Regular",
+                      fontSize: 16,
+                      gap: 4,
+                      color: "${({theme}) => theme.color.black}",
+                      boxShadow: "0px -8px 36px 0px rgba(0, 0, 0, 0.17)",
+                      borderRadius: 16,
+                      width: 160,
+                      padding: 0,
+                    }}
+                  />
+                  <Option
+                    fill={theme?.color.black}
+                    data-tooltip-id={"tooltip_id"}
+                    data-tooltip-content="Save to Folder"
+                    data-tooltip-place="bottom"
+                  />
+                </S.HeaderButton>
+                <Export
                   fill={theme?.color.black}
                   data-tooltip-id={"tooltip_id"}
-                  data-tooltip-content="Save to Folder"
+                  data-tooltip-content="Export to PDF"
                   data-tooltip-place="bottom"
+                  onClick={async () => {
+                    setIsLoadingPDF(true);
+                    setIsOpenView(true);
+                    setTimeout(() => {
+                      toPDF();
+                    }, 3000);
+                    setTimeout(() => {
+                      setIsLoadingPDF(false);
+                      setIsOpenView(false);
+                    }, 4000);
+                  }}
                 />
-              </S.HeaderButton>
-              <Export
-                fill={theme?.color.black}
-                data-tooltip-id={"tooltip_id"}
-                data-tooltip-content="Export to PDF"
-                data-tooltip-place="bottom"
-                onClick={async () => {
-                  setIsLoadingPDF(true);
-                  setIsOpenView(true);
-                  setTimeout(() => {
-                    toPDF();
-                  }, 3000);
-                  setTimeout(() => {
-                    setIsLoadingPDF(false);
-                    setIsOpenView(false);
-                  }, 4000);
-                }}
-              />
-              <Delete
-                fill={theme?.color.black}
-                data-tooltip-id={"tooltip_id"}
-                data-tooltip-content="Delete"
-                data-tooltip-place="bottom"
-                onClick={(e) => {
-                  // setDeleteId(documents.id);
-                  if (documents) {
-                    // console.log(
-                    //   "=====document id=====",
-                    //   documents.id,
-                    //   typeof deleteId
-                    // );
-                    cookies.set("deleteId", documents.id);
-                    setShowIsDeleteModal(true);
-                  } else {
-                    toast.current?.show({
-                      severity: "error",
-                      summary: "Failed",
-                      detail:
-                        "The document is still loading. Please wait a moment.",
-                      life: 3000,
-                    });
-                  }
-                }}
-              />
-            </S.DocumentHeaderButtonContainer>
-          </S.DocumentHeaderButtonWrapper>
-        </S.DocumentHeader>
-        <S.DocumentContentWrapper isOpen={isOpen}>
-          <S.DocumentContentContianer ref={scrollRef}>
-            <S.DocumentScrollWrapper
-              ref={targetRef}
-              style={
-                isLoadingPDF
-                  ? {
-                      overflow: "visible",
+                <Delete
+                  fill={theme?.color.black}
+                  data-tooltip-id={"tooltip_id"}
+                  data-tooltip-content="Delete"
+                  data-tooltip-place="bottom"
+                  onClick={(e) => {
+                    // setDeleteId(documents.id);
+                    if (documents) {
+                      // console.log(
+                      //   "=====document id=====",
+                      //   documents.id,
+                      //   typeof deleteId
+                      // );
+                      cookies.set("deleteId", documents.id);
+                      setShowIsDeleteModal(true);
+                    } else {
+                      toast.current?.show({
+                        severity: "error",
+                        summary: "Failed",
+                        detail:
+                          "The document is still loading. Please wait a moment.",
+                        life: 3000,
+                      });
                     }
-                  : {}
-              }
-            >
-              <S.DocumentContents>
-                {!documents ? (
-                  <DocumentItem
-                    // setScrollRefs={setScrollRefList}
-                    // scrollRefs={[]}
-                    index={-1}
-                    refs={scrollRefs}
-                    item={null}
-                  />
-                ) : (
-                  (documents.documents as any[]).map((item, index) => {
-                    console.log(item);
-                    return (
-                      <DocumentItem
-                        isOpenView={isOpenView}
-                        key={index}
-                        index={index}
-                        refs={scrollRefs}
-                        // setScrollRefs={setScrollRefList}
-                        // scrollRefs={scrollRefList}
-                        item={
-                          documentList.length > 0 ? documentList[index] : null
-                        }
-                      />
-                    );
-                  })
-                )}
-              </S.DocumentContents>
-            </S.DocumentScrollWrapper>
-            <S.DocumentQueryWrapper>
-              <S.QueryInputContainer>
-                <S.InputContainer ref={drop}>
-                  <SS.QueryInputBorder
-                    // className="mention_input_styling"
-                    ref={(el) => {
-                      queryBorderRef.current = el;
-                      container = el;
-                    }}
-                  >
-                    <S.MentionItemWrapper length={mentionItems.length}>
-                      {mentionItems.map((item, index) => {
-                        return (
-                          <S.MentionItem key={index}>
-                            <S.MentionItemContainer>
-                              <S.MentionItemTitle>
-                                {item.type === "news"
-                                  ? item.data.title
-                                  : item.result
-                                  ? item.result.title
-                                  : item.description
-                                  ? item.description
-                                  : ""}
-                              </S.MentionItemTitle>
-                            </S.MentionItemContainer>
-                            {item.type === "news" && (
-                              <S.MentionsItemImage
-                                src={
-                                  item.type === "news" ? item.data.image : ""
-                                }
-                              />
-                            )}
-                            {item.type !== "news" && item.type !== "search" && (
-                              <S.IconMentionsItemImage
-                                color={
-                                  item.type === "bar-chart"
-                                    ? "rgba(222, 222, 227, 0.8)"
-                                    : item.type === "candle-chart"
-                                    ? "rgba(219, 200, 221, 0.8)"
-                                    : item.type === "causal-graph"
-                                    ? "rgba(236, 227, 222, 0.8)"
-                                    : item.type === "fan-chart"
-                                    ? "rgba(240, 234, 232, 0.8)"
-                                    : "rgba(222, 222, 227, 0.8)"
-                                }
-                              >
-                                {item.type === "bar-chart" && <Bar />}
-                                {item.type === "fan-chart" && <Fan />}
-                                {item.type === "causal-graph" && <Node />}
-                                {item.type === "candle-chart" && <Candle />}
-                              </S.IconMentionsItemImage>
-                            )}
-                            <Close
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                right: 0,
-                                cursor: "pointer",
-                              }}
-                              onClick={() => {
-                                // setMentionItems(items);
-                                setMentionItems((list) =>
-                                  list.filter((item, idx) => index !== idx)
-                                );
-                              }}
-                            />
-                          </S.MentionItem>
-                        );
-                      })}
-                    </S.MentionItemWrapper>
-                    <MentionsInput
-                      customSuggestionsContainer={suggestions}
-                      disabled={false}
+                  }}
+                />
+              </S.DocumentHeaderButtonContainer>
+            </S.DocumentHeaderButtonWrapper>
+          </S.DocumentHeader>
+          <S.DocumentContentWrapper isOpen={isOpen}>
+            <S.DocumentContentContianer ref={scrollRef}>
+              <S.DocumentScrollWrapper
+                ref={targetRef}
+                style={
+                  isLoadingPDF
+                    ? {
+                        overflow: "visible",
+                      }
+                    : {}
+                }
+              >
+                <S.DocumentContents>
+                  {!documents ? (
+                    <DocumentItem
+                      // setScrollRefs={setScrollRefList}
+                      // scrollRefs={[]}
+                      index={-1}
+                      refs={scrollRefs}
+                      item={null}
+                    />
+                  ) : (
+                    (documents.documents as any[]).map((item, index) => {
+                      console.log(item);
+                      return (
+                        <DocumentItem
+                          isOpenView={isOpenView}
+                          key={index}
+                          index={index}
+                          refs={scrollRefs}
+                          // setScrollRefs={setScrollRefList}
+                          // scrollRefs={scrollRefList}
+                          item={
+                            documentList.length > 0 ? documentList[index] : null
+                          }
+                        />
+                      );
+                    })
+                  )}
+                </S.DocumentContents>
+              </S.DocumentScrollWrapper>
+              <S.DocumentQueryWrapper>
+                <S.QueryInputContainer>
+                  <S.InputContainer ref={drop}>
+                    <SS.QueryInputBorder
                       // className="mention_input_styling"
-                      singleLine={false}
-                      classNames={["mentions"]}
-                      allowSpaceInQuery={true}
-                      onChange={(e, newValue, newPlainTextValue, mentions) => {
-                        // console.log("newValue : ", newValue);
-                        // console.log("newPlainTextValue", newPlainTextValue);
-                        console.log("mentions", mentions);
-                        console.log("value", e.target.value);
-
-                        setMentions(mentions);
-
-                        setQuery(e.target.value);
-                      }}
-                      allowSuggestionsAboveCursor={true}
-                      suggestionsPortalHost={container}
-                      // forceSuggestionsAboveCursor={true}
-                      inputRef={queryRef}
-                      style={queryStyle}
-                      placeholder="Ask Something.."
-                      value={query}
-                      onFocus={() => {
-                        queryBorderRef.current?.classList.add("focus");
-                        exampleRef.current?.classList.add("focus");
-                        console.log("Focus!");
-                      }}
-                      onBlur={() => {
-                        console.log("Blur!");
-                        if (query.length === 0) {
-                          queryBorderRef.current?.classList.remove("focus");
-                          exampleRef.current?.classList.remove("focus");
-                        }
+                      ref={(el) => {
+                        queryBorderRef.current = el;
+                        container = el;
                       }}
                     >
-                      <Mention
-                        // style={mentionStyle}
-                        className={"mention_style"}
-                        trigger={"@"}
-                        data={(e, callback) => {
-                          console.log("Search: ", e);
-                          getSuggestion(e, callback);
-                        }}
-                        onAdd={(id, display) => {
-                          console.log(id, display);
-                        }}
-                        displayTransform={(id, display) => {
-                          return `@${display}`;
-                        }}
-                        renderSuggestion={(e) => {
-                          // console.log(e);
-                          return <SS.Mention>@{e.display}</SS.Mention>;
-                        }}
-                      />
-                    </MentionsInput>
-                  </SS.QueryInputBorder>
-                  <S.QuerySendButton
-                    query={query}
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      console.log(mentionItems);
-                      let q = `${query}`;
-                      const m = [...mentions];
-                      console.log(m);
-                      const mentionList = m.map((item) => {
-                        const mention = item.id.split("|||");
-
-                        console.log(mention);
-
-                        return {
-                          key: mention[0],
-                          value: mention[1],
-                        };
-                      });
-
-                      mentionList.map((item) => {
-                        q = q.replaceAll(
-                          `@[${item.key}](${item.key}|||${item.value})`,
-                          `@${item.key}`
-                        );
-                      });
-
-                      console.log(q, mentionList);
-
-                      const references = mentionItems.map((item) => {
-                        return {
-                          type: item.type,
-                          id: item.id,
-                        };
-                      });
-
-                      setIsLoading(true);
-
-                      await makeNewDocument(documents.id, q, mentionList)
-                        .then(async (res) => {
-                          const data =
-                            typeof res.data === "string"
-                              ? JSON.parse(res.data)
-                              : res.data;
-
-                          console.log(data);
-
-                          if (res.status === 200 || res.status === 201) {
-                            await generateAI(data.id, references).then(
-                              async (r) => {
-                                console.log(r.data);
-                                if (r.status === 200 || r.status === 201) {
-                                  setIsLoading(false);
-                                  setMentionItems([]);
-                                  if (queryRef.current) {
-                                    queryRef.current.value = "";
-                                    queryRef.current.blur();
+                      <S.MentionItemWrapper length={mentionItems.length}>
+                        {mentionItems.map((item, index) => {
+                          return (
+                            <S.MentionItem key={index}>
+                              <S.MentionItemContainer>
+                                <S.MentionItemTitle>
+                                  {item.type === "news"
+                                    ? item.data.title
+                                    : item.result
+                                    ? item.result.title
+                                    : item.description
+                                    ? item.description
+                                    : ""}
+                                </S.MentionItemTitle>
+                              </S.MentionItemContainer>
+                              {item.type === "news" && (
+                                <S.MentionsItemImage
+                                  src={
+                                    item.type === "news" ? item.data.image : ""
                                   }
-                                  setQuery("");
-                                  await getDocumentData();
-                                } else {
-                                  toast.current?.show({
-                                    severity: "error",
-                                    summary: "Failed",
-                                    detail: `${data.detail}`,
-                                    life: 3000,
-                                  });
-                                  setIsLoading(false);
-                                }
-                              }
-                            );
-                          } else {
-                            if (res.status === 422) {
-                              toast.current?.show({
-                                severity: "error",
-                                summary: "Failed",
-                                detail: `${data.detail[0].msg}`,
-                                life: 3000,
-                              });
-                              setIsLoading(false);
-                            }
+                                />
+                              )}
+                              {item.type !== "news" &&
+                                item.type !== "search" && (
+                                  <S.IconMentionsItemImage
+                                    color={
+                                      item.type === "bar-chart"
+                                        ? "rgba(222, 222, 227, 0.8)"
+                                        : item.type === "candle-chart"
+                                        ? "rgba(219, 200, 221, 0.8)"
+                                        : item.type === "causal-graph"
+                                        ? "rgba(236, 227, 222, 0.8)"
+                                        : item.type === "fan-chart"
+                                        ? "rgba(240, 234, 232, 0.8)"
+                                        : "rgba(222, 222, 227, 0.8)"
+                                    }
+                                  >
+                                    {item.type === "bar-chart" && <Bar />}
+                                    {item.type === "fan-chart" && <Fan />}
+                                    {item.type === "causal-graph" && <Node />}
+                                    {item.type === "candle-chart" && <Candle />}
+                                  </S.IconMentionsItemImage>
+                                )}
+                              <Close
+                                style={{
+                                  position: "absolute",
+                                  top: 0,
+                                  right: 0,
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  // setMentionItems(items);
+                                  setMentionItems((list) =>
+                                    list.filter((item, idx) => index !== idx)
+                                  );
+                                }}
+                              />
+                            </S.MentionItem>
+                          );
+                        })}
+                      </S.MentionItemWrapper>
+                      <MentionsInput
+                        customSuggestionsContainer={suggestions}
+                        disabled={false}
+                        // className="mention_input_styling"
+                        singleLine={false}
+                        classNames={["mentions"]}
+                        allowSpaceInQuery={true}
+                        onChange={(
+                          e,
+                          newValue,
+                          newPlainTextValue,
+                          mentions
+                        ) => {
+                          // console.log("newValue : ", newValue);
+                          // console.log("newPlainTextValue", newPlainTextValue);
+                          console.log("mentions", mentions);
+                          console.log("value", e.target.value);
+
+                          setMentions(mentions);
+
+                          setQuery(e.target.value);
+                        }}
+                        allowSuggestionsAboveCursor={true}
+                        suggestionsPortalHost={container}
+                        // forceSuggestionsAboveCursor={true}
+                        inputRef={queryRef}
+                        style={queryStyle}
+                        placeholder="Ask Something.."
+                        value={query}
+                        onFocus={() => {
+                          queryBorderRef.current?.classList.add("focus");
+                          exampleRef.current?.classList.add("focus");
+                          console.log("Focus!");
+                        }}
+                        onBlur={() => {
+                          console.log("Blur!");
+                          if (query.length === 0) {
+                            queryBorderRef.current?.classList.remove("focus");
+                            exampleRef.current?.classList.remove("focus");
                           }
-                        })
-                        .catch((err) => {
-                          toast.current?.show({
-                            severity: "error",
-                            summary: "Failed",
-                            content: `${err}`,
-                            life: 3000,
-                          });
-                          setIsLoading(false);
+                        }}
+                      >
+                        <Mention
+                          // style={mentionStyle}
+                          className={"mention_style"}
+                          trigger={"@"}
+                          data={(e, callback) => {
+                            console.log("Search: ", e);
+                            getSuggestion(e, callback);
+                          }}
+                          onAdd={(id, display) => {
+                            console.log(id, display);
+                          }}
+                          displayTransform={(id, display) => {
+                            return `@${display}`;
+                          }}
+                          renderSuggestion={(e) => {
+                            // console.log(e);
+                            return <SS.Mention>@{e.display}</SS.Mention>;
+                          }}
+                        />
+                      </MentionsInput>
+                    </SS.QueryInputBorder>
+                    <S.QuerySendButton
+                      query={query}
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        console.log(mentionItems);
+                        let q = `${query}`;
+                        const m = [...mentions];
+                        console.log(m);
+                        const mentionList = m.map((item) => {
+                          const mention = item.id.split("|||");
+
+                          console.log(mention);
+
+                          return {
+                            key: mention[0],
+                            value: mention[1],
+                          };
                         });
-                    }}
-                  >
-                    {query !== "" ? (
-                      <ArrowUp fill={theme?.color.white} />
-                    ) : (
-                      <ArrowUpDisable />
-                    )}
-                  </S.QuerySendButton>
-                </S.InputContainer>
-              </S.QueryInputContainer>
-            </S.DocumentQueryWrapper>
-          </S.DocumentContentContianer>
-          <S.DocumentRightBar>
-            <S.DocumentRightBarTitle>On this page</S.DocumentRightBarTitle>
-            <S.DocumentRightBarListContainer>
-              {documentList.length > 0 &&
-                scrollRefs.current
-                  .filter((item) => item.current?.id.startsWith("Query"))
-                  .map((item, index) => {
-                    console.log("item ref : ", item.current?.id);
-                    return (
-                      <>
-                        {item.current?.id.startsWith("Query") && (
-                          <>
-                            <S.DocumentRightBarText
-                              style={{
-                                paddingBottom: 18,
-                              }}
-                              key={index}
-                              isInterect={false}
-                              onClick={() => {
-                                console.log(item);
-                                item.current?.scrollIntoView({
-                                  behavior: "smooth",
+
+                        mentionList.map((item) => {
+                          q = q.replaceAll(
+                            `@[${item.key}](${item.key}|||${item.value})`,
+                            `@${item.key}`
+                          );
+                        });
+
+                        console.log(q, mentionList);
+
+                        const references = mentionItems.map((item) => {
+                          return {
+                            type: item.type,
+                            id: item.id,
+                          };
+                        });
+
+                        setIsLoading(true);
+
+                        await makeNewDocument(documents.id, q, mentionList)
+                          .then(async (res) => {
+                            const data =
+                              typeof res.data === "string"
+                                ? JSON.parse(res.data)
+                                : res.data;
+
+                            console.log(data);
+
+                            if (res.status === 200 || res.status === 201) {
+                              await generateAI(data.id, references).then(
+                                async (r) => {
+                                  console.log(r.data);
+                                  if (r.status === 200 || r.status === 201) {
+                                    setIsLoading(false);
+                                    setMentionItems([]);
+                                    if (queryRef.current) {
+                                      queryRef.current.value = "";
+                                      queryRef.current.blur();
+                                    }
+                                    setQuery("");
+                                    await getDocumentData();
+                                  } else {
+                                    toast.current?.show({
+                                      severity: "error",
+                                      summary: "Failed",
+                                      detail: `${data.detail}`,
+                                      life: 3000,
+                                    });
+                                    setIsLoading(false);
+                                  }
+                                }
+                              );
+                            } else {
+                              if (res.status === 422) {
+                                toast.current?.show({
+                                  severity: "error",
+                                  summary: "Failed",
+                                  detail: `${data.detail[0].msg}`,
+                                  life: 3000,
                                 });
-                              }}
-                            >
-                              {/* {item?.nodeValue} */}
-                              {item.current?.id}
-                            </S.DocumentRightBarText>
-                            <S.DocumentRightOl>
+                                setIsLoading(false);
+                              }
+                            }
+                          })
+                          .catch((err) => {
+                            toast.current?.show({
+                              severity: "error",
+                              summary: "Failed",
+                              content: `${err}`,
+                              life: 3000,
+                            });
+                            setIsLoading(false);
+                          });
+                      }}
+                    >
+                      {query !== "" ? (
+                        <ArrowUp fill={theme?.color.white} />
+                      ) : (
+                        <ArrowUpDisable />
+                      )}
+                    </S.QuerySendButton>
+                  </S.InputContainer>
+                </S.QueryInputContainer>
+              </S.DocumentQueryWrapper>
+            </S.DocumentContentContianer>
+            <S.DocumentRightBar>
+              <S.DocumentRightBarTitle>On this page</S.DocumentRightBarTitle>
+              <S.DocumentRightBarListContainer>
+                {documentList.length > 0 &&
+                  scrollRefs.current
+                    .filter((item) => item.current?.id.startsWith("Query"))
+                    .map((item, index) => {
+                      console.log("item ref : ", item.current?.id);
+                      return (
+                        <>
+                          {item.current?.id.startsWith("Query") && (
+                            <>
                               <S.DocumentRightBarText
-                                key={`${
-                                  scrollRefs.current[4 * index + 1].current?.id
-                                }`}
+                                style={{
+                                  paddingBottom: 18,
+                                }}
+                                key={index}
                                 isInterect={false}
                                 onClick={() => {
-                                  console.log(
-                                    scrollRefs.current[4 * index + 1]
-                                  );
-                                  // item.current?.scrollIntoView({
-                                  //   behavior: "smooth",
-                                  // });
-                                  scrollRefs.current[
-                                    4 * index + 1
-                                  ].current?.scrollIntoView({
+                                  console.log(item);
+                                  item.current?.scrollIntoView({
                                     behavior: "smooth",
                                   });
                                 }}
                               >
                                 {/* {item?.nodeValue} */}
-                                <div>{`${
-                                  scrollRefs.current[4 * index + 1].current?.id
-                                }`}</div>
+                                {item.current?.id}
                               </S.DocumentRightBarText>
-                              <S.DocumentRightBarText
-                                key={`${scrollRefs.current[
-                                  4 * index + 2
-                                ].current?.id
-                                  .replaceAll("#", "")
-                                  .replaceAll("*", "")}`}
-                                isInterect={false}
-                                onClick={() => {
-                                  console.log(
-                                    scrollRefs.current[4 * index + 2]
-                                  );
-                                  // item.current?.scrollIntoView({
-                                  //   behavior: "smooth",
-                                  // });
-                                  scrollRefs.current[
+                              <S.DocumentRightOl>
+                                <S.DocumentRightBarText
+                                  key={`${
+                                    scrollRefs.current[4 * index + 1].current
+                                      ?.id
+                                  }`}
+                                  isInterect={false}
+                                  onClick={() => {
+                                    console.log(
+                                      scrollRefs.current[4 * index + 1]
+                                    );
+                                    // item.current?.scrollIntoView({
+                                    //   behavior: "smooth",
+                                    // });
+                                    scrollRefs.current[
+                                      4 * index + 1
+                                    ].current?.scrollIntoView({
+                                      behavior: "smooth",
+                                    });
+                                  }}
+                                >
+                                  {/* {item?.nodeValue} */}
+                                  <div>{`${
+                                    scrollRefs.current[4 * index + 1].current
+                                      ?.id
+                                  }`}</div>
+                                </S.DocumentRightBarText>
+                                <S.DocumentRightBarText
+                                  key={`${scrollRefs.current[
                                     4 * index + 2
-                                  ].current?.scrollIntoView({
-                                    behavior: "smooth",
-                                  });
-                                }}
-                              >
-                                {/* {item?.nodeValue} */}
-                                <div>{`${scrollRefs.current[
-                                  4 * index + 2
-                                ].current?.id
-                                  .replaceAll("#", "")
-                                  .replaceAll("*", "")}`}</div>
-                              </S.DocumentRightBarText>
-                              <S.DocumentRightBarText
-                                key={`${
-                                  scrollRefs.current[4 * index + 3].current?.id
-                                }`}
-                                isInterect={false}
-                                onClick={() => {
-                                  console.log(
-                                    scrollRefs.current[4 * index + 3]
-                                  );
-                                  // item.current?.scrollIntoView({
-                                  //   behavior: "smooth",
-                                  // });
-                                  scrollRefs.current[
-                                    4 * index + 3
-                                  ].current?.scrollIntoView({
-                                    behavior: "smooth",
-                                  });
-                                }}
-                              >
-                                {/* {item?.nodeValue} */}
-                                <div>{`${
-                                  scrollRefs.current[4 * index + 3].current?.id
-                                }`}</div>
-                              </S.DocumentRightBarText>
-                            </S.DocumentRightOl>
-                          </>
-                        )}
-                      </>
-                    );
-                  })}
-            </S.DocumentRightBarListContainer>
-          </S.DocumentRightBar>
-        </S.DocumentContentWrapper>
-      </S.DocumentWrapper>
-      <Tooltip
-        style={{
-          fontFamily: "Pretendard-SemiBold",
-          color: "${({theme}) => theme.color.white}",
-          background: "rgba(117, 117, 117, 1)",
-          borderRadius: 8,
-        }}
-        id={"tooltip_id"}
-        place="bottom"
-      />
-      <Toast ref={toast} />
-      {isLoading && (
-        <SS.LoadingWrapper>
-          <ProgressSpinner />
-        </SS.LoadingWrapper>
-      )}
-    </Menubar>
+                                  ].current?.id
+                                    .replaceAll("#", "")
+                                    .replaceAll("*", "")}`}
+                                  isInterect={false}
+                                  onClick={() => {
+                                    console.log(
+                                      scrollRefs.current[4 * index + 2]
+                                    );
+                                    // item.current?.scrollIntoView({
+                                    //   behavior: "smooth",
+                                    // });
+                                    scrollRefs.current[
+                                      4 * index + 2
+                                    ].current?.scrollIntoView({
+                                      behavior: "smooth",
+                                    });
+                                  }}
+                                >
+                                  {/* {item?.nodeValue} */}
+                                  <div>{`${scrollRefs.current[
+                                    4 * index + 2
+                                  ].current?.id
+                                    .replaceAll("#", "")
+                                    .replaceAll("*", "")}`}</div>
+                                </S.DocumentRightBarText>
+                                <S.DocumentRightBarText
+                                  key={`${
+                                    scrollRefs.current[4 * index + 3].current
+                                      ?.id
+                                  }`}
+                                  isInterect={false}
+                                  onClick={() => {
+                                    console.log(
+                                      scrollRefs.current[4 * index + 3]
+                                    );
+                                    // item.current?.scrollIntoView({
+                                    //   behavior: "smooth",
+                                    // });
+                                    scrollRefs.current[
+                                      4 * index + 3
+                                    ].current?.scrollIntoView({
+                                      behavior: "smooth",
+                                    });
+                                  }}
+                                >
+                                  {/* {item?.nodeValue} */}
+                                  <div>{`${
+                                    scrollRefs.current[4 * index + 3].current
+                                      ?.id
+                                  }`}</div>
+                                </S.DocumentRightBarText>
+                              </S.DocumentRightOl>
+                            </>
+                          )}
+                        </>
+                      );
+                    })}
+              </S.DocumentRightBarListContainer>
+            </S.DocumentRightBar>
+          </S.DocumentContentWrapper>
+        </S.DocumentWrapper>
+        <Tooltip
+          style={{
+            fontFamily: "Pretendard-SemiBold",
+            color: "${({theme}) => theme.color.white}",
+            background: "rgba(117, 117, 117, 1)",
+            borderRadius: 8,
+          }}
+          id={"tooltip_id"}
+          place="bottom"
+        />
+        <Toast ref={toast} />
+        {isLoading && (
+          <SS.LoadingWrapper>
+            <ProgressSpinner />
+          </SS.LoadingWrapper>
+        )}
+      </Menubar>
+    </>
   );
 };
 

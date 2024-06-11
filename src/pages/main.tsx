@@ -14,9 +14,9 @@ import {
 import { Toast } from "primereact/toast";
 import { ProgressSpinner } from "primereact/progressspinner";
 import "../components/mention.css";
+import { ThemeContext } from "styled-components";
 import { useRecoilValue } from "recoil";
 import { isDarkModeState } from "../recoil/recoil";
-import { ThemeContext } from "styled-components";
 
 let container: any;
 
@@ -35,6 +35,7 @@ const MainPage = () => {
   const [mentions, setMentions] = useState<{ id: string; display: string }[]>(
     []
   );
+  const isDarkMode = useRecoilValue(isDarkModeState);
 
   const getSuggestion = async (q: string, callback: (data: any) => void) => {
     return await getSuggetion(q)
@@ -121,14 +122,36 @@ const MainPage = () => {
     },
   };
 
+  const videoSrc1 = isDarkMode ? "video_dark_1.mp4" : "video1.mp4";
+  const videoSrc2 = isDarkMode ? "video_dark_2.mp4" : "video2.mp4";
+  const videoSrc3 = isDarkMode ? "video_dark_3.mp4" : "video3.mp4";
+
+  const video1 = useRef<HTMLVideoElement>(null);
+  const video2 = useRef<HTMLVideoElement>(null);
+  const video3 = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (video1.current && video2.current && video3.current) {
+      if (isDarkMode) {
+        video1.current.src = "video_dark_1.mp4";
+        video2.current.src = "video_dark_2.mp4";
+        video3.current.src = "video_dark_3.mp4";
+      } else {
+        video1.current.src = "video1.mp4";
+        video2.current.src = "video2.mp4";
+        video3.current.src = "video3.mp4";
+      }
+    }
+  }, [isDarkMode]);
+
   return (
     <Menubar>
       <S.MainPageWrapper>
         <S.MainPageContainer>
           <S.AssetContianer>
             <S.AssetImageContainer>
-              <S.AssetImage muted autoPlay loop>
-                <source src={"video1.mp4"} type="video/mp4" />
+              <S.AssetImage muted autoPlay loop ref={video1}>
+                <source src={videoSrc1} type="video/mp4" />
               </S.AssetImage>
               <S.AssetText>
                 @ 를 입력한 뒤 예측하고 싶은 대상을
@@ -137,8 +160,8 @@ const MainPage = () => {
               </S.AssetText>
             </S.AssetImageContainer>
             <S.AssetImageContainer>
-              <S.AssetImage muted autoPlay loop>
-                <source src={"video2.mp4"} type="video/mp4" />
+              <S.AssetImage muted autoPlay loop ref={video2}>
+                <source src={videoSrc2} type="video/mp4" />
               </S.AssetImage>
               <S.AssetText>
                 예측상황을 AI에게 설명하고
@@ -147,8 +170,8 @@ const MainPage = () => {
               </S.AssetText>
             </S.AssetImageContainer>
             <S.AssetImageContainer>
-              <S.AssetImage muted autoPlay loop>
-                <source src={"video3.mp4"} type="video/mp4" />
+              <S.AssetImage muted autoPlay loop ref={video3}>
+                <source src={videoSrc3} type="video/mp4" />
               </S.AssetImage>
               <S.AssetText>
                 추가 질문이 있다면

@@ -1,32 +1,28 @@
-import { useContext, useEffect, useState } from "react";
-import * as S from "../styles";
-import { AgChartsReact } from "ag-charts-react";
-import { AgChartOptions } from "ag-charts-community";
-import MarkdownPreview from "@uiw/react-markdown-preview";
-import NodeGraph from "react-vis-graph-wrapper";
-import { AgCharts } from "ag-charts-enterprise";
-import { useDrag } from "react-dnd";
-import { useRecoilValue } from "recoil";
-import { isDarkModeState } from "../../../recoil/recoil";
+import React, { useContext, useEffect, useState } from "react";
+import * as S from "./styles";
+import { ReactComponent as Close } from "../../../assets/Close.svg";
 import { ThemeContext } from "styled-components";
+import MarkdownPreview from "@uiw/react-markdown-preview";
+import { MarkdownTheme } from "../styles";
+import { isDarkModeState } from "../../../recoil/recoil";
+import { useRecoilValue } from "recoil";
+import { AgChartsReact } from "ag-charts-react";
+import NodeGraph from "react-vis-graph-wrapper";
+import { deepClone } from "ag-charts-community/dist/types/src/module-support";
+import { AgChartOptions } from "ag-charts-community";
+import { AgCharts } from "ag-charts-enterprise";
 
 type Props = {
   item: any;
   setPickRef: React.Dispatch<React.SetStateAction<any>>;
 };
 
-const BarChart = ({ item, setPickRef }: Props) => {
+const ReferencePopup = ({ item, setPickRef }: Props) => {
   const [options, setOptions] = useState<AgChartOptions>();
   const isDarkMode = useRecoilValue(isDarkModeState);
   const theme = useContext(ThemeContext);
 
-  const [{}, drag] = useDrag(() => ({
-    type: "ITEM",
-    item: item,
-    collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-  }));
+  const [controll, setControll] = useState<string>("1D");
 
   AgCharts.setLicenseKey(
     "Using_this_{AG_Charts}_Enterprise_key_{AG-061368}_in_excess_of_the_licence_granted_is_not_permitted___Please_report_misuse_to_legal@ag-grid.com___For_help_with_changing_this_key_please_contact_info@ag-grid.com___{LG_AI_Research}_is_granted_a_{Single_Application}_Developer_License_for_the_application_{timeseries_forecasting}_only_for_{1}_Front-End_JavaScript_developer___All_Front-End_JavaScript_developers_working_on_{timeseries_forecasting}_need_to_be_licensed___{timeseries_forecasting}_has_not_been_granted_a_Deployment_License_Add-on___This_key_works_with_{AG_Charts}_Enterprise_versions_released_before_{10_June_2025}____[v3]_[02]_MTc0OTUxMDAwMDAwMA==fc9c0e0f2d32fb440d1a3642614c44b5"
@@ -318,13 +314,78 @@ const BarChart = ({ item, setPickRef }: Props) => {
     }
   }, [isDarkMode]);
 
+  useEffect(() => {
+    if (options) {
+      const clone = options;
+      if (clone && clone.zoom) {
+        const startDate = new Date(item.values[0].timestamp);
+        const endDate = new Date(item.values[item.values.length - 1].timestamp);
+
+        switch (controll) {
+          case "1D":
+            clone.zoom.rangeX = {
+              start: endDate.setDate(endDate.getDate() - 1),
+              end: undefined,
+            };
+            break;
+          case "5D":
+            clone.zoom.rangeX = {
+              start: endDate.setDate(endDate.getDate() - 5),
+              end: undefined,
+            };
+            break;
+          case "1M":
+            clone.zoom.rangeX = {
+              start: endDate.setMonth(endDate.getMonth() - 1),
+              end: undefined,
+            };
+            break;
+          case "6M":
+            clone.zoom.rangeX = {
+              start: endDate.setMonth(endDate.getMonth() - 6),
+              end: undefined,
+            };
+            break;
+          case "YTD":
+            break;
+          case "1Y":
+            clone.zoom.rangeX = {
+              start: endDate.setMonth(endDate.getMonth() - 12),
+              end: undefined,
+            };
+            break;
+          case "5Y":
+            clone.zoom.rangeX = {
+              start: endDate.setMonth(endDate.getMonth() - 60),
+              end: undefined,
+            };
+            break;
+          case "All":
+            clone.zoom.rangeX = {
+              start: startDate,
+              end: endDate,
+            };
+            break;
+        }
+      }
+    }
+  }, [controll]);
+
   return (
-    <S.BarChartWrapper
-      onClick={() => {
-        setPickRef(item);
-      }}
-    >
-      <div ref={drag}>
+    <S.ReferencePopupWrapper>
+      <S.ReferencePopupContainer>
+        <S.ReferencePopupHeaderWrapper>
+          <Close
+            style={{
+              cursor: "pointer",
+            }}
+            fill={theme?.color.black}
+            onClick={(e) => {
+              // e.stopPropagation();
+              setPickRef(null);
+            }}
+          />
+        </S.ReferencePopupHeaderWrapper>
         <S.MarkdownTheme>
           <MarkdownPreview
             wrapperElement={{
@@ -333,63 +394,135 @@ const BarChart = ({ item, setPickRef }: Props) => {
             source={item.description ? item.description : "NO CONTENTS"}
           />
         </S.MarkdownTheme>
-      </div>
-      {options &&
-        (item.type === "bar-chart" ||
-          item.type === "candle-chart" ||
-          item.type === "fan-chart") && (
-          <S.BarChart
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <AgChartsReact
-              onChartReady={(chart) => {
-                console.log("options", chart.getOptions());
+        {options &&
+          (item.type === "bar-chart" ||
+            item.type === "candle-chart" ||
+            item.type === "fan-chart") && (
+            <S.BarChart>
+              <AgChartsReact
+                onChartReady={(chart) => {
+                  console.log("options", chart.getOptions());
+                }}
+                options={options}
+              />
+            </S.BarChart>
+          )}
+        {item.type === "causal-graph" && (
+          <S.CausalChart>
+            <NodeGraph
+              style={{
+                height: "100%",
+                background: theme?.color.chartBackground,
               }}
-              options={options}
+              options={{
+                layout: {
+                  // hierarchical: true,
+                },
+                edges: {
+                  color: theme?.color.white,
+                },
+              }}
+              graph={{
+                nodes: (item.nodes as any[]).map((item) => {
+                  return {
+                    label: item.label,
+                    id: item.id,
+                    title: `${item.value}`,
+                    // color: theme?.color.black,
+                  };
+                }),
+                edges: item.edges.map((item: any) => {
+                  return {
+                    label: item.label,
+                    to: item.target,
+                    from: item.source,
+                    color: theme?.color.black,
+                  };
+                }),
+              }}
             />
-          </S.BarChart>
+          </S.CausalChart>
         )}
-      {item.type === "causal-graph" && (
-        <S.CausalChart>
-          <S.Cover />
-          <NodeGraph
-            style={{
-              height: "100%",
-              background: theme?.color.chartBackground,
-            }}
-            options={{
-              layout: {
-                // hierarchical: true,
-              },
-              edges: {
-                color: theme?.color.white,
-              },
-            }}
-            graph={{
-              nodes: (item.nodes as any[]).map((item) => {
-                return {
-                  label: item.label,
-                  id: item.id,
-                  title: `${item.value}`,
-                  // color: theme?.color.black,
-                };
-              }),
-              edges: item.edges.map((item: any) => {
-                return {
-                  label: item.label,
-                  to: item.target,
-                  from: item.source,
-                  color: theme?.color.black,
-                };
-              }),
-            }}
-          />
-        </S.CausalChart>
-      )}
-    </S.BarChartWrapper>
+        {item.type === "candle-chart" && (
+          <S.ChartControllerWrapper>
+            <S.ChartController>
+              <S.ControllButton
+                select={controll === "1D"}
+                onClick={() => {
+                  setControll("1D");
+                }}
+              >
+                1D
+              </S.ControllButton>
+              <S.Divider />
+              <S.ControllButton
+                select={controll === "5D"}
+                onClick={() => {
+                  setControll("5D");
+                }}
+              >
+                5D
+              </S.ControllButton>
+              <S.Divider />
+              <S.ControllButton
+                select={controll === "1M"}
+                onClick={() => {
+                  setControll("1M");
+                }}
+              >
+                1M
+              </S.ControllButton>
+              <S.Divider />
+              <S.ControllButton
+                select={controll === "6M"}
+                onClick={() => {
+                  setControll("6M");
+                }}
+              >
+                6M
+              </S.ControllButton>
+              <S.Divider />
+              <S.ControllButton
+                select={controll === "YTD"}
+                onClick={() => {
+                  setControll("YTD");
+                }}
+              >
+                YTD
+              </S.ControllButton>
+              <S.Divider />
+              <S.ControllButton
+                select={controll === "1Y"}
+                onClick={() => {
+                  setControll("1Y");
+                }}
+              >
+                1Y
+              </S.ControllButton>
+              <S.Divider />
+              <S.ControllButton
+                select={controll === "5Y"}
+                onClick={() => {
+                  setControll("5Y");
+                }}
+              >
+                5Y
+              </S.ControllButton>
+              <S.Divider />
+              <S.ControllButton
+                select={controll === "All"}
+                onClick={() => {
+                  setControll("All");
+                }}
+              >
+                All
+              </S.ControllButton>
+            </S.ChartController>
+          </S.ChartControllerWrapper>
+        )}
+      </S.ReferencePopupContainer>
+    </S.ReferencePopupWrapper>
   );
 };
 
-export default BarChart;
+export default ReferencePopup;

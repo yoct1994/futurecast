@@ -353,8 +353,8 @@ const Menubar = ({ children }: Props) => {
               onCheckedChange={(e) => {
                 console.log("click");
                 if (isDarkMode) {
-                  cookies.set("is_dark_mode", false);
                   setIsDarkMode(false);
+                  cookies.set("is_dark_mode", false);
                 } else {
                   setIsDarkMode(true);
                   cookies.set("is_dark_mode", true);
@@ -493,6 +493,8 @@ const Menubar = ({ children }: Props) => {
         <S.NewFolderPopupWrapper
           onClick={() => {
             setShowCreatePage(false);
+            cookies.remove("deleteId");
+            cookies.remove("deleteType");
           }}
         >
           <S.NewFolderPopupContainer

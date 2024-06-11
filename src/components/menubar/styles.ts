@@ -127,7 +127,7 @@ export const NewPageSaveButton = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 18px;
-  color: black;
+  color: ${({ theme }) => theme.color.white};
   margin-top: 8px;
   cursor: pointer;
 

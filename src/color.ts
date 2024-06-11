@@ -10,6 +10,7 @@ const darkColor = {
   skeleton: "rgba(255, 255, 255, 0.06)",
   skeleton_gradient: "rgba(255, 255, 255, 0.04)",
   menu: "rgba(39, 39, 39, 1)",
+  desc: "rgba(255, 255, 255, 0.5)",
 };
 
 const lightColor = {
@@ -24,6 +25,7 @@ const lightColor = {
   skeleton: "#e9ecef",
   skeleton_gradient: "rgba(255, 255, 255, 0.4)",
   menu: "rgba(247, 247, 247, 1)",
+  desc: "rgba(117, 117, 117, 1)",
 };
 
 export const darkTheme = {

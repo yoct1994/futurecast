@@ -13,6 +13,7 @@ import BarChart from "./graph/bar-chart";
 import { useRecoilValue } from "recoil";
 import { isDarkModeState } from "../../recoil/recoil";
 import { ThemeContext } from "styled-components";
+import ReferencePopup from "./document_refrence/reference_popup";
 
 type Props = {
   item: any;
@@ -34,6 +35,8 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
   const [isLoadingRef, setIsLoadingRef] = useState(false);
 
   const isDarkMode = useRecoilValue(isDarkModeState);
+
+  const [pickRef, setPickRef] = useState<any>(null);
 
   useEffect(() => {
     if (isOpenView) {
@@ -324,7 +327,7 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
             item.type === "fan-chart"
         )
         .map((item, index) => {
-          return <BarChart item={item} key={index} />;
+          return <BarChart item={item} key={index} setPickRef={setPickRef} />;
         })}
       <S.NewsWrapper>
         <S.NewsTitleWrapper
@@ -419,6 +422,7 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
           )}
         </S.DocumentDividerCreateAt>
       </S.DocumentItemDivider>
+      {pickRef && <ReferencePopup setPickRef={setPickRef} item={pickRef} />}
     </>
   );
 };
