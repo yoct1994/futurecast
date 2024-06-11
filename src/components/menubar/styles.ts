@@ -111,11 +111,34 @@ export const NewFolderSaveButton = styled.div`
   }
 `;
 
+export const RenameSaveButton = styled.div`
+  width: 66px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.color.black};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  color: ${({ theme }) => theme.color.white};
+
+  &:active {
+    background-color: #404040;
+  }
+`;
+
 export const NewPageButtonContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
   gap: 8px;
+`;
+
+export const RenameButtonContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
 `;
 
 export const NewPageSaveButton = styled.div`

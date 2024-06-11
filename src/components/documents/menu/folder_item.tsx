@@ -12,8 +12,8 @@ import { ReactComponent as Edit } from "../../../assets/Sidebar/Edit_Icon.svg";
 import { MenuItem } from "primereact/menuitem";
 import { Toast } from "primereact/toast";
 import { Cookies } from "react-cookie";
-import { useRecoilValue } from "recoil";
-import { isDarkModeState } from "../../../recoil/recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { isDarkModeState, showRenameState } from "../../../recoil/recoil";
 import { ThemeContext } from "styled-components";
 
 type Props = {
@@ -47,6 +47,7 @@ const FolderItem = ({
   const isDarkMode = useRecoilValue(isDarkModeState);
   const cookies = new Cookies();
   const theme = useContext(ThemeContext);
+  const setShowRename = useSetRecoilState(showRenameState);
 
   useEffect(() => {
     {
@@ -75,12 +76,9 @@ const FolderItem = ({
         </div>
       ),
       command: () => {
-        // toast.current?.show({
-        //   severity: "success",
-        //   summary: "Success",
-        //   detail: "File created",
-        //   life: 3000,
-        // });
+        cookies.set("renameId", node.data?.id);
+        cookies.set("renameType", "folder");
+        setShowRename(true);
       },
     },
     {

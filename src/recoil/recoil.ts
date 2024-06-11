@@ -31,3 +31,8 @@ export const isDarkModeState = atom<boolean>({
   default: new Cookies().get("is_dark_mode"),
   key: "is_dark_mode_state",
 });
+
+export const showRenameState = atom<boolean>({
+  default: false,
+  key: "show_rename_state",
+});

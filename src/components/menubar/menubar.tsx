@@ -22,6 +22,8 @@ import {
   getNavBar,
   makeCollection,
   moveCollectionItem,
+  renameFolder,
+  renamePage,
 } from "../../server/server";
 import { Skeleton } from "primereact/skeleton";
 import { useRecoilState } from "recoil";
@@ -31,6 +33,7 @@ import {
   isLoadingNavState,
   menubarOpenState,
   showDeleteModal,
+  showRenameState,
   treeDataState,
 } from "../../recoil/recoil";
 import { Link, useParams } from "react-router-dom";
@@ -56,10 +59,12 @@ const Menubar = ({ children }: Props) => {
   const menu = useRef<HTMLDivElement>(null);
   const toast = useRef<Toast>(null);
   const collectoinInputRef = useRef<HTMLInputElement>(null);
+  const renameInputRef = useRef<HTMLInputElement>(null);
 
   const [toggles, setToggles] = useState<(number | string)[]>([1]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCreatePage, setShowCreatePage] = useRecoilState(showDeleteModal);
+  const [showRename, setShowRename] = useRecoilState(showRenameState);
   const [isOpen, setIsOpen] = useRecoilState(menubarOpenState);
 
   const [treeData, setTreeData] = useRecoilState(treeDataState);
@@ -486,6 +491,128 @@ const Menubar = ({ children }: Props) => {
                 SAVE
               </S.NewFolderSaveButton>
             </S.NewFolderInputWrapper>
+          </S.NewFolderPopupContainer>
+        </S.NewFolderPopupWrapper>
+      )}
+      {showRename && (
+        <S.NewFolderPopupWrapper
+          onClick={() => {
+            setShowRename(false);
+            cookies.remove("renameId");
+            cookies.remove("renameType");
+          }}
+        >
+          <S.NewFolderPopupContainer
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <S.NewFolderTitleContainer>
+              <ModalIcon color="#000000" style={{}} />
+              <S.NewFolderTitleText>
+                Rename{" "}
+                {cookies.get("renameType") === "folder" ? "Folder" : "Page"}
+              </S.NewFolderTitleText>
+              <Close
+                fill={theme?.color.black}
+                onClick={(e) => {
+                  setShowRename(false);
+                  cookies.remove("renameId");
+                  cookies.remove("renameType");
+                }}
+              />
+            </S.NewFolderTitleContainer>
+            <S.NewFolderInputWrapper>
+              <S.NewFolderInput
+                ref={renameInputRef}
+                placeholder={
+                  cookies.get("renameType") === "folder"
+                    ? "Folder name"
+                    : "Page name"
+                }
+              />
+            </S.NewFolderInputWrapper>
+            <S.RenameButtonContainer>
+              <S.RenameSaveButton
+                onClick={async (e) => {
+                  if (renameInputRef.current?.value === "") {
+                    toast.current?.show({
+                      severity: "error",
+                      summary: "Error",
+                      detail: "Please write the name of the collection.",
+                      life: 3000,
+                    });
+                    return;
+                  }
+
+                  const renameId = cookies.get("renameId");
+                  const renameType = cookies.get("renameType");
+
+                  if (renameType === "folder") {
+                    await renameFolder(
+                      renameId,
+                      renameInputRef.current?.value ?? ""
+                    ).then(async (res) => {
+                      const data = JSON.parse(res.data);
+
+                      toast.current?.show({
+                        severity:
+                          res.status === 200 || res.status === 201
+                            ? "success"
+                            : "error",
+                        summary:
+                          res.status === 200 || res.status === 201
+                            ? "Success"
+                            : "Error",
+                        detail:
+                          res.status === 200 || res.status === 201
+                            ? "Success to rename"
+                            : data.detail,
+                        life: 3000,
+                      });
+
+                      if (res.status === 200 || res.status === 201) {
+                        // setTreeData((e) => []);
+                        await getNav(true).then((res) => {
+                          setShowRename(false);
+                        });
+                      }
+                    });
+                  } else {
+                    await renamePage(
+                      renameId,
+                      renameInputRef.current?.value ?? ""
+                    ).then(async (res) => {
+                      const data = JSON.parse(res.data);
+
+                      toast.current?.show({
+                        severity:
+                          res.status === 200 || res.status === 201
+                            ? "success"
+                            : "error",
+                        summary:
+                          res.status === 200 || res.status === 201
+                            ? "Success"
+                            : "Error",
+                        detail:
+                          res.status === 200 || res.status === 201
+                            ? "Success to rename"
+                            : data.detail,
+                        life: 3000,
+                      });
+
+                      if (res.status === 200 || res.status === 201) {
+                        // setTreeData((e) => []);
+                        setShowCreateModal(false);
+                        await getNav(true).then((res) => {});
+                      }
+                    });
+                  }
+                }}
+              >
+                SAVE
+              </S.RenameSaveButton>
+            </S.RenameButtonContainer>
           </S.NewFolderPopupContainer>
         </S.NewFolderPopupWrapper>
       )}
