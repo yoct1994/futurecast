@@ -68,7 +68,7 @@ export const SaveAndEditButton = styled.div`
   padding-top: 4px;
   padding-bottom: 4px;
   border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.color.grey};
+  border: 1px solid ${({ theme }) => theme.color.grey2};
   color: ${({ theme }) => theme.color.black};
   gap: 4px;
   align-items: center;
@@ -289,6 +289,21 @@ export const InputContainer = styled.div`
   /* background-color: green; */
 `;
 
+export const EditDocumentQueryWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  padding-left: 16px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+  box-sizing: border-box;
+  border: 1px solid ${({ theme }) => theme.color.grey2};
+  border-radius: 16px;
+  margin-bottom: 16px;
+  flex-direction: row;
+  min-height: 75px;
+  align-items: center;
+`;
+
 export const DocumentContainer = styled.div`
   width: 100%;
   /* background-color: ${({ theme }) => theme.color.white}; */
@@ -368,12 +383,28 @@ export const SubDocumentItem = styled.div`
   border: 1px solid ${({ theme }) => theme.color.grey1};
   cursor: pointer;
   box-sizing: border-box;
+  position: relative;
 
   &:hover {
     background-color: ${({ theme }) => theme.color.white};
     border: 1px solid ${({ theme }) => theme.color.grey2};
     box-sizing: border-box;
   }
+`;
+
+export const DeleteSubPageIcon = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 20px;
+  background-color: ${({ theme }) => theme.color.black};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transform: translate(16px, -16px);
+  cursor: pointer;
 `;
 
 export const QuerySendButton = styled.div<{ query: string }>`
@@ -487,6 +518,7 @@ export const SubDocumentViewMoreButton = styled.div`
   transform: translate(-50%, -50%);
   font-size: 16px;
   font-family: "Pretendard-SemiBold";
+  color: ${({ theme }) => theme.color.black};
   cursor: pointer;
   /* 
   &:hover {

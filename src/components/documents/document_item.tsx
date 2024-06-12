@@ -1,19 +1,34 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import * as S from "./styles";
+import * as SS from "../../components/main/styles";
 import { ReactComponent as Retry } from "../../assets/document_page/tooltop.svg";
 import { ReactComponent as ChevronDown } from "../../assets/document_page/ChevronDown.svg";
 import { ReactComponent as AnswerLogo } from "../../assets/answer_logo.svg";
 import "highlight.js/styles/a11y-dark.css";
 import MarkdownPreview from "@uiw/react-markdown-preview";
-import { getReferences } from "../../server/server";
+import { getReferences, getSuggetion } from "../../server/server";
 import { Skeleton } from "primereact/skeleton";
 import SubPageItem from "./sub_page/sub_page_item";
 import ReferenceItem from "./reference/refrence_item";
 import BarChart from "./graph/bar-chart";
-import { useRecoilValue } from "recoil";
-import { isDarkModeState } from "../../recoil/recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  deleteItemsState,
+  isDarkModeState,
+  isEditDocumentState,
+  updateItemsState,
+} from "../../recoil/recoil";
 import { ThemeContext } from "styled-components";
 import ReferencePopup from "./document_refrence/reference_popup";
+import { Mention, MentionsInput } from "react-mentions";
+import MDEditor from "@uiw/react-md-editor";
+import "@uiw/react-md-editor/markdown-editor.css";
 
 type Props = {
   item: any;
@@ -24,19 +39,40 @@ type Props = {
   // scrollRefs: (HTMLDivElement | null)[];
 };
 
+let container: any;
+
 const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
   const viewMoreRef = useRef<HTMLDivElement | null>(null);
   const refViewMoreRef = useRef<HTMLDivElement | null>(null);
+  const queryRef = useRef<HTMLInputElement | null>(null);
   const theme = useContext(ThemeContext);
 
   const [moreNum, setMoreNum] = useState<number>(4);
   const [refMoreNum, setRefMoreNum] = useState<number>(6);
   const [resources, setResources] = useState<any[]>([]);
   const [isLoadingRef, setIsLoadingRef] = useState(false);
+  const [query, setQuery] = useState("");
+  const [content, setContent] = useState("");
+
+  const [mentions, setMentions] = useState<any[]>([]);
 
   const isDarkMode = useRecoilValue(isDarkModeState);
 
   const [pickRef, setPickRef] = useState<any>(null);
+
+  const setUpdateItems = useSetRecoilState(updateItemsState);
+  const setDeleteItems = useSetRecoilState(deleteItemsState);
+  const isEdit = useRecoilValue(isEditDocumentState);
+
+  useEffect(() => {
+    if (isEdit) {
+      setQuery(item.query.full_text);
+      if (queryRef.current) {
+        queryRef.current.value = item.query.full_text;
+      }
+      setContent(item.content.full_text);
+    }
+  }, [isEdit]);
 
   useEffect(() => {
     if (isOpenView) {
@@ -84,33 +120,183 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
     }
   }, [item]);
 
+  const queryStyle = {
+    minHeight: 55,
+    width: "100%",
+    paddingLeft: 0,
+    paddingRight: 0,
+    maxHeight: 200,
+    // color: "transparent",
+    paddingTop: "0px",
+    paddingBottom: "0px",
+    fontFamily: "Pretendard-SemiBold",
+    input: {
+      scrollbarWidth: "none",
+      overflowY: "scroll",
+      fontFamily: "Pretendard-SemiBold",
+      // fontFamily: "Pretendard",
+      boxShadow: "none",
+      // color: "transparent",
+      // lineHeight: 1,
+      border: "none",
+      color: theme?.color.black,
+      outline: "none",
+      background: theme?.color.white,
+      paddingLeft: 0,
+      paddingRight: 0,
+      paddingTop: "0px",
+      paddingBottom: "0px",
+      boxSizing: "border-box",
+      fontSize: 18,
+    },
+  };
+
+  const getSuggestion = async (q: string, callback: (data: any) => void) => {
+    return await getSuggetion(q)
+      .then((res) => {
+        const data = JSON.parse(res.data);
+
+        callback(
+          data.map((e: any) => {
+            return {
+              id: `${e.unique_name}|||${e.unique_code}`,
+              display: e.unique_name,
+              // unique_code: e.unique_code,
+              // string: e.string,
+            };
+          })
+        );
+      })
+      .catch((e) => {
+        console.log(e);
+        callback([]);
+      });
+  };
+
+  const suggestions = (e: ReactNode) => {
+    // console.log(e);
+    return <SS.SuggestionsContainer>{e}</SS.SuggestionsContainer>;
+  };
+
   return (
     <>
-      <S.DocumentContainer
-        id={item ? `Query:${item.query.full_text}` : ""}
-        ref={index === -1 ? undefined : refs.current[4 * index + 0]}
-      >
-        <S.DocumentQueryContainer>
-          {item ? item.query.full_text : <Skeleton height={"24px"} />}
-        </S.DocumentQueryContainer>
-        <S.DocumentStatusWrapper status={item ? item.status : ""}>
-          {item
-            ? item.status === "completed"
-              ? "SUCCESS"
-              : item.status === "failed"
-              ? "FAIL"
-              : "LOADING"
-            : "LOADING"}
-        </S.DocumentStatusWrapper>
-        <div style={{ width: 48, height: 48 }}>
-          <Retry
-            fill={theme?.color.black}
-            data-tooltip-id={"tooltip_id"}
-            data-tooltip-content="Retry"
-            data-tooltip-place="bottom"
-          />
-        </div>
-      </S.DocumentContainer>
+      {isEdit ? (
+        <S.EditDocumentQueryWrapper>
+          <MentionsInput
+            customSuggestionsContainer={suggestions}
+            disabled={false}
+            // className="mention_input_styling"
+            singleLine={false}
+            classNames={["mentions"]}
+            allowSpaceInQuery={true}
+            onChange={(e, newValue, newPlainTextValue, mentions) => {
+              // console.log("newValue : ", newValue);
+              // console.log("newPlainTextValue", newPlainTextValue);
+              console.log("mentions", mentions);
+              console.log("value", e.target.value);
+              console.log(item);
+
+              setMentions(mentions);
+
+              setQuery(e.target.value);
+              setUpdateItems((i) => {
+                const idx = i.findIndex((item) => item.type === "QUERY");
+                if (idx !== -1) {
+                  const res = JSON.parse(JSON.stringify(i));
+                  res[idx] = {
+                    data: {
+                      id: item.id,
+                      full_text: e.target.value,
+                      mentions: mentions,
+                    },
+                    type: "QUERY",
+                  };
+                  return res;
+                } else {
+                  return [
+                    ...i,
+                    {
+                      data: {
+                        id: item.id,
+                        full_text: e.target.value,
+                        mentions: mentions,
+                      },
+                      type: "QUERY",
+                    },
+                  ];
+                }
+              });
+            }}
+            allowSuggestionsAboveCursor={true}
+            suggestionsPortalHost={container}
+            // forceSuggestionsAboveCursor={true}
+            inputRef={queryRef}
+            style={queryStyle}
+            placeholder="Ask Something.."
+            value={query}
+            onFocus={() => {
+              console.log("Focus!");
+            }}
+            onBlur={() => {
+              console.log("Blur!");
+            }}
+          >
+            <Mention
+              // style={mentionStyle}
+              className={"mention_style"}
+              trigger={"@"}
+              data={(e, callback) => {
+                console.log("Search: ", e);
+                getSuggestion(e, callback);
+              }}
+              onAdd={(id, display) => {
+                console.log(id, display);
+              }}
+              displayTransform={(id, display) => {
+                return `@${display}`;
+              }}
+              renderSuggestion={(e) => {
+                // console.log(e);
+                return <SS.Mention>@{e.display}</SS.Mention>;
+              }}
+            />
+          </MentionsInput>
+          <div style={{ width: 48, height: 48 }}>
+            <Retry
+              fill={theme?.color.black}
+              data-tooltip-id={"tooltip_id"}
+              data-tooltip-content="Retry"
+              data-tooltip-place="bottom"
+            />
+          </div>
+        </S.EditDocumentQueryWrapper>
+      ) : (
+        <S.DocumentContainer
+          id={item ? `Query:${item.query.full_text}` : ""}
+          ref={index === -1 ? undefined : refs.current[4 * index + 0]}
+        >
+          <S.DocumentQueryContainer>
+            {item ? item.query.full_text : <Skeleton height={"24px"} />}
+          </S.DocumentQueryContainer>
+          <S.DocumentStatusWrapper status={item ? item.status : ""}>
+            {item
+              ? item.status === "completed"
+                ? "SUCCESS"
+                : item.status === "failed"
+                ? "FAIL"
+                : "LOADING"
+              : "LOADING"}
+          </S.DocumentStatusWrapper>
+          <div style={{ width: 48, height: 48 }}>
+            <Retry
+              fill={theme?.color.black}
+              data-tooltip-id={"tooltip_id"}
+              data-tooltip-content="Retry"
+              data-tooltip-place="bottom"
+            />
+          </div>
+        </S.DocumentContainer>
+      )}
       {item && item.status !== "submitted" && item.children.length === 0 && (
         <S.EmptyWrapper>
           <S.EmptyContainer>There is no content</S.EmptyContainer>
@@ -131,7 +317,7 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
           ) : item.children.length === 0 ? (
             <></>
           ) : (
-            (item.children as any[]).slice(0, moreNum).map((item, index) => {
+            (item.children as any[]).slice(0, moreNum).map((item, idx) => {
               // console.log("sub document : ", item);
 
               const uniqueReferences = (
@@ -157,9 +343,10 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
 
               return (
                 <SubPageItem
-                  index={index}
+                  index={idx}
                   item={item}
                   uniqueReferences={uniqueReferences}
+                  documentIdx={index}
                 />
               );
             })
@@ -204,23 +391,122 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
       ) : (
         <></>
       )}
-      <S.AnswerWrapper>
-        <AnswerLogo />
-        <S.AnswerContainer
-          id={`${
-            item && item.content ? item.content.full_text : "NO CONTENTS"
-          }`}
-          ref={index === -1 ? undefined : refs.current[4 * index + 2]}
+      {isEdit ? (
+        <S.AnswerWrapper
+          data-color-mode={isDarkMode ? "dark" : "light"}
+          // ref={index === -1 ? undefined : refs.current[4 * index + 2]}
         >
-          {/* <S.CustomFontMarkDown
+          <MDEditor
+            height={1200}
+            style={{
+              width: "100%",
+            }}
+            value={content}
+            onChange={(e) => {
+              setContent(e ?? "");
+              setUpdateItems((i) => {
+                const idx = i.findIndex((item) => item.type === "CONTENT");
+                if (idx !== -1) {
+                  const res = JSON.parse(JSON.stringify(i));
+                  res[idx] = {
+                    data: {
+                      id: item.id,
+                      content: e,
+                    },
+                    type: "CONTENT",
+                  };
+                  return res;
+                } else {
+                  return [
+                    ...i,
+                    {
+                      data: {
+                        id: item.id,
+                        content: e,
+                      },
+                      type: "CONTENT",
+                    },
+                  ];
+                }
+              });
+            }}
+          />
+        </S.AnswerWrapper>
+      ) : (
+        <S.AnswerWrapper>
+          <div style={{ width: 48, height: 36 }}>
+            <AnswerLogo />
+          </div>
+          <S.AnswerContainer
+            id={`${
+              item && item.content ? item.content.full_text : "NO CONTENTS"
+            }`}
+            ref={index === -1 ? undefined : refs.current[4 * index + 2]}
+          >
+            {/* <S.CustomFontMarkDown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeHighlight]}
           >
             {item.content ? item.content.full_text : "NO CONTENTS"}
             
           </S.CustomFontMarkDown> */}
-          {item ? (
-            item.status === "submitted" && !item.content ? (
+            {item ? (
+              item.status === "submitted" && !item.content ? (
+                <S.SkeletonLoadingContainer>
+                  <Skeleton width={"70%"} height={"28px"} />
+                  <div style={{ marginBottom: 8 }} />
+                  <Skeleton width={"30%"} height={"25px"} />
+                  <div style={{ marginBottom: 7 }} />
+                  <Skeleton width={"100%"} height={"20px"} />
+                  <div style={{ marginBottom: 15 }} />
+                  <Skeleton width={"100%"} height={"20px"} />
+                  <div style={{ marginBottom: 11 }} />
+                  <Skeleton width={"100%"} height={"20px"} />
+                  <div style={{ marginBottom: 11 }} />
+                  <Skeleton width={"100%"} height={"20px"} />
+                  <div style={{ marginBottom: 14 }} />
+                  <Skeleton width={"30%"} height={"25px"} />
+                  <div style={{ marginBottom: 12 }} />
+                  <div style={{ marginLeft: 25 }}>
+                    <Skeleton width={"38%"} height={"20px"} />
+                    <div style={{ marginBottom: 19 }} />
+                    <div style={{ marginLeft: 29 }}>
+                      <Skeleton width={"100%"} height={"20px"} />
+                      <div style={{ marginBottom: 11 }} />
+                      <Skeleton width={"100%"} height={"20px"} />
+                      <div style={{ marginBottom: 19 }} />
+                    </div>
+                    <Skeleton width={"38%"} height={"20px"} />
+                    <div style={{ marginBottom: 17 }} />
+                    <div style={{ marginLeft: 29 }}>
+                      <Skeleton width={"100%"} height={"20px"} />
+                      <div style={{ marginBottom: 11 }} />
+                      <Skeleton width={"100%"} height={"20px"} />
+                      <div style={{ marginBottom: 24 }} />
+                    </div>
+                    <Skeleton width={"38%"} height={"20px"} />
+                    <div style={{ marginBottom: 13, marginLeft: 25 }} />
+                    <div style={{ marginLeft: 29 }}>
+                      <Skeleton width={"100%"} height={"20px"} />
+                      <div style={{ marginBottom: 11 }} />
+                      <Skeleton width={"100%"} height={"20px"} />
+                    </div>
+                  </div>
+                </S.SkeletonLoadingContainer>
+              ) : (
+                <S.MarkdownTheme>
+                  <MarkdownPreview
+                    wrapperElement={{
+                      "data-color-mode": isDarkMode ? "dark" : "light",
+                    }}
+                    source={
+                      item.content ? item.content.full_text : "NO CONTENTS"
+                    }
+                    // source={testText}
+                  />
+                </S.MarkdownTheme>
+              )
+            ) : (
               <S.SkeletonLoadingContainer>
                 <Skeleton width={"70%"} height={"28px"} />
                 <div style={{ marginBottom: 8 }} />
@@ -262,62 +548,10 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
                   </div>
                 </div>
               </S.SkeletonLoadingContainer>
-            ) : (
-              <S.MarkdownTheme>
-                <MarkdownPreview
-                  wrapperElement={{
-                    "data-color-mode": isDarkMode ? "dark" : "light",
-                  }}
-                  source={item.content ? item.content.full_text : "NO CONTENTS"}
-                  // source={testText}
-                />
-              </S.MarkdownTheme>
-            )
-          ) : (
-            <S.SkeletonLoadingContainer>
-              <Skeleton width={"70%"} height={"28px"} />
-              <div style={{ marginBottom: 8 }} />
-              <Skeleton width={"30%"} height={"25px"} />
-              <div style={{ marginBottom: 7 }} />
-              <Skeleton width={"100%"} height={"20px"} />
-              <div style={{ marginBottom: 15 }} />
-              <Skeleton width={"100%"} height={"20px"} />
-              <div style={{ marginBottom: 11 }} />
-              <Skeleton width={"100%"} height={"20px"} />
-              <div style={{ marginBottom: 11 }} />
-              <Skeleton width={"100%"} height={"20px"} />
-              <div style={{ marginBottom: 14 }} />
-              <Skeleton width={"30%"} height={"25px"} />
-              <div style={{ marginBottom: 12 }} />
-              <div style={{ marginLeft: 25 }}>
-                <Skeleton width={"38%"} height={"20px"} />
-                <div style={{ marginBottom: 19 }} />
-                <div style={{ marginLeft: 29 }}>
-                  <Skeleton width={"100%"} height={"20px"} />
-                  <div style={{ marginBottom: 11 }} />
-                  <Skeleton width={"100%"} height={"20px"} />
-                  <div style={{ marginBottom: 19 }} />
-                </div>
-                <Skeleton width={"38%"} height={"20px"} />
-                <div style={{ marginBottom: 17 }} />
-                <div style={{ marginLeft: 29 }}>
-                  <Skeleton width={"100%"} height={"20px"} />
-                  <div style={{ marginBottom: 11 }} />
-                  <Skeleton width={"100%"} height={"20px"} />
-                  <div style={{ marginBottom: 24 }} />
-                </div>
-                <Skeleton width={"38%"} height={"20px"} />
-                <div style={{ marginBottom: 13, marginLeft: 25 }} />
-                <div style={{ marginLeft: 29 }}>
-                  <Skeleton width={"100%"} height={"20px"} />
-                  <div style={{ marginBottom: 11 }} />
-                  <Skeleton width={"100%"} height={"20px"} />
-                </div>
-              </div>
-            </S.SkeletonLoadingContainer>
-          )}
-        </S.AnswerContainer>
-      </S.AnswerWrapper>
+            )}
+          </S.AnswerContainer>
+        </S.AnswerWrapper>
+      )}
       {resources
         .filter(
           (item) =>

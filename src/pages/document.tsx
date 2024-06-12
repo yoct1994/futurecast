@@ -42,11 +42,15 @@ import { Tooltip } from "react-tooltip";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   deleteIdValue,
+  deleteItemsState,
+  documentListState,
   isDarkModeState,
+  isEditDocumentState,
   isLoadingNavState,
   menubarOpenState,
   showDeleteModal,
   treeDataState,
+  updateItemsState,
 } from "../recoil/recoil";
 import DocumentItem from "../components/documents/document_item";
 import { Skeleton } from "primereact/skeleton";
@@ -88,9 +92,9 @@ const Document = () => {
 
   const isOpen = useRecoilValue(menubarOpenState);
   const [documentTree, setDocumentTree] = useState<any[]>([]);
-  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useRecoilState(isEditDocumentState);
   const [documents, setDocuments] = useState<any>();
-  const [documentList, setDocumentList] = useState<any[]>([]);
+  const [documentList, setDocumentList] = useRecoilState(documentListState);
   const [mentionItems, setMentionItems] = useState<any[]>([]);
   const [isPolling, setIsPolling] = useState<boolean>(false);
   const [pollId, setPollId] = useState<string>("");
@@ -102,6 +106,9 @@ const Document = () => {
   const treeData = useRecoilValue(treeDataState);
   const setIsLoadingNav = useSetRecoilState(isLoadingNavState);
   const isDarkMode = useRecoilValue(isDarkModeState);
+
+  const updateItems = useRecoilValue(updateItemsState);
+  const deleteItems = useRecoilValue(deleteItemsState);
 
   useEffect(() => {
     const getCollections = async () => {
@@ -370,6 +377,12 @@ const Document = () => {
   };
 
   useEffect(() => {
+    console.log("RESULT");
+    console.log(documentList);
+    console.log("RESULT");
+  }, [documentList]);
+
+  useEffect(() => {
     // scrollRefs.current = [];
     scrollRef.current?.scrollTo(0, 0);
     // setNowWitch(0);
@@ -382,6 +395,7 @@ const Document = () => {
     setDocuments(undefined);
     setDocumentList([]);
     setDocumentTree([]);
+    setIsEdit(false);
 
     setIsPolling(false);
     setPollId("");
@@ -400,7 +414,11 @@ const Document = () => {
 
   useEffect(() => {
     setIsLoadingToc(!isLoadingToc);
-  }, [scrollRefs, scrollRefs.current]);
+  }, [scrollRefs, scrollRefs.current, isEdit]);
+
+  useEffect(() => {
+    console.log("scroll : :::: : : ", scrollRef.current);
+  }, [isEdit]);
 
   const queryStyle = {
     minHeight: 55,
@@ -473,7 +491,14 @@ const Document = () => {
             <S.DocumentHeaderButtonWrapper>
               <S.SaveAndEditButton
                 onClick={() => {
-                  setIsEdit(!isEdit);
+                  if (documents && documentList.length > 0) {
+                    if (isEdit) {
+                      console.log("SAVE ::: ", updateItems, deleteItems);
+                    } else {
+                    }
+
+                    setIsEdit(!isEdit);
+                  }
                 }}
               >
                 {isEdit ? <Add /> : <Edit />}

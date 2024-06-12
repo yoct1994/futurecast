@@ -36,3 +36,27 @@ export const showRenameState = atom<boolean>({
   default: false,
   key: "show_rename_state",
 });
+
+export const updateItemsState = atom<
+  { data: any; type: "SUB_PAGE" | "QUERY" | "REFERENCE" | "CONTENT" }[]
+>({
+  default: [],
+  key: "update_items_state",
+});
+
+export const deleteItemsState = atom<
+  { data: any; type: "SUB_PAGE" | "QUERY" | "REFERENCE" | "CONTENT" }[]
+>({
+  default: [],
+  key: "delete_items_state",
+});
+
+export const isEditDocumentState = atom<boolean>({
+  default: false,
+  key: "is_edit_document_state",
+});
+
+export const documentListState = atom<any[]>({
+  default: [],
+  key: "document_list_state",
+});

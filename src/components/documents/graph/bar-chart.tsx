@@ -141,8 +141,11 @@ const BarChart = ({ item, setPickRef }: Props) => {
             type: "bar",
             xKey: "label",
             yKey: "value",
-            cornerRadius: 8,
+            cornerRadius: 16,
             fill: "#5661F6",
+            label: {
+              fontSize: 10,
+            },
           },
         ],
         axes: [
@@ -161,6 +164,9 @@ const BarChart = ({ item, setPickRef }: Props) => {
           {
             type: "category",
             position: "bottom",
+            label: {
+              fontSize: 10,
+            },
             gridLine: {
               style: [
                 {

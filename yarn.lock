@@ -1130,7 +1130,7 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
-"@babel/runtime@^7.13.10":
+"@babel/runtime@^7.13.10", "@babel/runtime@^7.14.6":
   version "7.24.7"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.24.7.tgz#f4f0d5530e8dbdf59b3451b9b3e594b6ba082e12"
   integrity sha512-UwgBRMjJP+xv857DCngvqXI3Iq6J4v0wXmwc6sapg+zyhbwmQX67LUEFrkK5tbyJ30jGuG3ZvWpBiB9LCy1kWw==
@@ -3190,7 +3190,7 @@
   resolved "https://registry.yarnpkg.com/@uiw/copy-to-clipboard/-/copy-to-clipboard-1.0.17.tgz#86f501ddc8a6db0b45e6899bcd9d48e0b78f233e"
   integrity sha512-O2GUHV90Iw2VrSLVLK0OmNIMdZ5fgEg4NhvtwINsX+eZ/Wf6DWD0TdsK9xwV7dNRnK/UI2mQtl0a2/kRgm1m1A==
 
-"@uiw/react-markdown-preview@^5.1.1":
+"@uiw/react-markdown-preview@^5.0.6", "@uiw/react-markdown-preview@^5.1.1":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@uiw/react-markdown-preview/-/react-markdown-preview-5.1.1.tgz#f5e2845d75bc3160748a7ab106b11e39cd9f7a93"
   integrity sha512-uN/1o53o+4F9jerU3ijZcukOSe+fBR6cmIWi3IjqPWqhc/JxUnbqE6sxiH6nDVJwLS2rx6TH8imb0r9r0aorqg==
@@ -3208,6 +3208,16 @@
     remark-gfm "~4.0.0"
     remark-github-blockquote-alert "^1.0.0"
     unist-util-visit "^5.0.0"
+
+"@uiw/react-md-editor@^4.0.4":
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/@uiw/react-md-editor/-/react-md-editor-4.0.4.tgz#142c42eb722035d60c1b71209e1d89b34d9fc4d4"
+  integrity sha512-JH9nDXXRhJtWPP4yE61VE+9ryFo9tg9v7KMwGfJCnaOOKuLF1MR3l/MNsiJCGkRjUwyto5WrU7kBSq8ODJEtYw==
+  dependencies:
+    "@babel/runtime" "^7.14.6"
+    "@uiw/react-markdown-preview" "^5.0.6"
+    rehype "~13.0.0"
+    rehype-prism-plus "~2.0.0"
 
 "@ungap/structured-clone@^1.0.0", "@ungap/structured-clone@^1.2.0":
   version "1.2.0"
@@ -6465,6 +6475,24 @@ hast-util-select@^6.0.0:
     space-separated-tokens "^2.0.0"
     unist-util-visit "^5.0.0"
     zwitch "^2.0.0"
+
+hast-util-to-html@^9.0.0:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/hast-util-to-html/-/hast-util-to-html-9.0.1.tgz#d108aba473c0ced8377267b1a725b25e818ff3c8"
+  integrity sha512-hZOofyZANbyWo+9RP75xIDV/gq+OUKx+T46IlwERnKmfpwp81XBFbT9mi26ws+SJchA4RVUQwIBJpqEOBhMzEQ==
+  dependencies:
+    "@types/hast" "^3.0.0"
+    "@types/unist" "^3.0.0"
+    ccount "^2.0.0"
+    comma-separated-tokens "^2.0.0"
+    hast-util-raw "^9.0.0"
+    hast-util-whitespace "^3.0.0"
+    html-void-elements "^3.0.0"
+    mdast-util-to-hast "^13.0.0"
+    property-information "^6.0.0"
+    space-separated-tokens "^2.0.0"
+    stringify-entities "^4.0.0"
+    zwitch "^2.0.4"
 
 hast-util-to-jsx-runtime@^2.0.0:
   version "2.3.0"
@@ -10589,7 +10617,7 @@ rehype-parse@^9.0.0:
     hast-util-from-html "^2.0.0"
     unified "^11.0.0"
 
-rehype-prism-plus@2.0.0:
+rehype-prism-plus@2.0.0, rehype-prism-plus@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/rehype-prism-plus/-/rehype-prism-plus-2.0.0.tgz#75b1e2d0dd7496125987a1732cb7d560de02a0fd"
   integrity sha512-FeM/9V2N7EvDZVdR2dqhAzlw5YI49m9Tgn7ZrYJeYHIahM6gcXpH0K1y2gNnKanZCydOMluJvX2cB9z3lhY8XQ==
@@ -10629,6 +10657,25 @@ rehype-slug@~6.0.0:
     hast-util-heading-rank "^3.0.0"
     hast-util-to-string "^3.0.0"
     unist-util-visit "^5.0.0"
+
+rehype-stringify@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/rehype-stringify/-/rehype-stringify-10.0.0.tgz#2031cf6fdd0355393706f0474ec794c75e5492f2"
+  integrity sha512-1TX1i048LooI9QoecrXy7nGFFbFSufxVRAfc6Y9YMRAi56l+oB0zP51mLSV312uRuvVLPV1opSlJmslozR1XHQ==
+  dependencies:
+    "@types/hast" "^3.0.0"
+    hast-util-to-html "^9.0.0"
+    unified "^11.0.0"
+
+rehype@~13.0.0:
+  version "13.0.1"
+  resolved "https://registry.yarnpkg.com/rehype/-/rehype-13.0.1.tgz#56384ba83955e2f3aa7eca1975b406c67d9dbd5e"
+  integrity sha512-AcSLS2mItY+0fYu9xKxOu1LhUZeBZZBx8//5HKzF+0XP+eP8+6a5MXn2+DW2kfXR6Dtp1FEXMVrjyKAcvcU8vg==
+  dependencies:
+    "@types/hast" "^3.0.0"
+    rehype-parse "^9.0.0"
+    rehype-stringify "^10.0.0"
+    unified "^11.0.0"
 
 relateurl@^0.2.7:
   version "0.2.7"
@@ -12873,7 +12920,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zwitch@^2.0.0:
+zwitch@^2.0.0, zwitch@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/zwitch/-/zwitch-2.0.4.tgz#c827d4b0acb76fc3e685a4c6ec2902d51070e9d7"
   integrity sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==

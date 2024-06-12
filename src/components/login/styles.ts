@@ -107,6 +107,7 @@ export const Button = styled.div`
   box-sizing: border-box;
   color: white;
   border-radius: 8px;
+  cursor: pointer;
 
   &:active {
     background-color: #7981f6;
