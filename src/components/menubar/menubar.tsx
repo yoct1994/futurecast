@@ -86,9 +86,10 @@ const Menubar = ({ children }: Props) => {
           if (res.status === 401) {
             console.log("data : ", data);
             if (data.detail === "Token expired") {
-              cookies.remove("TOKEN");
-              await auth.signOut();
-              window.location.href = "/login";
+              await auth.signOut().then((res) => {
+                cookies.remove("TOKEN");
+                window.location.href = "/login";
+              });
             }
             return;
           }

@@ -434,7 +434,7 @@ export const FolderNodeText = styled.div<{ depth: number }>`
   white-space: nowrap;
   /* background-color: green; */
   color: ${(props) =>
-    props.depth === 0 ? props.theme.color.black : "#757575"};
+    props.depth === 0 ? props.theme.color.black : props.theme.color.desc};
 `;
 
 export const PageNodeText = styled(Link)<{ depth: number }>`

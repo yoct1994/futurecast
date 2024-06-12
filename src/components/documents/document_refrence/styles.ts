@@ -12,12 +12,12 @@ export const ReferencePopupWrapper = styled.div`
   right: 0;
   bottom: 0;
   /* background-color: rgba(0, 0, 0, 0.3); */
-  z-index: 500;
+  z-index: 1200;
 `;
 
 export const ReferencePopupContainer = styled.div`
-  width: 800px;
-  height: 80vh;
+  width: 812px;
+  height: 90vh;
   background-color: ${({ theme }) => theme.color.white};
   border-radius: 16px;
   box-sizing: border-box;

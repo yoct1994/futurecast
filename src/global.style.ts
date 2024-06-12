@@ -4,6 +4,7 @@ import LgSmartLight from "./fonts/Pretendard-Light.woff";
 import LgSmartThin from "./fonts/Pretendard-Thin.woff";
 import LgSmartRegular from "./fonts/Pretendard-Regular.woff";
 import LgSmartSemiBold from "./fonts/Pretendard-SemiBold.woff";
+import IBMPlexMonoRegular from "./fonts/IBMPlexMono-Regular.ttf";
 
 export const Global = createGlobalStyle`
     * {
@@ -77,5 +78,12 @@ export const Global = createGlobalStyle`
         src: local('Pretendard-SemiBold'), local('Pretendard-SemiBold');
         font-style: normal;
         src: url(${LgSmartSemiBold}) format('woff');
+    }
+
+    @font-face {
+        font-family: "IBMPlexMono-Regular";
+        src: local('IBMPlexMono-Regular'), local('IBMPlexMono-Regular');
+        font-style: normal;
+        src: url(${IBMPlexMonoRegular}) format('truetype');
     }
 `;

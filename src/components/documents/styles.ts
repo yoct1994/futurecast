@@ -68,7 +68,7 @@ export const SaveAndEditButton = styled.div`
   padding-top: 4px;
   padding-bottom: 4px;
   border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.color.grey2};
+  border: 1px solid ${({ theme }) => theme.color.grey};
   color: ${({ theme }) => theme.color.black};
   gap: 4px;
   align-items: center;
@@ -194,7 +194,7 @@ export const DocumentRightBarText = styled.li<{ isInterect: boolean }>`
   -webkit-box-orient: vertical;
   /* list-style-type: circle; */
   color: ${(props) =>
-    props.isInterect ? props.theme.color.black : "rgba(117, 117, 117, 1)"};
+    props.isInterect ? props.theme.color.black : props.theme.color.desc};
   cursor: pointer;
 
   &:hover {
@@ -204,7 +204,7 @@ export const DocumentRightBarText = styled.li<{ isInterect: boolean }>`
 
 export const HeaderButton = styled.div``;
 
-export const CollectionItem = styled.div`
+export const CollectionItem = styled.div<{ idx: number; length: number }>`
   width: 100%;
   height: 40px;
   display: flex;
@@ -215,9 +215,11 @@ export const CollectionItem = styled.div`
   padding-bottom: 4px;
   align-items: center;
   cursor: pointer;
+  /* border-radius: 16px; */
+  background-color: ${({ theme }) => theme.color.white};
 
   &:hover {
-    background-color: #f7f7f7;
+    background-color: ${({ theme }) => theme.color.grey1};
   }
 `;
 
@@ -228,6 +230,7 @@ export const CollectionName = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   display: flex;
+  color: ${({ theme }) => theme.color.black};
   align-items: center;
   max-lines: 1;
   display: -webkit-box;
@@ -773,9 +776,10 @@ export const EmptyContainer = styled.div`
   border-radius: 8px;
   border: 1px solid ${({ theme }) => theme.color.divider};
   display: flex;
+  font-family: "IBMPlexMono-Regular";
   justify-content: center;
   align-items: center;
-  color: rgba(117, 117, 117, 1);
+  color: ${({ theme }) => theme.color.desc};
   font-size: 14px;
 `;
 

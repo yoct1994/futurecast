@@ -15,6 +15,7 @@ import { Cookies } from "react-cookie";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isDarkModeState, showRenameState } from "../../../recoil/recoil";
 import { ThemeContext } from "styled-components";
+import { CollectionItem, CollectionName } from "../styles";
 
 type Props = {
   depth: number;
@@ -70,30 +71,52 @@ const FolderItem = ({
   const items: MenuItem[] = [
     {
       label: "Rename",
-      icon: (
-        <div style={{ paddingRight: 4 }}>
-          <Edit fill={theme?.color.black} />
-        </div>
-      ),
-      command: () => {
-        cookies.set("renameId", node.data?.id);
-        cookies.set("renameType", "folder");
-        setShowRename(true);
+      // icon: (
+      //   <div style={{ paddingRight: 4 }}>
+
+      //   </div>
+      // ),
+      template: (item) => {
+        return (
+          <CollectionItem
+            idx={1}
+            length={2}
+            onClick={() => {
+              cookies.set("renameId", node.data?.id);
+              cookies.set("renameType", "folder");
+              setShowRename(true);
+            }}
+          >
+            <Edit fill={theme?.color.black} />
+            <CollectionName>Rename</CollectionName>
+          </CollectionItem>
+        );
       },
+      // command: () => {
+      //   cookies.set("renameId", node.data?.id);
+      //   cookies.set("renameType", "folder");
+      //   setShowRename(true);
+      // },
     },
     {
       label: "Remove",
-      icon: (
-        <div style={{ paddingRight: 4 }}>
-          <Remove fill={theme?.color.black} />
-        </div>
-      ),
-      command: async () => {
-        console.log("=======document delete=======", node.data?.id);
-        setDeleteId(`${node.data?.id}`);
-        cookies.set("deleteId", node.data?.id);
-        cookies.set("deleteType", "folder");
-        showDialog(true);
+      template: (item) => {
+        return (
+          <CollectionItem
+            idx={1}
+            length={2}
+            onClick={() => {
+              console.log("=======document delete=======", node.data?.id);
+              setDeleteId(`${node.data?.id}`);
+              cookies.set("deleteId", node.data?.id);
+              cookies.set("deleteType", "folder");
+              showDialog(true);
+            }}
+          >
+            <Remove fill={theme?.color.black} />
+            <CollectionName>Remove</CollectionName>
+          </CollectionItem>
+        );
       },
     },
   ];

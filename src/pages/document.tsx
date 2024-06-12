@@ -101,20 +101,24 @@ const Document = () => {
   const [collections, setCollections] = useState<MenuItem[]>([]);
   const treeData = useRecoilValue(treeDataState);
   const setIsLoadingNav = useSetRecoilState(isLoadingNavState);
+  const isDarkMode = useRecoilValue(isDarkModeState);
 
   useEffect(() => {
     const getCollections = async () => {
       const items: MenuItem[] = [];
 
-      for (var collection of treeData.filter(
-        (item) => item.data.type === "FOLDER"
-      )) {
+      var idx = 0;
+      const list = treeData.filter((item) => item.data.type === "FOLDER");
+
+      for (var collection of list) {
         items.push({
           label: collection.text,
           data: collection,
           template: (item, option) => {
             return (
               <S.CollectionItem
+                idx={idx}
+                length={list.length}
                 onClick={async () => {
                   await moveCollectionItem(item.data?.data?.id, id ?? "").then(
                     (res) => {
@@ -144,19 +148,21 @@ const Document = () => {
                   );
                 }}
               >
-                <ItemOption />
+                <ItemOption fill={theme?.color.black} />
                 <S.CollectionName>{item.label}</S.CollectionName>
               </S.CollectionItem>
             );
           },
         });
+
+        idx++;
       }
 
       setCollections(items);
     };
 
     getCollections();
-  }, [treeData]);
+  }, [treeData, isDarkMode]);
 
   const { toPDF, targetRef } = usePDF({
     method: "save",
@@ -486,16 +492,12 @@ const Document = () => {
                     popup
                     ref={menuRef}
                     id="option_menu_popup"
-                    color="${({theme}) => theme.color.black}"
+                    color={theme?.color.black}
                     style={{
-                      fontFamily: "Pretendard-Regular",
-                      fontSize: 16,
-                      gap: 4,
-                      color: "${({theme}) => theme.color.black}",
+                      backgroundColor: theme?.color.white,
                       boxShadow: "0px -8px 36px 0px rgba(0, 0, 0, 0.17)",
-                      borderRadius: 16,
-                      width: 160,
-                      padding: 0,
+                      borderRadius: 14,
+                      border: "none",
                     }}
                   />
                   <Option
