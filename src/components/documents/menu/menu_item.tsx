@@ -101,6 +101,7 @@ const PopupMenuItem = ({
     <>
       <S.FolderNodeWrapper
         depth={depth}
+        parent={node.parent}
         className={`depth${depth}`}
         as={Link}
         to={`/document/${node.data?.id}`}
@@ -108,12 +109,14 @@ const PopupMenuItem = ({
           textDecoration: "none",
         }}
       >
-        <S.PageDividerWrapper
-          idx={allNodes.indexOf(node)}
-          length={allNodes.length - 1}
-        >
-          <S.PageDivider parent={`${node.parent}`} />
-        </S.PageDividerWrapper>
+        {node.parent !== 1 && (
+          <S.PageDividerWrapper
+            idx={allNodes.indexOf(node)}
+            length={allNodes.length - 1}
+          >
+            <S.PageDivider parent={`${node.parent}`} />
+          </S.PageDividerWrapper>
+        )}
         <S.FolderNodeText depth={depth}>{node.text}</S.FolderNodeText>
         {node.parent === 0 ? (
           <div

@@ -78,7 +78,7 @@ const Menubar = ({ children }: Props) => {
     console.log(deleteId);
     if (isRefresh || treeData.length === 0) {
       await getNavBar()
-        .then((res) => {
+        .then(async (res) => {
           console.log(res.data);
           const data = JSON.parse(res.data);
           console.log(data);
@@ -87,6 +87,7 @@ const Menubar = ({ children }: Props) => {
             console.log("data : ", data);
             if (data.detail === "Token expired") {
               cookies.remove("TOKEN");
+              await auth.signOut();
               window.location.href = "/login";
             }
             return;
@@ -349,7 +350,9 @@ const Menubar = ({ children }: Props) => {
                   });
                 }}
               />
-              <S.UserEmailText>{auth.currentUser?.email}</S.UserEmailText>
+              <S.UserEmailText>
+                {auth.currentUser?.email?.split("@")[0]}
+              </S.UserEmailText>
             </S.UserAccountContiner>
             <S.DarkModeToggleWrapper
               // value={isDarkMode ? "on" : "off"}

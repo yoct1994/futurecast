@@ -181,7 +181,7 @@ export const DocumentRightBarTitle = styled.div`
 export const DocumentRightBarText = styled.li<{ isInterect: boolean }>`
   width: 250px;
   /* line-height: 20px; */
-  height: 16px;
+  height: 18px;
   /* background-color: grey; */
   font-size: 16px;
   font-family: ${(props) =>
@@ -192,14 +192,9 @@ export const DocumentRightBarText = styled.li<{ isInterect: boolean }>`
   display: -webkit-box;
   -webkit-line-clamp: 1; // 원하는 라인수
   -webkit-box-orient: vertical;
-  list-style-type: circle;
+  /* list-style-type: circle; */
   color: ${(props) =>
-    props.isInterect
-      ? "${({theme}) => theme.color.black}"
-      : "rgba(117, 117, 117, 1)"};
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
+    props.isInterect ? props.theme.color.black : "rgba(117, 117, 117, 1)"};
   cursor: pointer;
 
   &:hover {

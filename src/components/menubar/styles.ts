@@ -347,7 +347,12 @@ export const PageDivider = styled.div<PageDividerProp>`
   margin-right: 20px;
 `;
 
-export const FolderNodeWrapper = styled.div<{ depth: number }>`
+type Props = {
+  depth: number;
+  parent: string | number;
+};
+
+export const FolderNodeWrapper = styled.div<Props>`
   height: 45px;
   /* width: calc(280px - 32px - ${(props) => props.depth} * 32px); */
   width: calc(280px - 32px);

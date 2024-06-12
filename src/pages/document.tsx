@@ -855,7 +855,7 @@ const Document = () => {
                                 }}
                               >
                                 {/* {item?.nodeValue} */}
-                                {item.current?.id}
+                                {item.current?.id.substring(6)}
                               </S.DocumentRightBarText>
                               <S.DocumentRightOl>
                                 <S.DocumentRightBarText

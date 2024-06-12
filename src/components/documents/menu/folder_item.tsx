@@ -101,6 +101,7 @@ const FolderItem = ({
   return (
     <>
       <S.FolderNodeWrapper
+        parent={node.parent}
         depth={depth}
         className={`depth${depth}`}
         onClick={(e) => {
