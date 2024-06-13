@@ -276,7 +276,15 @@ const DocumentItem = ({
               }}
             />
           </MentionsInput>
-          <div style={{ width: 48, height: 48 }}>
+          <div
+            style={{ width: 48, height: 48 }}
+            onClick={() => {
+              setQuery(item.query.full_text);
+              if (queryRef.current) {
+                queryRef.current.value = item.query.full_text;
+              }
+            }}
+          >
             <Retry
               fill={theme?.color.black}
               data-tooltip-id={"tooltip_id"}
