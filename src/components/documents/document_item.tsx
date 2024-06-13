@@ -36,13 +36,20 @@ type Props = {
   refs: React.MutableRefObject<React.RefObject<HTMLDivElement>[]>;
   index: number;
   isOpenView?: boolean;
+  getDocument: () => Promise<void>;
   // setScrollRefs: React.Dispatch<SetStateAction<(HTMLDivElement | null)[]>>;
   // scrollRefs: (HTMLDivElement | null)[];
 };
 
 let container: any;
 
-const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
+const DocumentItem = ({
+  item,
+  refs,
+  index,
+  isOpenView,
+  getDocument,
+}: Props) => {
   const viewMoreRef = useRef<HTMLDivElement | null>(null);
   const refViewMoreRef = useRef<HTMLDivElement | null>(null);
   const queryRef = useRef<HTMLInputElement | null>(null);
@@ -60,6 +67,7 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
   const isDarkMode = useRecoilValue(isDarkModeState);
 
   const [pickRef, setPickRef] = useState<any>(null);
+  const [pickIndex, setPickIndex] = useState(-1);
 
   const setUpdateItems = useSetRecoilState(updateItemsState);
   const setDeleteItems = useSetRecoilState(deleteItemsState);
@@ -398,7 +406,7 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
           // ref={index === -1 ? undefined : refs.current[4 * index + 2]}
         >
           <MDEditor
-            height={1200}
+            height={800}
             style={{
               width: "100%",
             }}
@@ -562,7 +570,15 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
             item.type === "fan-chart"
         )
         .map((item, index) => {
-          return <BarChart item={item} key={index} setPickRef={setPickRef} />;
+          return (
+            <BarChart
+              item={item}
+              key={index}
+              setPickIndex={setPickIndex}
+              index={index}
+              setPickRef={setPickRef}
+            />
+          );
         })}
       <S.NewsWrapper>
         <S.NewsTitleWrapper
@@ -661,7 +677,15 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
           )}
         </S.DocumentDividerCreateAt>
       </S.DocumentItemDivider>
-      {pickRef && <ReferencePopup setPickRef={setPickRef} item={pickRef} />}
+      {pickRef && (
+        <ReferencePopup
+          getDocument={getDocument}
+          setPickIndex={setPickIndex}
+          setPickRef={setPickRef}
+          item={pickRef}
+          index={pickIndex}
+        />
+      )}
     </>
   );
 };

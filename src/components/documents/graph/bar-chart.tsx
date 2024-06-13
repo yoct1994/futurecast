@@ -13,9 +13,11 @@ import { ThemeContext } from "styled-components";
 type Props = {
   item: any;
   setPickRef: React.Dispatch<React.SetStateAction<any>>;
+  setPickIndex: React.Dispatch<React.SetStateAction<number>>;
+  index: number;
 };
 
-const BarChart = ({ item, setPickRef }: Props) => {
+const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
   const [options, setOptions] = useState<AgChartOptions>();
   const isDarkMode = useRecoilValue(isDarkModeState);
   const theme = useContext(ThemeContext);
@@ -349,6 +351,7 @@ const BarChart = ({ item, setPickRef }: Props) => {
     <S.BarChartWrapper
       onClick={() => {
         setPickRef(item);
+        setPickIndex(index);
       }}
     >
       <div ref={drag}>
@@ -408,33 +411,41 @@ const BarChart = ({ item, setPickRef }: Props) => {
               },
             }}
             graph={{
-              nodes: (item.nodes as any[]).map((item) => {
-                return {
-                  label: item.label,
-                  id: item.id,
-                  title: `${item.value}`,
-                  color: {
-                    border: "rgba(86, 97, 246, 1)",
-                    background: theme?.color.white1,
-                    highlight: {
+              nodes: (item.nodes as any[])
+                .filter((review, idx) => {
+                  return (
+                    (item.nodes as any[]).findIndex((review1) => {
+                      return review.id === review1.id;
+                    }) === idx
+                  );
+                })
+                .map((item) => {
+                  return {
+                    label: item.label,
+                    id: item.id,
+                    title: `${item.value}`,
+                    color: {
                       border: "rgba(86, 97, 246, 1)",
-                      background: "rgba(86, 97, 246, 1)",
+                      background: theme?.color.white1,
+                      highlight: {
+                        border: "rgba(86, 97, 246, 1)",
+                        background: "rgba(86, 97, 246, 1)",
+                      },
                     },
-                  },
-                  shape: "circle",
-                  margin: {
-                    left: 10,
-                    right: 10,
-                  },
-                  physics: true,
-                  font: {
-                    size: 14,
-                    color: theme?.color.black,
-                  },
-                  size: 30,
-                  borderWidth: 2,
-                };
-              }),
+                    shape: "circle",
+                    margin: {
+                      left: 10,
+                      right: 10,
+                    },
+                    physics: true,
+                    font: {
+                      size: 14,
+                      color: theme?.color.black,
+                    },
+                    size: 30,
+                    borderWidth: 2,
+                  };
+                }),
               edges: item.edges.map((item: any) => {
                 return {
                   // label: item.label,

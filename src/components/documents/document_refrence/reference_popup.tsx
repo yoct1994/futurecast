@@ -1,38 +1,55 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import * as S from "./styles";
 import { ReactComponent as Close } from "../../../assets/Close.svg";
 import { ThemeContext } from "styled-components";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import { MarkdownTheme } from "../styles";
-import { isDarkModeState } from "../../../recoil/recoil";
-import { useRecoilValue } from "recoil";
+import { isDarkModeState, referencesState } from "../../../recoil/recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { AgChartsReact } from "ag-charts-react";
-import NodeGraph from "react-vis-graph-wrapper";
+import NodeGraph, { GraphData, Network } from "react-vis-graph-wrapper";
 import { deepClone } from "ag-charts-community/dist/types/src/module-support";
 import { AgChartOptions } from "ag-charts-community";
 import { AgCharts } from "ag-charts-enterprise";
 import { ReactComponent as Edit } from "../../../assets/document_page/Edit.svg";
 import { ReactComponent as Add } from "../../../assets/document_page/Add.svg";
+import { v4 as uuidv4 } from "uuid";
+import { getReferences, updateNodeGraph } from "../../../server/server";
 
 type Props = {
   item: any;
   setPickRef: React.Dispatch<React.SetStateAction<any>>;
+  setPickIndex: React.Dispatch<React.SetStateAction<number>>;
+  index: number;
+  getDocument: () => Promise<void>;
 };
 
-const ReferencePopup = ({ item, setPickRef }: Props) => {
+const ReferencePopup = ({
+  item,
+  setPickRef,
+  index,
+  setPickIndex,
+  getDocument,
+}: Props) => {
   const [options, setOptions] = useState<AgChartOptions>();
   const isDarkMode = useRecoilValue(isDarkModeState);
   const theme = useContext(ThemeContext);
+  const nodeRef = useRef<Network>(null);
 
   const [controll, setControll] = useState<string>("1D");
   const [isEdit, setIsEdit] = useState<boolean>(false);
+
+  const [resources, setResources] = useRecoilState(referencesState);
 
   AgCharts.setLicenseKey(
     "Using_this_{AG_Charts}_Enterprise_key_{AG-061368}_in_excess_of_the_licence_granted_is_not_permitted___Please_report_misuse_to_legal@ag-grid.com___For_help_with_changing_this_key_please_contact_info@ag-grid.com___{LG_AI_Research}_is_granted_a_{Single_Application}_Developer_License_for_the_application_{timeseries_forecasting}_only_for_{1}_Front-End_JavaScript_developer___All_Front-End_JavaScript_developers_working_on_{timeseries_forecasting}_need_to_be_licensed___{timeseries_forecasting}_has_not_been_granted_a_Deployment_License_Add-on___This_key_works_with_{AG_Charts}_Enterprise_versions_released_before_{10_June_2025}____[v3]_[02]_MTc0OTUxMDAwMDAwMA==fc9c0e0f2d32fb440d1a3642614c44b5"
   );
 
+  const [graph, setGraph] = useState<GraphData | null>(null);
+
   useEffect(() => {
     console.log(item);
+
     if (item.type === "candle-chart") {
       let data = [...item.values];
       console.log(data);
@@ -314,6 +331,61 @@ const ReferencePopup = ({ item, setPickRef }: Props) => {
           },
         ],
       });
+    } else if (item.type === "causal-graph") {
+      setGraph({
+        nodes: (item.nodes as any[])
+          .filter((review: any, idx: number) => {
+            return (
+              (item.nodes as any[]).findIndex((review1) => {
+                return review.id === review1.id;
+              }) === idx
+            );
+          })
+          .map((item) => {
+            return {
+              label: item.label,
+              id: item.id,
+              title: `${item.value}`,
+              color: {
+                border: "rgba(86, 97, 246, 1)",
+                background: theme?.color.white1,
+                highlight: {
+                  border: "rgba(86, 97, 246, 1)",
+                  background: "rgba(86, 97, 246, 1)",
+                },
+              },
+              shape: "circle",
+              margin: {
+                left: 10,
+                right: 10,
+              },
+              physics: true,
+              font: {
+                size: 14,
+                color: theme?.color.black,
+              },
+              size: 30,
+              borderWidth: 2,
+            };
+          }),
+        edges: item.edges.map((item: any) => {
+          return {
+            // label: item.label,
+            to: item.target,
+            from: item.source,
+            color: {
+              color: theme?.color.black,
+              highlight: "rgba(86, 97, 246, 1)",
+            },
+            font: {
+              color: theme?.color.black,
+              strokeWidth: 0,
+            },
+            length: 200,
+            physics: true,
+          };
+        }),
+      });
     }
   }, [isDarkMode]);
 
@@ -413,6 +485,7 @@ const ReferencePopup = ({ item, setPickRef }: Props) => {
         {item.type === "causal-graph" && (
           <S.CausalChart isDarkMode={isDarkMode}>
             <NodeGraph
+              ref={nodeRef}
               style={{
                 height: "100%",
                 background: theme?.color.chartBackground,
@@ -429,62 +502,177 @@ const ReferencePopup = ({ item, setPickRef }: Props) => {
                 },
                 manipulation: {
                   enabled: isEdit,
-                  editNode: () => {},
+                  addNode: (nodeData: any, callback: Function) => {
+                    const label = prompt("Input node label");
+
+                    if (label) {
+                      if (label === "") {
+                        return;
+                      }
+
+                      const id = uuidv4();
+                      nodeData.label = label;
+                      nodeData.shape = "circle";
+                      nodeData.margin = {
+                        left: 10,
+                        right: 10,
+                      };
+                      nodeData.color = {
+                        border: "rgba(86, 97, 246, 1)",
+                        background: theme?.color.white1,
+                        highlight: {
+                          border: "rgba(86, 97, 246, 1)",
+                          background: "rgba(86, 97, 246, 1)",
+                        },
+                      };
+                      nodeData.font = {
+                        size: 14,
+                        color: theme?.color.black,
+                      };
+                      nodeData.borderWidth = 2;
+                      nodeData.id = id;
+
+                      setGraph((i) => {
+                        i?.nodes.push(nodeData);
+                        return i;
+                      });
+
+                      callback(nodeData);
+                    }
+                  },
+                  editEdge: (edgeData: any, callback: Function) => {
+                    setGraph((i) => {
+                      const idx = i?.edges.findIndex(
+                        (it) => it.id === edgeData.id
+                      );
+
+                      if (i && idx) {
+                        i.edges[idx] = edgeData;
+                      }
+
+                      return i;
+                    });
+
+                    callback(edgeData);
+                  },
+                  addEdge: (edgeData: any, callback: Function) => {
+                    const id = uuidv4();
+                    console.log(edgeData);
+                    edgeData.id = id;
+                    edgeData.color = {
+                      color: theme?.color.black,
+                      highlight: "rgba(86, 97, 246, 1)",
+                    };
+                    edgeData.font = {
+                      color: theme?.color.black,
+                      strokeWidth: 0,
+                    };
+                    edgeData.length = 200;
+
+                    setGraph((i) => {
+                      i?.edges.push(edgeData);
+                      return i;
+                    });
+
+                    callback(edgeData);
+                  },
+                  editNode: (nodeData: any, callback: Function) => {
+                    console.log(nodeData);
+
+                    const label = prompt("Input other label");
+
+                    if (label) {
+                      if (label === "") {
+                        return;
+                      }
+                      setGraph((i) => {
+                        const idx = i?.nodes.findIndex(
+                          (it) => it.id === nodeData.id
+                        );
+
+                        if (i && idx) {
+                          i.nodes[idx] = nodeData;
+                        }
+
+                        return i;
+                      });
+
+                      nodeData.label = label;
+                    }
+                    callback(nodeData);
+                  },
+                  deleteNode: (deleteNode: any, callback: Function) => {
+                    setGraph((i) => {
+                      if (i) {
+                        i.nodes = i.nodes.filter(
+                          (it) => it.id !== deleteNode.id
+                        );
+                      }
+
+                      return i;
+                    });
+
+                    callback(deleteNode);
+                  },
+                  deleteEdge: (deleteEdge: any, callback: Function) => {
+                    setGraph((i) => {
+                      if (i) {
+                        i.edges = i.edges.filter(
+                          (it) => it.id !== deleteEdge.id
+                        );
+                      }
+
+                      return i;
+                    });
+
+                    callback(deleteEdge);
+                  },
                   initiallyActive: true,
                 },
               }}
-              graph={{
-                nodes: (item.nodes as any[]).map((item) => {
-                  return {
-                    label: item.label,
-                    id: item.id,
-                    title: `${item.value}`,
-                    color: {
-                      border: "rgba(86, 97, 246, 1)",
-                      background: theme?.color.white1,
-                      highlight: {
-                        border: "rgba(86, 97, 246, 1)",
-                        background: "rgba(86, 97, 246, 1)",
-                      },
-                    },
-                    shape: "circle",
-                    margin: {
-                      left: 10,
-                      right: 10,
-                    },
-                    physics: true,
-                    font: {
-                      size: 14,
-                      color: theme?.color.black,
-                    },
-                    size: 30,
-                    borderWidth: 2,
-                  };
-                }),
-                edges: item.edges.map((item: any) => {
-                  return {
-                    // label: item.label,
-                    to: item.target,
-                    from: item.source,
-                    color: {
-                      color: theme?.color.black,
-                      highlight: "rgba(86, 97, 246, 1)",
-                    },
-                    font: {
-                      color: theme?.color.black,
-                      strokeWidth: 0,
-                    },
-                    length: 200,
-                    physics: true,
-                  };
-                }),
-              }}
+              graph={
+                graph
+                  ? graph
+                  : {
+                      edges: [],
+                      nodes: [],
+                    }
+              }
             />
             <S.ChartEditButton
-              onClick={(e) => {
+              onClick={async (e) => {
                 if (isEdit) {
+                  if (graph) {
+                    await updateNodeGraph(
+                      item.id,
+                      graph?.edges.map((item) => {
+                        return {
+                          label: item.label ? item.label : "",
+                          value: 0,
+                          source: item.from,
+                          target: item.to,
+                          type: "dummy",
+                          additional_kwargs: {},
+                        };
+                      }),
+                      graph.nodes.map((item) => {
+                        return {
+                          additional_kwargs: {},
+                          id: item.id,
+                          label: item.label ? item.label : "",
+                          type: "dummy",
+                          value: 0,
+                        };
+                      }),
+                      item.description
+                    ).then(async (res) => {
+                      if (res.status === 200) {
+                        await getDocument();
+                      }
+                    });
+                  }
                 }
-
+                console.log(graph);
                 setIsEdit(!isEdit);
               }}
             >

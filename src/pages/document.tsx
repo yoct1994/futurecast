@@ -27,6 +27,9 @@ import { Mention, MentionsInput } from "react-mentions";
 import { Cookies } from "react-cookie";
 import generatePDF, { Margin, Resolution, usePDF } from "react-to-pdf";
 import {
+  deleteDocument,
+  deletePage,
+  deleteReference,
   generateAI,
   getDocument,
   getDocumentInfo,
@@ -36,6 +39,7 @@ import {
   makeNewDocument,
   makePage,
   moveCollectionItem,
+  updateDocument,
 } from "../server/server";
 import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip } from "react-tooltip";
@@ -107,8 +111,8 @@ const Document = () => {
   const setIsLoadingNav = useSetRecoilState(isLoadingNavState);
   const isDarkMode = useRecoilValue(isDarkModeState);
 
-  const updateItems = useRecoilValue(updateItemsState);
-  const deleteItems = useRecoilValue(deleteItemsState);
+  const [updateItems, setUpdateItems] = useRecoilState(updateItemsState);
+  const [deleteItems, setDeleteItems] = useRecoilState(deleteItemsState);
 
   useEffect(() => {
     const getCollections = async () => {
@@ -490,10 +494,128 @@ const Document = () => {
             </S.DocumentTreeContainer>
             <S.DocumentHeaderButtonWrapper>
               <S.SaveAndEditButton
-                onClick={() => {
+                onClick={async () => {
                   if (documents && documentList.length > 0) {
                     if (isEdit) {
                       console.log("SAVE ::: ", updateItems, deleteItems);
+
+                      for (var deleteItem of deleteItems) {
+                        switch (deleteItem.type) {
+                          case "SUB_PAGE":
+                            console.log(
+                              "DELETE_SUB_PAGE ::: ",
+                              deleteItem.data
+                            );
+                            await deletePage(deleteItem.data.page_id).then(
+                              (res) => {
+                                if (res.status !== 200) {
+                                  const data = JSON.parse(res.data);
+                                  toast.current?.show({
+                                    severity: "error",
+                                    summary: "Failed",
+                                    detail: data.detail,
+                                    life: 3000,
+                                  });
+                                }
+                              }
+                            );
+                            break;
+                          case "REFERENCE":
+                            await deleteReference(
+                              deleteItem.data.id,
+                              deleteItem.data.type
+                            ).then((res) => {
+                              if (res.status !== 200) {
+                                const data = JSON.parse(res.data);
+                                toast.current?.show({
+                                  severity: "error",
+                                  summary: "Failed",
+                                  detail: data.detail,
+                                  life: 3000,
+                                });
+                              }
+                            });
+                            break;
+                          case "CONTENT":
+                          case "QUERY":
+                          default:
+                            break;
+                        }
+                      }
+
+                      for (var updateItem of updateItems) {
+                        switch (updateItem.type) {
+                          case "CONTENT":
+                            await updateDocument(
+                              updateItem.data.id,
+                              {
+                                full_text: updateItem.data.content,
+                                mentions: [],
+                              },
+                              null
+                            ).then((res) => {
+                              console.log("RES :::::", JSON.parse(res.data));
+                              if (res.status !== 200) {
+                                const data = JSON.parse(res.data);
+                                toast.current?.show({
+                                  severity: "error",
+                                  summary: "Failed",
+                                  detail: data.detail,
+                                  life: 3000,
+                                });
+                              }
+                            });
+                            break;
+                          case "QUERY":
+                            let q = `${updateItem.data.full_text}`;
+                            const m = [...updateItem.data.mentions];
+                            console.log(m);
+                            const mentionList = m.map((item) => {
+                              const mention = item.id.split("|||");
+
+                              console.log(mention);
+
+                              return {
+                                key: mention[0],
+                                value: mention[1],
+                              };
+                            });
+
+                            mentionList.map((item) => {
+                              q = q.replaceAll(
+                                `@[${item.key}](${item.key}|||${item.value})`,
+                                `@${item.key}`
+                              );
+                            });
+
+                            await updateDocument(updateItem.data.id, null, {
+                              full_text: q,
+                              mentions: mentionList,
+                            }).then((res) => {
+                              console.log("RES ::::: ", res.data);
+
+                              if (res.status !== 200) {
+                                const data = JSON.parse(res.data);
+                                toast.current?.show({
+                                  severity: "error",
+                                  summary: "Failed",
+                                  detail: data.detail,
+                                  life: 3000,
+                                });
+                              }
+                            });
+                            break;
+                          case "REFERENCE":
+                          case "SUB_PAGE":
+                          default:
+                            break;
+                        }
+                      }
+
+                      setDeleteItems([]);
+                      setUpdateItems([]);
+
+                      await getDocumentData();
                     } else {
                     }
 
@@ -593,6 +715,7 @@ const Document = () => {
                 <S.DocumentContents>
                   {!documents ? (
                     <DocumentItem
+                      getDocument={async () => {}}
                       // setScrollRefs={setScrollRefList}
                       // scrollRefs={[]}
                       index={-1}
@@ -604,6 +727,7 @@ const Document = () => {
                       console.log(item);
                       return (
                         <DocumentItem
+                          getDocument={getDocumentData}
                           isOpenView={isOpenView}
                           key={index}
                           index={index}

@@ -213,3 +213,76 @@ export const deleteFolder = async (collection_id: string) => {
     },
   });
 };
+
+export const deleteReference = async (reference_id: string, type: string) => {
+  return await server.delete(`/reference/${type}/${reference_id}`, {
+    headers: {
+      token: getToken(),
+    },
+  });
+};
+
+export const deleteDocument = async (document_id: string) => {
+  return await server.delete(`/document/${document_id}`, {
+    headers: {
+      token: getToken(),
+    },
+  });
+};
+
+export const updateDocument = async (
+  document_id: string,
+  content: {
+    full_text: string;
+    mentions: any[];
+  } | null = null,
+  query: {
+    full_text: string;
+    mentions: any[];
+  } | null = null
+) => {
+  return await server.put(
+    `/document/${document_id}`,
+    JSON.stringify({
+      title: null,
+      content: content,
+      query: query,
+      children: null,
+      generation: null,
+      additional_kwargs: null,
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+        token: getToken(),
+      },
+    }
+  );
+};
+
+export const updateNodeGraph = async (
+  reference_id: string,
+  edges: any[],
+  nodes: any[],
+  description: string
+) => {
+  console.log("REQUEST", {
+    edges: edges,
+    nodes: nodes,
+    description: description,
+  });
+  return await server.put(
+    `/reference/causal-graph/${reference_id}`,
+    JSON.stringify({
+      edges: edges,
+      nodes: nodes,
+      description: description,
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+        token: getToken(),
+      },
+    }
+  );
+};

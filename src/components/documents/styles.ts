@@ -11,7 +11,7 @@ import Delete from "../../assets/node_graph_edit/DeleteNode.svg";
 import DarkAddEdge from "../../assets/node_graph_edit/dark/AddEdge.svg";
 import DarkAddNode from "../../assets/node_graph_edit/dark/AddNode.svg";
 import DarkDelete from "../../assets/node_graph_edit/dark/DeleteNode.svg";
-import DarkEdit from "../../assets/node_graph_edit/dark/EditEdge.svg";
+import DarkEdit from "../../assets/node_graph_edit/dark/EditNode.svg";
 import DarkBack from "../../assets/node_graph_edit/dark/Back.svg";
 
 export const DocumentWrapper = styled.div<{ isOpen: boolean }>`
@@ -970,7 +970,7 @@ export const CausalChart = styled.div<{
 
   * > div.vis-network div.vis-manipulation button.vis-button.vis-edit {
     background-image: ${(props) =>
-      props.isDarkMode ? `url(${DarkEdit})` : `url(${Edit})`} !important;
+      props.isDarkMode ? `url(${Edit})` : `url(${DarkEdit})`} !important;
   }
 
   * > div.vis-network div.vis-manipulation button.vis-button.vis-back {
