@@ -12,7 +12,7 @@ import { ReactComponent as ChevronDown } from "../../assets/document_page/Chevro
 import { ReactComponent as AnswerLogo } from "../../assets/answer_logo.svg";
 import "highlight.js/styles/a11y-dark.css";
 import MarkdownPreview from "@uiw/react-markdown-preview";
-import { getReferences, getSuggetion } from "../../server/server";
+import { generateAI, getReferences, getSuggetion } from "../../server/server";
 import { Skeleton } from "primereact/skeleton";
 import SubPageItem from "./sub_page/sub_page_item";
 import ReferenceItem from "./reference/refrence_item";
@@ -30,6 +30,7 @@ import ReferencePopup from "./document_refrence/reference_popup";
 import { Mention, MentionsInput } from "react-mentions";
 import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
+import { Toast } from "primereact/toast";
 
 type Props = {
   item: any;
@@ -37,6 +38,9 @@ type Props = {
   index: number;
   isOpenView?: boolean;
   getDocument: () => Promise<void>;
+  toast: React.RefObject<Toast>;
+  setIsRefresh?: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   // setScrollRefs: React.Dispatch<SetStateAction<(HTMLDivElement | null)[]>>;
   // scrollRefs: (HTMLDivElement | null)[];
 };
@@ -49,6 +53,8 @@ const DocumentItem = ({
   index,
   isOpenView,
   getDocument,
+  toast,
+  setIsRefresh,
 }: Props) => {
   const viewMoreRef = useRef<HTMLDivElement | null>(null);
   const refViewMoreRef = useRef<HTMLDivElement | null>(null);
@@ -296,7 +302,38 @@ const DocumentItem = ({
                 : "LOADING"
               : "LOADING"}
           </S.DocumentStatusWrapper>
-          <div style={{ width: 48, height: 48 }}>
+          <div
+            style={{ width: 48, height: 48 }}
+            onClick={async () => {
+              if (item.status === "submitted") {
+                toast.current?.show({
+                  severity: "error",
+                  summary: "Failed",
+                  detail: "This document is already loading now..",
+                  life: 3000,
+                });
+              } else {
+                console.log(item);
+                await generateAI(item.id ?? "", []).then(async (r) => {
+                  console.log(r.data);
+                  const data = JSON.parse(r.data);
+                  if (r.status === 200 || r.status === 201) {
+                    if (setIsRefresh) {
+                      console.log("setIsRefresh");
+                      setIsRefresh(true);
+                    }
+                  } else {
+                    toast.current?.show({
+                      severity: "error",
+                      summary: "Failed",
+                      detail: `${data.detail}`,
+                      life: 3000,
+                    });
+                  }
+                });
+              }
+            }}
+          >
             <Retry
               fill={theme?.color.black}
               data-tooltip-id={"tooltip_id"}

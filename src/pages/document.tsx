@@ -94,6 +94,8 @@ const Document = () => {
   const [mentions, setMentions] = useState<any[]>([]);
   const [intervalId, setIntervalId] = useState<NodeJS.Timer | null>(null);
 
+  const [isRefresh, setIsRefresh] = useState<boolean>(false);
+
   const isOpen = useRecoilValue(menubarOpenState);
   const [documentTree, setDocumentTree] = useState<any[]>([]);
   const [isEdit, setIsEdit] = useRecoilState(isEditDocumentState);
@@ -113,6 +115,30 @@ const Document = () => {
 
   const [updateItems, setUpdateItems] = useRecoilState(updateItemsState);
   const [deleteItems, setDeleteItems] = useRecoilState(deleteItemsState);
+
+  useEffect(() => {
+    if (isRefresh) {
+      setDocuments(undefined);
+      setDocumentList([]);
+      setDocumentTree([]);
+      setIsEdit(false);
+
+      setIsPolling(false);
+      setPollId("");
+      setPollIdx(-1);
+
+      if (intervalId) {
+        clearInterval(intervalId);
+        setIntervalId(null);
+      }
+
+      console.log(id);
+
+      getDocumentData();
+
+      setIsRefresh(false);
+    }
+  }, [isRefresh]);
 
   useEffect(() => {
     const getCollections = async () => {
@@ -235,8 +261,11 @@ const Document = () => {
 
         if (res.status === 200 || res.status === 201) {
           setDocumentList((list) => {
-            list[pollIdx] = data;
-            return list;
+            console.log(pollIdx);
+            const res = [...list];
+            console.log(`${list[pollIdx]}`);
+            res[pollIdx] = data;
+            return res;
           });
 
           if (data.status !== "submitted") {
@@ -715,6 +744,8 @@ const Document = () => {
                 <S.DocumentContents>
                   {!documents ? (
                     <DocumentItem
+                      toast={toast}
+                      setIsLoading={setIsLoading}
                       getDocument={async () => {}}
                       // setScrollRefs={setScrollRefList}
                       // scrollRefs={[]}
@@ -727,8 +758,11 @@ const Document = () => {
                       console.log(item);
                       return (
                         <DocumentItem
+                          toast={toast}
+                          setIsLoading={setIsLoading}
                           getDocument={getDocumentData}
                           isOpenView={isOpenView}
+                          setIsRefresh={setIsRefresh}
                           key={index}
                           index={index}
                           refs={scrollRefs}
