@@ -60,3 +60,8 @@ export const documentListState = atom<any[]>({
   default: [],
   key: "document_list_state",
 });
+
+export const referencesState = atom<any[]>({
+  default: [],
+  key: "reference_state",
+});

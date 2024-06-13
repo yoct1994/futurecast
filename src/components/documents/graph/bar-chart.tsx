@@ -3,7 +3,7 @@ import * as S from "../styles";
 import { AgChartsReact } from "ag-charts-react";
 import { AgChartOptions } from "ag-charts-community";
 import MarkdownPreview from "@uiw/react-markdown-preview";
-import NodeGraph from "react-vis-graph-wrapper";
+import NodeGraph, { Node } from "react-vis-graph-wrapper";
 import { AgCharts } from "ag-charts-enterprise";
 import { useDrag } from "react-dnd";
 import { useRecoilValue } from "recoil";
@@ -106,6 +106,10 @@ const BarChart = ({ item, setPickRef }: Props) => {
           {
             type: "ordinal-time",
             position: "bottom",
+            line: {
+              width: 1,
+              color: "#E9E9E9",
+            },
             gridLine: {
               enabled: true,
               width: 0.37,
@@ -141,10 +145,11 @@ const BarChart = ({ item, setPickRef }: Props) => {
             type: "bar",
             xKey: "label",
             yKey: "value",
-            cornerRadius: 16,
+            cornerRadius: 0,
             fill: "#5661F6",
             label: {
               fontSize: 10,
+              color: "#5661F6",
             },
           },
         ],
@@ -152,6 +157,10 @@ const BarChart = ({ item, setPickRef }: Props) => {
           {
             type: "number",
             position: "right",
+            line: {
+              width: 1,
+              color: "#E9E9E9",
+            },
             gridLine: {
               style: [
                 {
@@ -166,6 +175,10 @@ const BarChart = ({ item, setPickRef }: Props) => {
             position: "bottom",
             label: {
               fontSize: 10,
+            },
+            line: {
+              width: 1,
+              color: "#E9E9E9",
             },
             gridLine: {
               style: [
@@ -298,6 +311,10 @@ const BarChart = ({ item, setPickRef }: Props) => {
           {
             type: "ordinal-time",
             position: "bottom",
+            line: {
+              width: 1,
+              color: "#E9E9E9",
+            },
             gridLine: {
               style: [
                 {
@@ -310,6 +327,10 @@ const BarChart = ({ item, setPickRef }: Props) => {
           {
             type: "number",
             position: "right",
+            line: {
+              width: 1,
+              color: "#E9E9E9",
+            },
             gridLine: {
               style: [
                 {
@@ -358,19 +379,32 @@ const BarChart = ({ item, setPickRef }: Props) => {
           </S.BarChart>
         )}
       {item.type === "causal-graph" && (
-        <S.CausalChart>
-          <S.Cover />
+        <S.CausalChart
+          isDarkMode={isDarkMode}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          {/* <S.Cover /> */}
           <NodeGraph
             style={{
               height: "100%",
               background: theme?.color.chartBackground,
             }}
             options={{
-              layout: {
-                // hierarchical: true,
-              },
+              layout: {},
               edges: {
                 color: theme?.color.white,
+              },
+              interaction: {
+                zoomView: false,
+                tooltipDelay: 0,
+                navigationButtons: true,
+              },
+              manipulation: {
+                enabled: false,
+                editNode: () => {},
+                initiallyActive: true,
               },
             }}
             graph={{
@@ -379,15 +413,43 @@ const BarChart = ({ item, setPickRef }: Props) => {
                   label: item.label,
                   id: item.id,
                   title: `${item.value}`,
-                  // color: theme?.color.black,
+                  color: {
+                    border: "rgba(86, 97, 246, 1)",
+                    background: theme?.color.white1,
+                    highlight: {
+                      border: "rgba(86, 97, 246, 1)",
+                      background: "rgba(86, 97, 246, 1)",
+                    },
+                  },
+                  shape: "circle",
+                  margin: {
+                    left: 10,
+                    right: 10,
+                  },
+                  physics: true,
+                  font: {
+                    size: 14,
+                    color: theme?.color.black,
+                  },
+                  size: 30,
+                  borderWidth: 2,
                 };
               }),
               edges: item.edges.map((item: any) => {
                 return {
-                  label: item.label,
+                  // label: item.label,
                   to: item.target,
                   from: item.source,
-                  color: theme?.color.black,
+                  color: {
+                    color: theme?.color.black,
+                    highlight: "rgba(86, 97, 246, 1)",
+                  },
+                  font: {
+                    color: theme?.color.black,
+                    strokeWidth: 0,
+                  },
+                  length: 200,
+                  physics: false,
                 };
               }),
             }}

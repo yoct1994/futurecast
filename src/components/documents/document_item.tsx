@@ -17,11 +17,12 @@ import { Skeleton } from "primereact/skeleton";
 import SubPageItem from "./sub_page/sub_page_item";
 import ReferenceItem from "./reference/refrence_item";
 import BarChart from "./graph/bar-chart";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
   deleteItemsState,
   isDarkModeState,
   isEditDocumentState,
+  referencesState,
   updateItemsState,
 } from "../../recoil/recoil";
 import { ThemeContext } from "styled-components";
@@ -49,7 +50,7 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
 
   const [moreNum, setMoreNum] = useState<number>(4);
   const [refMoreNum, setRefMoreNum] = useState<number>(6);
-  const [resources, setResources] = useState<any[]>([]);
+  const [resources, setResources] = useRecoilState(referencesState);
   const [isLoadingRef, setIsLoadingRef] = useState(false);
   const [query, setQuery] = useState("");
   const [content, setContent] = useState("");
@@ -299,7 +300,7 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
       )}
       {item && item.status !== "submitted" && item.children.length === 0 && (
         <S.EmptyWrapper>
-          <S.EmptyContainer>There is no content</S.EmptyContainer>
+          <S.EmptyContainer>There is no sub pages.</S.EmptyContainer>
         </S.EmptyWrapper>
       )}
       <S.SubDocumentGrid
@@ -573,7 +574,9 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
         {!isLoadingRef &&
           item &&
           item.status !== "submitted" &&
-          resources.length === 0 && (
+          resources.filter(
+            (item, index) => item.type === "search" || item.type === "news"
+          ).length === 0 && (
             <S.EmptyWrapper>
               <S.EmptyContainer>There is no content</S.EmptyContainer>
             </S.EmptyWrapper>
@@ -603,8 +606,10 @@ const DocumentItem = ({ item, refs, index, isOpenView }: Props) => {
                 (item, index) => item.type === "search" || item.type === "news"
               )
               .slice(0, refMoreNum)
-              .map((item, index) => {
-                return <ReferenceItem index={index} item={item} />;
+              .map((item, idx) => {
+                return (
+                  <ReferenceItem index={idx} item={item} documentIdx={index} />
+                );
               })
           )}
         </S.NewsGrid>
