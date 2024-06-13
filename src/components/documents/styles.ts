@@ -315,6 +315,7 @@ export const EditDocumentQueryWrapper = styled.div`
   flex-direction: row;
   min-height: 75px;
   align-items: center;
+  position: relative;
 `;
 
 export const DocumentContainer = styled.div`

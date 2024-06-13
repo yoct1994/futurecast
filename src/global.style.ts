@@ -5,6 +5,7 @@ import LgSmartThin from "./fonts/Pretendard-Thin.woff";
 import LgSmartRegular from "./fonts/Pretendard-Regular.woff";
 import LgSmartSemiBold from "./fonts/Pretendard-SemiBold.woff";
 import IBMPlexMonoRegular from "./fonts/IBMPlexMono-Regular.ttf";
+import { SuggestionsContainer } from "./components/main/styles";
 
 export const Global = createGlobalStyle`
     * {
@@ -27,6 +28,56 @@ export const Global = createGlobalStyle`
     * > .p-focus {
         background: ${({ theme }) => theme.color.menu} !important;
     }
+
+    *.focus > div:has(${SuggestionsContainer}) {
+        border-radius: 16px;
+    }
+
+    *.mention_style {
+        /* color: #5661f6; */
+        /* color: black; */
+        color: transparent;
+        text-decoration-color: ${({ theme }) => theme.color.black} !important;
+        z-index: 1;
+        position: relative;
+        /* background-color: rgba(0, 0, 0, 0.6); */
+        /* border-bottom: 1px solid black; */
+        /* text-shadow: 2px 1px 0px white, 0px 0px 0px white, -1px 1px 0px white,
+            -1px -1px 0px white; */
+        /* transform: translate(-1px, -1px); */
+        font-size: 16px;
+        box-sizing: border-box;
+        text-decoration: underline;
+        font-family: "Pretendard-Regular";
+        /* outline: 1px solid black; */
+        /* overflow: visible; */
+        /* margin-right: 2px; */
+
+        pointer-events: none;
+    }
+
+    *.mention_style_edit_dark {
+        /* color: black; */
+        color: transparent;
+        text-decoration-color: ${({ theme }) => theme.color.black} !important;
+        z-index: 1;
+        position: relative;
+        /* background-color: rgba(0, 0, 0, 0.6); */
+        /* border-bottom: 1px solid black; */
+        /* text-shadow: 2px 1px 0px white, 0px 0px 0px white, -1px 1px 0px white,
+            -1px -1px 0px white; */
+        /* transform: translate(-1px, -1px); */
+        font-size: 18px;
+        box-sizing: border-box;
+        text-decoration: underline;
+        font-family: "Pretendard-SemiBold";
+        /* outline: 1px solid black; */
+        /* overflow: visible; */
+        /* margin-right: 2px; */
+
+        pointer-events: none;
+    }
+
     * > .p-menu .p-menuitem:not(.p-highlight):not(.p-disabled).p-focus > .p-menuitem-content {
         background: ${({ theme }) => theme.color.menu} !important;
     }

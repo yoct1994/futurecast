@@ -213,7 +213,7 @@ export const QuerySendButton = styled.div<{ query: string }>`
 `;
 
 export const SuggestionsContainer = styled.div`
-  background-color: rgba(255, 255, 255, 1);
+  background-color: ${({ theme }) => theme.color.white1};
   box-shadow: 0px -8px 36px 0px rgba(0, 0, 0, 0.17);
   width: 240px;
   max-height: 160px;
@@ -225,6 +225,10 @@ export const SuggestionsContainer = styled.div`
   -ms-overflow-style: none;
   scrollbar-width: none;
 
+  ul {
+    background-color: transparent;
+  }
+
   li {
     width: 100%;
     height: 40px;
@@ -232,6 +236,7 @@ export const SuggestionsContainer = styled.div`
     align-items: center;
     padding-left: 16px;
     padding-right: 16px;
+    border-radius: 16px;
     overflow-x: hidden;
   }
 `;
@@ -245,6 +250,7 @@ export const Mention = styled.div`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  border-radius: 16px;
   /* font-family: "Pretendard-SemiBold"; */
   /* background-color: rgba(86, 97, 246, 1); */
 `;

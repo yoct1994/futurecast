@@ -853,7 +853,7 @@ const Document = () => {
                         disabled={false}
                         // className="mention_input_styling"
                         singleLine={false}
-                        classNames={["mentions"]}
+                        classNames={["mentions", "focus"]}
                         allowSpaceInQuery={true}
                         onChange={(
                           e,

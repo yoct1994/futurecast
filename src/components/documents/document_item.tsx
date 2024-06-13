@@ -31,6 +31,7 @@ import { Mention, MentionsInput } from "react-mentions";
 import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-md-editor/markdown-editor.css";
 import { Toast } from "primereact/toast";
+import "../mention.css";
 
 type Props = {
   item: any;
@@ -81,11 +82,11 @@ const DocumentItem = ({
 
   useEffect(() => {
     if (isEdit) {
-      setQuery(item.query.full_text);
+      setQuery(item.query ? item.query.full_text : "");
       if (queryRef.current) {
-        queryRef.current.value = item.query.full_text;
+        queryRef.current.value = item.query ? item.query.full_text : "";
       }
-      setContent(item.content.full_text);
+      setContent(item.content ? item.content.full_text : "");
     }
   }, [isEdit]);
 
@@ -138,12 +139,12 @@ const DocumentItem = ({
   const queryStyle = {
     minHeight: 55,
     width: "100%",
-    paddingLeft: 0,
-    paddingRight: 0,
+    paddingLeft: 16,
+    paddingRight: 16,
     maxHeight: 200,
     // color: "transparent",
-    paddingTop: "0px",
-    paddingBottom: "0px",
+    paddingTop: "16px",
+    paddingBottom: "16px",
     fontFamily: "Pretendard-SemiBold",
     input: {
       scrollbarWidth: "none",
@@ -189,93 +190,113 @@ const DocumentItem = ({
   };
 
   const suggestions = (e: ReactNode) => {
-    // console.log(e);
-    return <SS.SuggestionsContainer>{e}</SS.SuggestionsContainer>;
+    console.log("sug", e);
+    return (
+      <SS.SuggestionsContainer className="child_sug">
+        {e}
+      </SS.SuggestionsContainer>
+    );
   };
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.querySelectorAll("child_sug").forEach((child) => {
+        const parent = child.parentElement;
+        parent?.classList.add("parent");
+      });
+    } else {
+      document.querySelectorAll("child_sug").forEach((child) => {
+        const parent = child.parentElement;
+        parent?.classList.remove("parent");
+      });
+    }
+  }, [isDarkMode, query]);
 
   return (
     <>
       {isEdit ? (
-        <S.EditDocumentQueryWrapper>
-          <MentionsInput
-            customSuggestionsContainer={suggestions}
-            disabled={false}
-            // className="mention_input_styling"
-            singleLine={false}
-            classNames={["mentions"]}
-            allowSpaceInQuery={true}
-            onChange={(e, newValue, newPlainTextValue, mentions) => {
-              // console.log("newValue : ", newValue);
-              // console.log("newPlainTextValue", newPlainTextValue);
-              console.log("mentions", mentions);
-              console.log("value", e.target.value);
-              console.log(item);
+        <S.EditDocumentQueryWrapper className="focus">
+          <div style={{ width: "100%" }} ref={(el) => (container = el)}>
+            <MentionsInput
+              customSuggestionsContainer={suggestions}
+              disabled={false}
+              // className="mention_input_styling"
+              singleLine={false}
+              classNames={["mentions", "focus"]}
+              allowSpaceInQuery={true}
+              onChange={(e, newValue, newPlainTextValue, mentions) => {
+                // console.log("newValue : ", newValue);
+                // console.log("newPlainTextValue", newPlainTextValue);
+                console.log("mentions", mentions);
+                console.log("value", e.target.value);
+                console.log(item);
 
-              setMentions(mentions);
+                setMentions(mentions);
 
-              setQuery(e.target.value);
-              setUpdateItems((i) => {
-                const idx = i.findIndex((item) => item.type === "QUERY");
-                if (idx !== -1) {
-                  const res = JSON.parse(JSON.stringify(i));
-                  res[idx] = {
-                    data: {
-                      id: item.id,
-                      full_text: e.target.value,
-                      mentions: mentions,
-                    },
-                    type: "QUERY",
-                  };
-                  return res;
-                } else {
-                  return [
-                    ...i,
-                    {
+                setQuery(e.target.value);
+                setUpdateItems((i) => {
+                  const idx = i.findIndex((item) => item.type === "QUERY");
+                  if (idx !== -1) {
+                    const res = JSON.parse(JSON.stringify(i));
+                    res[idx] = {
                       data: {
                         id: item.id,
                         full_text: e.target.value,
                         mentions: mentions,
                       },
                       type: "QUERY",
-                    },
-                  ];
-                }
-              });
-            }}
-            allowSuggestionsAboveCursor={true}
-            suggestionsPortalHost={container}
-            // forceSuggestionsAboveCursor={true}
-            inputRef={queryRef}
-            style={queryStyle}
-            placeholder="Ask Something.."
-            value={query}
-            onFocus={() => {
-              console.log("Focus!");
-            }}
-            onBlur={() => {
-              console.log("Blur!");
-            }}
-          >
-            <Mention
-              // style={mentionStyle}
-              className={"mention_style"}
-              trigger={"@"}
-              data={(e, callback) => {
-                console.log("Search: ", e);
-                getSuggestion(e, callback);
+                    };
+                    return res;
+                  } else {
+                    return [
+                      ...i,
+                      {
+                        data: {
+                          id: item.id,
+                          full_text: e.target.value,
+                          mentions: mentions,
+                        },
+                        type: "QUERY",
+                      },
+                    ];
+                  }
+                });
               }}
-              onAdd={(id, display) => {
-                console.log(id, display);
+              allowSuggestionsAboveCursor={true}
+              suggestionsPortalHost={container}
+              // forceSuggestionsAboveCursor={true}
+              inputRef={queryRef}
+              style={queryStyle}
+              placeholder="Ask Something.."
+              value={query}
+              onFocus={() => {
+                console.log("Focus!");
               }}
-              displayTransform={(id, display) => {
-                return `@${display}`;
+              onBlur={() => {
+                console.log("Blur!");
               }}
-              renderSuggestion={(e) => {
-                // console.log(e);
-                return <SS.Mention>@{e.display}</SS.Mention>;
-              }}
-            />
-          </MentionsInput>
+            >
+              <Mention
+                // style={mentionStyle}
+                className={"mention_style_edit"}
+                trigger={"@"}
+                data={(e, callback) => {
+                  console.log("Search: ", e);
+                  getSuggestion(e, callback);
+                }}
+                onAdd={(id, display) => {
+                  console.log(id, display);
+                }}
+                displayTransform={(id, display) => {
+                  return `@${display}`;
+                }}
+                renderSuggestion={(e) => {
+                  // console.log(e);
+                  return <SS.Mention>@{e.display}</SS.Mention>;
+                }}
+              />
+            </MentionsInput>
+          </div>
           <div
             style={{ width: 48, height: 48 }}
             onClick={() => {

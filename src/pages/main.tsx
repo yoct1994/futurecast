@@ -222,13 +222,13 @@ const MainPage = () => {
               );
             })}
           </S.ExampleQueryGrid>
-          <S.InputContainer ref={(el) => (container = el)}>
+          <S.InputContainer className={"focus"} ref={(el) => (container = el)}>
             <S.QueryInputBorder ref={queryBorderRef}>
               <MentionsInput
                 disabled={isLoading}
                 customSuggestionsContainer={suggestions}
                 singleLine={false}
-                classNames={["mentions"]}
+                classNames={["mentions", "focus"]}
                 allowSpaceInQuery={true}
                 onChange={(e, newValue, newPlainTextValue, mentions) => {
                   // console.log("newValue : ", newValue);
