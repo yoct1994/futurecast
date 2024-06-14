@@ -1,6 +1,7 @@
 import { lazy, useContext, useEffect, useRef, useState } from "react";
 import * as S from "./styles";
 import { ReactComponent as Logo } from "../../assets/Logo.svg";
+import { ReactComponent as LogoDark } from "../../assets/LogoDark.svg";
 import { ReactComponent as Arrow } from "../../assets/Arrow.svg";
 import { ReactComponent as Line } from "../../assets/Line.svg";
 import { ReactComponent as Logout } from "../../assets/Logout.svg";
@@ -245,9 +246,7 @@ const Menubar = ({ children }: Props) => {
       <S.MenubarWrapper>
         <S.MenubarContainer ref={menu} className={isOpen ? "open" : "close"}>
           <S.MenuLogoContainer>
-            <Link to={"/"}>
-              <Logo />
-            </Link>
+            <Link to={"/"}>{isDarkMode ? <LogoDark /> : <Logo />}</Link>
             <S.IconHoverContainer>
               <Create
                 fill={isDarkMode ? "white" : "black"}
