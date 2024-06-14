@@ -104,7 +104,24 @@ export const NewFolderSaveButton = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 18px;
+  cursor: pointer;
   color: ${({ theme }) => theme.color.white};
+
+  &:active {
+    background-color: #404040;
+  }
+`;
+
+export const DisabledNewFolderSaveButton = styled.div`
+  width: 150px;
+  height: 48px;
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.color.popupButton};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  color: rgba(175, 175, 175, 1);
 
   &:active {
     background-color: #404040;
@@ -121,10 +138,23 @@ export const RenameSaveButton = styled.div`
   align-items: center;
   font-size: 16px;
   color: ${({ theme }) => theme.color.white};
+  cursor: pointer;
 
   &:active {
     background-color: #404040;
   }
+`;
+
+export const DisableRenameSaveButton = styled.div`
+  width: 66px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: ${({ theme }) => theme.color.popupButton};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  color: rgba(175, 175, 175, 1);
 `;
 
 export const NewPageButtonContainer = styled.div`

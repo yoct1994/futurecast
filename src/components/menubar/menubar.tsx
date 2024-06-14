@@ -68,6 +68,8 @@ const Menubar = ({ children }: Props) => {
   const [showRename, setShowRename] = useRecoilState(showRenameState);
   const [isOpen, setIsOpen] = useRecoilState(menubarOpenState);
 
+  const [value, setValue] = useState<string>("");
+
   const [treeData, setTreeData] = useRecoilState(treeDataState);
   const [deleteId, setDeleteId] = useRecoilState(deleteIdValue);
   const [isLoadingNav, setIsLoadingNav] = useRecoilState(isLoadingNavState);
@@ -428,6 +430,7 @@ const Menubar = ({ children }: Props) => {
         <S.NewFolderPopupWrapper
           onClick={() => {
             setShowCreateModal(false);
+            setValue("");
           }}
         >
           <S.NewFolderPopupContainer
@@ -442,57 +445,68 @@ const Menubar = ({ children }: Props) => {
                 fill={theme?.color.black}
                 onClick={(e) => {
                   setShowCreateModal(false);
+                  setValue("");
                 }}
               />
             </S.NewFolderTitleContainer>
             <S.NewFolderInputWrapper>
               <S.NewFolderInput
                 ref={collectoinInputRef}
+                value={value}
+                onChange={(e) => {
+                  setValue(e.currentTarget.value);
+                }}
                 placeholder="Folder name"
               />
-              <S.NewFolderSaveButton
-                onClick={async (e) => {
-                  if (collectoinInputRef.current?.value === "") {
-                    toast.current?.show({
-                      severity: "error",
-                      summary: "Error",
-                      detail: "Please write the name of the collection.",
-                      life: 3000,
-                    });
-                    return;
-                  }
-
-                  await makeCollection(
-                    collectoinInputRef.current?.value || "Untitled"
-                  ).then(async (res) => {
-                    const data = JSON.parse(res.data);
-
-                    toast.current?.show({
-                      severity:
-                        res.status === 200 || res.status === 201
-                          ? "success"
-                          : "error",
-                      summary:
-                        res.status === 200 || res.status === 201
-                          ? "Success"
-                          : "Error",
-                      detail:
-                        res.status === 200 || res.status === 201
-                          ? "Success to create collection"
-                          : data.detail,
-                      life: 3000,
-                    });
-
-                    if (res.status === 200 || res.status === 201) {
-                      // setTreeData((e) => []);
-                      setShowCreateModal(false);
-                      await getNav(true).then((res) => {});
+              {value.length === 0 ? (
+                <S.DisabledNewFolderSaveButton>
+                  SAVE
+                </S.DisabledNewFolderSaveButton>
+              ) : (
+                <S.NewFolderSaveButton
+                  onClick={async (e) => {
+                    if (collectoinInputRef.current?.value === "") {
+                      toast.current?.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: "Please write the name of the collection.",
+                        life: 3000,
+                      });
+                      return;
                     }
-                  });
-                }}
-              >
-                SAVE
-              </S.NewFolderSaveButton>
+
+                    await makeCollection(
+                      collectoinInputRef.current?.value || "Untitled"
+                    ).then(async (res) => {
+                      const data = JSON.parse(res.data);
+
+                      toast.current?.show({
+                        severity:
+                          res.status === 200 || res.status === 201
+                            ? "success"
+                            : "error",
+                        summary:
+                          res.status === 200 || res.status === 201
+                            ? "Success"
+                            : "Error",
+                        detail:
+                          res.status === 200 || res.status === 201
+                            ? "Success to create collection"
+                            : data.detail,
+                        life: 3000,
+                      });
+
+                      if (res.status === 200 || res.status === 201) {
+                        // setTreeData((e) => []);
+                        setShowCreateModal(false);
+                        await getNav(true).then((res) => {});
+                      }
+                    });
+                  }}
+                >
+                  SAVE
+                </S.NewFolderSaveButton>
+              )}
             </S.NewFolderInputWrapper>
           </S.NewFolderPopupContainer>
         </S.NewFolderPopupWrapper>
@@ -501,6 +515,7 @@ const Menubar = ({ children }: Props) => {
         <S.NewFolderPopupWrapper
           onClick={() => {
             setShowRename(false);
+            setValue("");
             cookies.remove("renameId");
             cookies.remove("renameType");
           }}
@@ -513,13 +528,14 @@ const Menubar = ({ children }: Props) => {
             <S.NewFolderTitleContainer>
               <ModalIcon color="#000000" style={{}} />
               <S.NewFolderTitleText>
-                Rename{" "}
+                Rename
                 {cookies.get("renameType") === "folder" ? "Folder" : "Page"}
               </S.NewFolderTitleText>
               <Close
                 fill={theme?.color.black}
                 onClick={(e) => {
                   setShowRename(false);
+                  setValue("");
                   cookies.remove("renameId");
                   cookies.remove("renameType");
                 }}
@@ -528,6 +544,10 @@ const Menubar = ({ children }: Props) => {
             <S.NewFolderInputWrapper>
               <S.NewFolderInput
                 ref={renameInputRef}
+                value={value}
+                onChange={(e) => {
+                  setValue(e.currentTarget.value);
+                }}
                 placeholder={
                   cookies.get("renameType") === "folder"
                     ? "Folder name"
@@ -536,85 +556,89 @@ const Menubar = ({ children }: Props) => {
               />
             </S.NewFolderInputWrapper>
             <S.RenameButtonContainer>
-              <S.RenameSaveButton
-                onClick={async (e) => {
-                  if (renameInputRef.current?.value === "") {
-                    toast.current?.show({
-                      severity: "error",
-                      summary: "Error",
-                      detail: "Please write the name of the collection.",
-                      life: 3000,
-                    });
-                    return;
-                  }
-
-                  const renameId = cookies.get("renameId");
-                  const renameType = cookies.get("renameType");
-
-                  if (renameType === "folder") {
-                    await renameFolder(
-                      renameId,
-                      renameInputRef.current?.value ?? ""
-                    ).then(async (res) => {
-                      const data = JSON.parse(res.data);
-
+              {value.length === 0 ? (
+                <S.DisableRenameSaveButton>SAVE</S.DisableRenameSaveButton>
+              ) : (
+                <S.RenameSaveButton
+                  onClick={async (e) => {
+                    if (renameInputRef.current?.value === "") {
                       toast.current?.show({
-                        severity:
-                          res.status === 200 || res.status === 201
-                            ? "success"
-                            : "error",
-                        summary:
-                          res.status === 200 || res.status === 201
-                            ? "Success"
-                            : "Error",
-                        detail:
-                          res.status === 200 || res.status === 201
-                            ? "Success to rename"
-                            : data.detail,
+                        severity: "error",
+                        summary: "Error",
+                        detail: "Please write the name of the collection.",
                         life: 3000,
                       });
+                      return;
+                    }
 
-                      if (res.status === 200 || res.status === 201) {
-                        // setTreeData((e) => []);
-                        await getNav(true).then((res) => {
-                          setShowRename(false);
+                    const renameId = cookies.get("renameId");
+                    const renameType = cookies.get("renameType");
+
+                    if (renameType === "folder") {
+                      await renameFolder(
+                        renameId,
+                        renameInputRef.current?.value ?? ""
+                      ).then(async (res) => {
+                        const data = JSON.parse(res.data);
+
+                        toast.current?.show({
+                          severity:
+                            res.status === 200 || res.status === 201
+                              ? "success"
+                              : "error",
+                          summary:
+                            res.status === 200 || res.status === 201
+                              ? "Success"
+                              : "Error",
+                          detail:
+                            res.status === 200 || res.status === 201
+                              ? "Success to rename"
+                              : data.detail,
+                          life: 3000,
                         });
-                      }
-                    });
-                  } else {
-                    await renamePage(
-                      renameId,
-                      renameInputRef.current?.value ?? ""
-                    ).then(async (res) => {
-                      const data = JSON.parse(res.data);
 
-                      toast.current?.show({
-                        severity:
-                          res.status === 200 || res.status === 201
-                            ? "success"
-                            : "error",
-                        summary:
-                          res.status === 200 || res.status === 201
-                            ? "Success"
-                            : "Error",
-                        detail:
-                          res.status === 200 || res.status === 201
-                            ? "Success to rename"
-                            : data.detail,
-                        life: 3000,
+                        if (res.status === 200 || res.status === 201) {
+                          // setTreeData((e) => []);
+                          await getNav(true).then((res) => {
+                            setShowRename(false);
+                          });
+                        }
                       });
+                    } else {
+                      await renamePage(
+                        renameId,
+                        renameInputRef.current?.value ?? ""
+                      ).then(async (res) => {
+                        const data = JSON.parse(res.data);
 
-                      if (res.status === 200 || res.status === 201) {
-                        // setTreeData((e) => []);
-                        setShowCreateModal(false);
-                        await getNav(true).then((res) => {});
-                      }
-                    });
-                  }
-                }}
-              >
-                SAVE
-              </S.RenameSaveButton>
+                        toast.current?.show({
+                          severity:
+                            res.status === 200 || res.status === 201
+                              ? "success"
+                              : "error",
+                          summary:
+                            res.status === 200 || res.status === 201
+                              ? "Success"
+                              : "Error",
+                          detail:
+                            res.status === 200 || res.status === 201
+                              ? "Success to rename"
+                              : data.detail,
+                          life: 3000,
+                        });
+
+                        if (res.status === 200 || res.status === 201) {
+                          // setTreeData((e) => []);
+                          setShowCreateModal(false);
+                          await getNav(true).then((res) => {});
+                        }
+                      });
+                    }
+                  }}
+                >
+                  SAVE
+                </S.RenameSaveButton>
+              )}
             </S.RenameButtonContainer>
           </S.NewFolderPopupContainer>
         </S.NewFolderPopupWrapper>

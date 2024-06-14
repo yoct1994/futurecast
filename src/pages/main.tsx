@@ -371,7 +371,7 @@ const MainPage = () => {
         </S.MainPageContainer>
         {isLoading && (
           <S.LoadingWrapper>
-            <ProgressSpinner />
+            <ProgressSpinner color={"#5661f6"} />
           </S.LoadingWrapper>
         )}
       </S.MainPageWrapper>

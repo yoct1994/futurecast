@@ -76,8 +76,6 @@ const PopupMenuItem = ({
             idx={1}
             length={2}
             onClick={() => {
-              console.log("=======document delete=======", node.data?.id);
-              setDeleteId(`${node.data?.id}`);
               cookies.set("renameId", node.data?.id);
               cookies.set("renameType", "page");
               setShowRename(true);
