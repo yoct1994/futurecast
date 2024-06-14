@@ -56,6 +56,7 @@ const DocumentItem = ({
   getDocument,
   toast,
   setIsRefresh,
+  setIsLoading,
 }: Props) => {
   const viewMoreRef = useRef<HTMLDivElement | null>(null);
   const refViewMoreRef = useRef<HTMLDivElement | null>(null);
@@ -342,6 +343,7 @@ const DocumentItem = ({
                   life: 3000,
                 });
               } else {
+                setIsLoading(true);
                 console.log(item);
                 await generateAI(item.id ?? "", []).then(async (r) => {
                   console.log(r.data);

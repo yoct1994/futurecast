@@ -118,6 +118,14 @@ const Document = () => {
 
   useEffect(() => {
     if (isRefresh) {
+      if (intervalId) {
+        clearInterval(intervalId);
+        setIntervalId(null);
+        setIsPolling(false);
+        setPollId("");
+        setPollIdx(-1);
+      }
+
       setDocuments(undefined);
       setDocumentList([]);
       setDocumentTree([]);
@@ -127,16 +135,13 @@ const Document = () => {
       setPollId("");
       setPollIdx(-1);
 
-      if (intervalId) {
-        clearInterval(intervalId);
-        setIntervalId(null);
-      }
-
       console.log(id);
 
-      getDocumentData();
-
-      setIsRefresh(false);
+      getDocumentTree();
+      getDocumentData().then((res) => {
+        setIsRefresh(false);
+        setIsLoading(false);
+      });
     }
   }, [isRefresh]);
 
@@ -286,11 +291,18 @@ const Document = () => {
       setIntervalId(setInterval(pollDocument, 5000)); // 5초마다 폴링
     } else if (intervalId) {
       clearInterval(intervalId);
+      setIsPolling(false);
+      setPollId("");
+      setPollIdx(-1);
       setIntervalId(null);
     }
     return () => {
       if (intervalId) {
         clearInterval(intervalId);
+        setIsPolling(false);
+        setPollId("");
+        setPollIdx(-1);
+        setIntervalId(null);
       }
     };
   }, [isPolling, pollId, pollIdx]);
@@ -425,6 +437,13 @@ const Document = () => {
     if (!token) {
       window.location.href = "/login";
     }
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+      setIsPolling(false);
+      setPollId("");
+      setPollIdx(-1);
+    }
     setDocuments(undefined);
     setDocumentList([]);
     setDocumentTree([]);
@@ -433,11 +452,6 @@ const Document = () => {
     setIsPolling(false);
     setPollId("");
     setPollIdx(-1);
-
-    if (intervalId) {
-      clearInterval(intervalId);
-      setIntervalId(null);
-    }
 
     console.log(id);
 
@@ -526,6 +540,7 @@ const Document = () => {
                 onClick={async () => {
                   if (documents && documentList.length > 0) {
                     if (isEdit) {
+                      setIsLoading(true);
                       console.log("SAVE ::: ", updateItems, deleteItems);
 
                       for (var deleteItem of deleteItems) {
@@ -644,7 +659,9 @@ const Document = () => {
                       setDeleteItems([]);
                       setUpdateItems([]);
 
-                      await getDocumentData();
+                      await getDocumentData().then((res) =>
+                        setIsLoading(false)
+                      );
                     } else {
                     }
 
