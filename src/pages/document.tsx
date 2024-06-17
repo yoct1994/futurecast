@@ -932,6 +932,15 @@ const Document = () => {
                       query={query}
                       onClick={async (e) => {
                         e.stopPropagation();
+                        if (query === "") {
+                          toast.current?.show({
+                            severity: "error",
+                            summary: "Failed",
+                            detail: `Please Input some query`,
+                            life: 3000,
+                          });
+                          return;
+                        }
                         console.log(mentionItems);
                         let q = `${query}`;
                         const m = [...mentions];

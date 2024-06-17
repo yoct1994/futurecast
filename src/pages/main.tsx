@@ -287,6 +287,12 @@ const MainPage = () => {
                 e.stopPropagation();
                 console.log("test");
                 if (query === "") {
+                  toast.current?.show({
+                    severity: "error",
+                    summary: "Failed",
+                    detail: `Please, Input some query`,
+                    life: 3000,
+                  });
                   return;
                 }
                 let q = `${query}`;
