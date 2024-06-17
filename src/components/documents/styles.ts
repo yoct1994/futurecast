@@ -328,6 +328,17 @@ export const DocumentContainer = styled.div`
   margin-bottom: 40px;
 `;
 
+export const RetryButton = styled.div`
+  width: 48px;
+  height: 48px;
+  border-radius: 30px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.color.grey};
+  }
+`;
+
 export const DocumentQueryContainer = styled.div`
   width: 100%;
   display: flex;
@@ -657,6 +668,7 @@ export const DocumentItemDivider = styled.div`
   position: relative;
   align-items: center;
   margin-top: 40px;
+  margin-bottom: 40px;
 `;
 
 export const DocumentLine = styled.div`

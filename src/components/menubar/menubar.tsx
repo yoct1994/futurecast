@@ -441,13 +441,15 @@ const Menubar = ({ children }: Props) => {
             <S.NewFolderTitleContainer>
               <ModalIcon color="#000000" style={{}} />
               <S.NewFolderTitleText>Create folder</S.NewFolderTitleText>
-              <Close
-                fill={theme?.color.black}
-                onClick={(e) => {
-                  setShowCreateModal(false);
-                  setValue("");
-                }}
-              />
+              <S.CloseButton>
+                <Close
+                  fill={theme?.color.black}
+                  onClick={(e) => {
+                    setShowCreateModal(false);
+                    setValue("");
+                  }}
+                />
+              </S.CloseButton>
             </S.NewFolderTitleContainer>
             <S.NewFolderInputWrapper>
               <S.NewFolderInput
@@ -529,17 +531,19 @@ const Menubar = ({ children }: Props) => {
               <ModalIcon color="#000000" style={{}} />
               <S.NewFolderTitleText>
                 Rename
-                {cookies.get("renameType") === "folder" ? "Folder" : "Page"}
+                {cookies.get("renameType") === "folder" ? " Folder" : " Page"}
               </S.NewFolderTitleText>
-              <Close
-                fill={theme?.color.black}
-                onClick={(e) => {
-                  setShowRename(false);
-                  setValue("");
-                  cookies.remove("renameId");
-                  cookies.remove("renameType");
-                }}
-              />
+              <S.CloseButton>
+                <Close
+                  fill={theme?.color.black}
+                  onClick={(e) => {
+                    setShowRename(false);
+                    setValue("");
+                    cookies.remove("renameId");
+                    cookies.remove("renameType");
+                  }}
+                />
+              </S.CloseButton>
             </S.NewFolderTitleContainer>
             <S.NewFolderInputWrapper>
               <S.NewFolderInput
@@ -662,15 +666,17 @@ const Menubar = ({ children }: Props) => {
                 Do you really want to delete the{" "}
                 {cookies.get("deleteType") === "folder" ? "folder" : "page"}?
               </S.NewFolderTitleText>
-              <Close
-                fill={theme?.color.black}
-                onClick={(e) => {
-                  setDeleteId("");
-                  cookies.remove("deleteId");
-                  cookies.remove("deleteType");
-                  setShowCreatePage(false);
-                }}
-              />
+              <S.CloseButton>
+                <Close
+                  fill={theme?.color.black}
+                  onClick={(e) => {
+                    setDeleteId("");
+                    cookies.remove("deleteId");
+                    cookies.remove("deleteType");
+                    setShowCreatePage(false);
+                  }}
+                />
+              </S.CloseButton>
             </S.NewFolderTitleContainer>
             <S.NewPageButtonContainer>
               <S.NewPageCancelButton

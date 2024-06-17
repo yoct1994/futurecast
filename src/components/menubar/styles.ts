@@ -678,6 +678,18 @@ export const FolderAddButton = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 30px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.color.grey};
+  }
+`;
+
+export const CloseButton = styled.div`
+  width: 24px;
+  height: 24px;
+  border-radius: 18px;
+  cursor: pointer;
 
   &:hover {
     background-color: ${({ theme }) => theme.color.grey};

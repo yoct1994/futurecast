@@ -1163,7 +1163,7 @@ const Document = () => {
         <Toast ref={toast} />
         {isLoading && (
           <SS.LoadingWrapper>
-            <ProgressSpinner />
+            <ProgressSpinner color="#5661f6" />
           </SS.LoadingWrapper>
         )}
       </Menubar>

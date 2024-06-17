@@ -298,8 +298,8 @@ const DocumentItem = ({
               />
             </MentionsInput>
           </div>
-          <div
-            style={{ width: 48, height: 48 }}
+          <S.RetryButton
+            style={{ width: 48, height: 48, cursor: "pointer" }}
             onClick={() => {
               setQuery(item.query.full_text);
               if (queryRef.current) {
@@ -313,7 +313,7 @@ const DocumentItem = ({
               data-tooltip-content="Retry"
               data-tooltip-place="bottom"
             />
-          </div>
+          </S.RetryButton>
         </S.EditDocumentQueryWrapper>
       ) : (
         <S.DocumentContainer
@@ -332,8 +332,7 @@ const DocumentItem = ({
                 : "LOADING"
               : "LOADING"}
           </S.DocumentStatusWrapper>
-          <div
-            style={{ width: 48, height: 48 }}
+          <S.RetryButton
             onClick={async () => {
               if (item.status === "submitted") {
                 toast.current?.show({
@@ -371,7 +370,7 @@ const DocumentItem = ({
               data-tooltip-content="Retry"
               data-tooltip-place="bottom"
             />
-          </div>
+          </S.RetryButton>
         </S.DocumentContainer>
       )}
       {item && item.status !== "submitted" && item.children.length === 0 && (
