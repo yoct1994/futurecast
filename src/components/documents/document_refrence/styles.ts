@@ -151,13 +151,13 @@ export const CausalChart = styled.div<{ isDarkMode: boolean }>`
   }
 
   * > div.vis-network div.vis-navigation div.vis-button {
-    width: 24px;
-    height: 24px;
+    width: 27px;
+    height: 27px;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #e9e9e9;
-    background-position: 5px 5px;
+    background-position: 6.5px 6.5px;
     border-radius: 6px;
 
     &:hover {
@@ -224,6 +224,15 @@ export const CausalChart = styled.div<{ isDarkMode: boolean }>`
     margin: 0px 0px 0px 16px;
   }
 
+  * > div.vis-network div.vis-manipulation button.vis-button,
+  div.vis-network div.vis-edit-mode button.vis-button {
+    &:hover {
+      background-color: ${({ theme }) => theme.color.white};
+      box-shadow: none;
+      color: ${({ theme }) => theme.color.grey2};
+    }
+  }
+
   * > div.vis-network button.vis-close {
     display: none !important;
   }
@@ -241,20 +250,22 @@ export const ChartEditButton = styled.div`
   align-items: center;
   gap: 5px;
   height: 40px;
-  bottom: 24px;
+  bottom: 10px;
   padding-left: 10px;
   padding-right: 15px;
-  left: 24px;
+  left: 15px;
   background-color: ${({ theme }) => theme.color.white};
   border: 1px solid ${({ theme }) => theme.color.grey2};
   border-radius: 8px;
+  color: ${({ theme }) => theme.color.black};
 
   cursor: pointer;
 
   &:hover {
     background-color: rgba(86, 97, 246, 1);
     border: 1px solid rgba(86, 97, 246, 1);
-    color: ${({ theme }) => theme.color.white};
+    color: white;
+    color: ${({ theme }) => theme.color.black};
     svg {
       color: ${({ theme }) => theme.color.white};
       fill: ${({ theme }) => theme.color.white};
