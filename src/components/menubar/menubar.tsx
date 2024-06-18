@@ -345,11 +345,10 @@ const Menubar = ({ children }: Props) => {
                 }}
                 onClick={async () => {
                   const cookies = new Cookies();
-                  await auth.signOut().then((res) => {
+                  await auth.signOut().then(async (res) => {
                     cookies.remove("TOKEN");
-
-                    window.location.replace("/login");
                   });
+                  window.location.replace("/login");
                 }}
               />
               <S.UserEmailText>
