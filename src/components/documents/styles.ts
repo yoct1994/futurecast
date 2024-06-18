@@ -634,6 +634,9 @@ export const NewsTitleText = styled.div`
   max-lines: 2;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; // 원하는 라인수
+  -webkit-box-orient: vertical;
   color: ${({ theme }) => theme.color.black};
 `;
 
@@ -644,6 +647,9 @@ export const NewsContentText = styled.div`
   max-lines: 2;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; // 원하는 라인수
+  -webkit-box-orient: vertical;
   color: ${({ theme }) => theme.color.black};
 `;
 
@@ -799,6 +805,7 @@ export const MentionItemTitle = styled.div`
   -webkit-line-clamp: 2; /* number of lines to show */
   line-clamp: 2;
   -webkit-box-orient: vertical;
+  color: ${({ theme }) => theme.color.black};
   /* text-align: justify; */
 `;
 
