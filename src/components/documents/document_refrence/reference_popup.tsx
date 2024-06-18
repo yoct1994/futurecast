@@ -68,7 +68,7 @@ const ReferencePopup = ({
             open: item.open,
             high: item.high,
             low: item.low,
-            date: new Date(item.timestamp),
+            date: new Date(item.timestamp * 1000),
             volume: 24,
           };
         }),
@@ -195,7 +195,7 @@ const ReferencePopup = ({
         },
         data: (item.values as any[]).map((item) => {
           console.log({
-            date: new Date(item.timestamp),
+            date: new Date(item.timestamp * 1000),
             value: item.central,
             low1: item.confidence_interval_50.lower
               ? item.confidence_interval_50.lower
@@ -217,7 +217,7 @@ const ReferencePopup = ({
               : item.central,
           });
           return {
-            date: new Date(item.timestamp),
+            date: new Date(item.timestamp * 1000),
             value: item.central,
             low1: item.confidence_interval_50.lower
               ? item.confidence_interval_50.lower
@@ -354,15 +354,16 @@ const ReferencePopup = ({
                   background: "rgba(86, 97, 246, 1)",
                 },
               },
-              shape: "circle",
+              shape: "dot",
               margin: {
                 left: 10,
                 right: 10,
               },
               physics: true,
               font: {
-                size: 14,
+                face: "IBMPlexMono-Regular",
                 color: theme?.color.black,
+                strokeWidth: 0,
               },
               size: 30,
               borderWidth: 2,
@@ -378,10 +379,11 @@ const ReferencePopup = ({
               highlight: "rgba(86, 97, 246, 1)",
             },
             font: {
+              face: "IBMPlexMono-Regular",
               color: theme?.color.black,
               strokeWidth: 0,
             },
-            length: 200,
+            length: 400,
             physics: true,
           };
         }),
@@ -496,7 +498,7 @@ const ReferencePopup = ({
                   color: theme?.color.white,
                 },
                 interaction: {
-                  zoomView: false,
+                  zoomView: true,
                   tooltipDelay: 0,
                   navigationButtons: true,
                 },

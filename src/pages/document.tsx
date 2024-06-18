@@ -39,6 +39,7 @@ import {
   makeNewDocument,
   makePage,
   moveCollectionItem,
+  updateDescription,
   updateDocument,
 } from "../server/server";
 import "react-tooltip/dist/react-tooltip.css";
@@ -581,6 +582,7 @@ const Document = () => {
                             });
                             break;
                           case "CONTENT":
+                          case "DESCRIPTION":
                           case "QUERY":
                           default:
                             break;
@@ -599,6 +601,25 @@ const Document = () => {
                               null
                             ).then((res) => {
                               console.log("RES :::::", JSON.parse(res.data));
+                              if (res.status !== 200) {
+                                const data = JSON.parse(res.data);
+                                toast.current?.show({
+                                  severity: "error",
+                                  summary: "Failed",
+                                  detail: data.detail,
+                                  life: 3000,
+                                });
+                              }
+                            });
+                            break;
+                          case "DESCRIPTION":
+                            await updateDescription(
+                              updateItem.data.id,
+                              updateItem.data.description,
+                              updateItem.data.type
+                            ).then((res) => {
+                              console.log("RES ::::: ", res.data);
+
                               if (res.status !== 200) {
                                 const data = JSON.parse(res.data);
                                 toast.current?.show({

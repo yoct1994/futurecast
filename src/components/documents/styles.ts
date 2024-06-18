@@ -567,6 +567,7 @@ export const AnswerWrapper = styled.div`
   flex-direction: row;
   gap: 24px;
   margin-top: 40px;
+  margin-bottom: 40px;
 `;
 
 export const AnswerContainer = styled.div`
@@ -850,6 +851,8 @@ export const BarChartWrapper = styled.div`
   gap: 24px;
   flex-direction: column;
   cursor: pointer;
+  background-color: ${({ theme }) => theme.color.white};
+  border-radius: 16px;
 `;
 
 export const BarChart = styled.div`
@@ -859,6 +862,7 @@ export const BarChart = styled.div`
   box-sizing: border-box;
   border-radius: 8px;
   overflow: hidden;
+  position: relative;
 
   & > canvas {
     border-radius: 8px;
@@ -912,14 +916,17 @@ export const CausalChart = styled.div<{
 
   * > div.vis-network div.vis-navigation div.vis-button.vis-zoomExtends {
     background-image: url(${Expanded});
+    z-index: 1000;
   }
 
   * > div.vis-network div.vis-navigation div.vis-button.vis-zoomIn {
     background-image: url(${ZoomIn});
+    z-index: 1000;
   }
 
   * > div.vis-network div.vis-navigation div.vis-button.vis-zoomOut {
     background-image: url(${ZoomOut});
+    z-index: 1000;
   }
 
   * > div.vis-network div.vis-navigation div.vis-button {

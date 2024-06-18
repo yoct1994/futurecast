@@ -6,9 +6,14 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 import NodeGraph, { Node } from "react-vis-graph-wrapper";
 import { AgCharts } from "ag-charts-enterprise";
 import { useDrag } from "react-dnd";
-import { useRecoilValue } from "recoil";
-import { isDarkModeState } from "../../../recoil/recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  isDarkModeState,
+  isEditDocumentState,
+  updateItemsState,
+} from "../../../recoil/recoil";
 import { ThemeContext } from "styled-components";
+import MDEditor from "@uiw/react-md-editor";
 
 type Props = {
   item: any;
@@ -21,6 +26,9 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
   const [options, setOptions] = useState<AgChartOptions>();
   const isDarkMode = useRecoilValue(isDarkModeState);
   const theme = useContext(ThemeContext);
+  const isEdit = useRecoilValue(isEditDocumentState);
+  const [content, setContent] = useState("");
+  const setUpdateItems = useSetRecoilState(updateItemsState);
 
   const [{}, drag] = useDrag(() => ({
     type: "ITEM",
@@ -33,6 +41,12 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
   AgCharts.setLicenseKey(
     "Using_this_{AG_Charts}_Enterprise_key_{AG-061368}_in_excess_of_the_licence_granted_is_not_permitted___Please_report_misuse_to_legal@ag-grid.com___For_help_with_changing_this_key_please_contact_info@ag-grid.com___{LG_AI_Research}_is_granted_a_{Single_Application}_Developer_License_for_the_application_{timeseries_forecasting}_only_for_{1}_Front-End_JavaScript_developer___All_Front-End_JavaScript_developers_working_on_{timeseries_forecasting}_need_to_be_licensed___{timeseries_forecasting}_has_not_been_granted_a_Deployment_License_Add-on___This_key_works_with_{AG_Charts}_Enterprise_versions_released_before_{10_June_2025}____[v3]_[02]_MTc0OTUxMDAwMDAwMA==fc9c0e0f2d32fb440d1a3642614c44b5"
   );
+
+  useEffect(() => {
+    if (isEdit) {
+      setContent(item.description);
+    }
+  }, [isEdit]);
 
   useEffect(() => {
     console.log(item);
@@ -54,7 +68,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
             open: item.open,
             high: item.high,
             low: item.low,
-            date: new Date(item.timestamp),
+            date: new Date(item.timestamp * 1000),
             volume: 24,
           };
         }),
@@ -200,7 +214,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
         },
         data: (item.values as any[]).map((item) => {
           console.log({
-            date: new Date(item.timestamp),
+            date: new Date(item.timestamp * 1000),
             value: item.central,
             low1: item.confidence_interval_50.lower
               ? item.confidence_interval_50.lower
@@ -222,7 +236,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
               : item.central,
           });
           return {
-            date: new Date(item.timestamp),
+            date: new Date(item.timestamp * 1000),
             value: item.central,
             low1: item.confidence_interval_50.lower
               ? item.confidence_interval_50.lower
@@ -312,6 +326,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
         axes: [
           {
             type: "ordinal-time",
+            keys: ["date"],
             position: "bottom",
             line: {
               width: 1,
@@ -349,12 +364,61 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
 
   return (
     <S.BarChartWrapper
-      onClick={() => {
+      ref={drag}
+      onClick={(e) => {
         setPickRef(item);
         setPickIndex(index);
       }}
     >
-      <div ref={drag}>
+      {isEdit ? (
+        <div
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <MDEditor
+            data-color-mode={isDarkMode ? "dark" : "light"}
+            height={400}
+            style={{
+              width: "100%",
+            }}
+            value={content}
+            onChange={(e) => {
+              setContent(e ?? "");
+              setUpdateItems((i) => {
+                const idx = i.findIndex(
+                  (i) => i.type === "DESCRIPTION" && i.data.id === item.id
+                );
+                if (idx !== -1) {
+                  const res = JSON.parse(JSON.stringify(i));
+                  res[idx] = {
+                    data: {
+                      id: item.id,
+                      description: e,
+                      type: item.type,
+                    },
+                    type: "DESCRIPTION",
+                  };
+                  return res;
+                } else {
+                  return [
+                    ...i,
+                    {
+                      data: {
+                        id: item.id,
+                        description: e,
+                        type: item.type,
+                      },
+                      type: "DESCRIPTION",
+                    },
+                  ];
+                }
+              });
+            }}
+          />
+        </div>
+      ) : (
         <S.MarkdownTheme>
           <MarkdownPreview
             wrapperElement={{
@@ -363,7 +427,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
             source={item.description ? item.description : "NO CONTENTS"}
           />
         </S.MarkdownTheme>
-      </div>
+      )}
       {options &&
         (item.type === "bar-chart" ||
           item.type === "candle-chart" ||
@@ -373,6 +437,12 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
               e.stopPropagation();
             }}
           >
+            <S.Cover
+              onClick={() => {
+                setPickRef(item);
+                setPickIndex(index);
+              }}
+            />
             <AgChartsReact
               onChartReady={(chart) => {
                 console.log("options", chart.getOptions());
@@ -388,7 +458,12 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
             e.stopPropagation();
           }}
         >
-          {/* <S.Cover /> */}
+          <S.Cover
+            onClick={() => {
+              setPickRef(item);
+              setPickIndex(index);
+            }}
+          />
           <NodeGraph
             style={{
               height: "100%",
@@ -406,8 +481,8 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
               },
               manipulation: {
                 enabled: false,
-                editNode: () => {},
-                initiallyActive: true,
+                // editNode: () => {},
+                // initiallyActive: true,
               },
             }}
             graph={{
@@ -432,13 +507,14 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
                         background: "rgba(86, 97, 246, 1)",
                       },
                     },
-                    shape: "circle",
+                    shape: "dot",
                     margin: {
                       left: 10,
                       right: 10,
                     },
                     physics: true,
                     font: {
+                      face: "IBMPlexMono-Regular",
                       size: 14,
                       color: theme?.color.black,
                     },
@@ -456,10 +532,11 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
                     highlight: "rgba(86, 97, 246, 1)",
                   },
                   font: {
+                    face: "IBMPlexMono-Regular",
                     color: theme?.color.black,
                     strokeWidth: 0,
                   },
-                  length: 200,
+                  length: 400,
                   physics: false,
                 };
               }),

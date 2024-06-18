@@ -38,14 +38,20 @@ export const showRenameState = atom<boolean>({
 });
 
 export const updateItemsState = atom<
-  { data: any; type: "SUB_PAGE" | "QUERY" | "REFERENCE" | "CONTENT" }[]
+  {
+    data: any;
+    type: "SUB_PAGE" | "QUERY" | "REFERENCE" | "CONTENT" | "DESCRIPTION";
+  }[]
 >({
   default: [],
   key: "update_items_state",
 });
 
 export const deleteItemsState = atom<
-  { data: any; type: "SUB_PAGE" | "QUERY" | "REFERENCE" | "CONTENT" }[]
+  {
+    data: any;
+    type: "SUB_PAGE" | "QUERY" | "REFERENCE" | "CONTENT" | "DESCRIPTION";
+  }[]
 >({
   default: [],
   key: "delete_items_state",

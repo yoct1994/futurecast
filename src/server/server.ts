@@ -286,3 +286,19 @@ export const updateNodeGraph = async (
     }
   );
 };
+
+export const updateDescription = async (
+  reference_id: string,
+  description: string,
+  type: string
+) => {
+  return await server.put(
+    `/reference/${type}/${reference_id}/description`,
+    description,
+    {
+      headers: {
+        token: getToken(),
+      },
+    }
+  );
+};

@@ -227,9 +227,9 @@ export const CausalChart = styled.div<{ isDarkMode: boolean }>`
   * > div.vis-network div.vis-manipulation button.vis-button,
   div.vis-network div.vis-edit-mode button.vis-button {
     &:hover {
-      background-color: ${({ theme }) => theme.color.white};
+      background-color: ${({ theme }) => theme.color.white1};
       box-shadow: none;
-      color: ${({ theme }) => theme.color.grey2};
+      color: ${({ theme }) => theme.color.dim};
     }
   }
 
