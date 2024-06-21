@@ -277,6 +277,22 @@ export const ChartEditButton = styled.div`
   }
 `;
 
+export const NodeOptionButton = styled.div`
+  width: 27px;
+  height: 27px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e9e9e9;
+  position: absolute;
+  cursor: pointer;
+
+  &:active {
+    background-color: rgba(204, 204, 204, 1);
+  }
+`;
+
 export const ChartEditText = styled.div`
   font-family: "Pretendard-SemiBold";
   font-size: 17.5px;

@@ -321,7 +321,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
           enabled: false,
         },
         zoom: {
-          enabled: true,
+          enabled: false,
         },
         axes: [
           {
@@ -361,6 +361,20 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
       });
     }
   }, [isDarkMode]);
+
+  function splitString(input: string) {
+    const maxCharsPerLine = 8;
+    const maxLines = 4;
+    const result = [];
+
+    // Split the input string into chunks of 8 characters
+    for (let i = 0; i < input.length; i += maxCharsPerLine) {
+      result.push(input.substring(i, i + maxCharsPerLine));
+    }
+
+    // Limit the result to a maximum of 4 lines
+    return result.slice(0, maxLines).join("\n");
+  }
 
   return (
     <S.BarChartWrapper
@@ -496,21 +510,21 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
                 })
                 .map((item) => {
                   return {
-                    label: item.label,
+                    label: splitString(item.label as string),
                     id: item.id,
-                    title: `${item.value}`,
+                    title: `${item.label}`,
                     color: {
-                      border: "rgba(86, 97, 246, 1)",
+                      border: "rgba(117, 117, 117, 1)",
                       background: theme?.color.white1,
                       highlight: {
                         border: "rgba(86, 97, 246, 1)",
                         background: "rgba(86, 97, 246, 1)",
                       },
                     },
-                    shape: "dot",
+                    shape: "circle",
                     margin: {
-                      left: 10,
-                      right: 10,
+                      left: 20,
+                      right: 20,
                     },
                     physics: true,
                     font: {
@@ -536,7 +550,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
                     color: theme?.color.black,
                     strokeWidth: 0,
                   },
-                  length: 400,
+                  length: 500,
                   physics: false,
                 };
               }),

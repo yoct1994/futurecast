@@ -3,18 +3,20 @@ import * as S from "./styles";
 import { ReactComponent as Close } from "../../../assets/Close.svg";
 import { ThemeContext } from "styled-components";
 import MarkdownPreview from "@uiw/react-markdown-preview";
-import { MarkdownTheme } from "../styles";
 import { isDarkModeState, referencesState } from "../../../recoil/recoil";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { AgChartsReact } from "ag-charts-react";
 import NodeGraph, { GraphData, Network } from "react-vis-graph-wrapper";
-import { deepClone } from "ag-charts-community/dist/types/src/module-support";
 import { AgChartOptions } from "ag-charts-community";
 import { AgCharts } from "ag-charts-enterprise";
 import { ReactComponent as Edit } from "../../../assets/document_page/Edit.svg";
 import { ReactComponent as Add } from "../../../assets/document_page/Add.svg";
 import { v4 as uuidv4 } from "uuid";
-import { getReferences, updateNodeGraph } from "../../../server/server";
+import { updateNodeGraph } from "../../../server/server";
+import { ReactComponent as GravityOff } from "../../../assets/gravity-off.svg";
+import { ReactComponent as GravityOn } from "../../../assets/gravity-on.svg";
+import { ReactComponent as Normal } from "../../../assets/normal-algorithm.svg";
+import { ReactComponent as Tree } from "../../../assets/tree-algotithm.svg";
 
 type Props = {
   item: any;
@@ -38,8 +40,8 @@ const ReferencePopup = ({
 
   const [controll, setControll] = useState<string>("1D");
   const [isEdit, setIsEdit] = useState<boolean>(false);
-
-  const [resources, setResources] = useRecoilState(referencesState);
+  const [isTree, setIsTree] = useState<boolean>(false);
+  const [isGravity, setIsGravity] = useState<boolean>(true);
 
   AgCharts.setLicenseKey(
     "Using_this_{AG_Charts}_Enterprise_key_{AG-061368}_in_excess_of_the_licence_granted_is_not_permitted___Please_report_misuse_to_legal@ag-grid.com___For_help_with_changing_this_key_please_contact_info@ag-grid.com___{LG_AI_Research}_is_granted_a_{Single_Application}_Developer_License_for_the_application_{timeseries_forecasting}_only_for_{1}_Front-End_JavaScript_developer___All_Front-End_JavaScript_developers_working_on_{timeseries_forecasting}_need_to_be_licensed___{timeseries_forecasting}_has_not_been_granted_a_Deployment_License_Add-on___This_key_works_with_{AG_Charts}_Enterprise_versions_released_before_{10_June_2025}____[v3]_[02]_MTc0OTUxMDAwMDAwMA==fc9c0e0f2d32fb440d1a3642614c44b5"
@@ -343,21 +345,21 @@ const ReferencePopup = ({
           })
           .map((item) => {
             return {
-              label: item.label,
+              label: splitString(item.label),
               id: item.id,
-              title: `${item.value}`,
+              title: `${item.label}`,
               color: {
-                border: "rgba(86, 97, 246, 1)",
+                border: "rgba(117, 117, 117, 1)",
                 background: theme?.color.white1,
                 highlight: {
                   border: "rgba(86, 97, 246, 1)",
                   background: "rgba(86, 97, 246, 1)",
                 },
               },
-              shape: "dot",
+              shape: "circle",
               margin: {
-                left: 10,
-                right: 10,
+                left: 20,
+                right: 20,
               },
               physics: true,
               font: {
@@ -383,7 +385,7 @@ const ReferencePopup = ({
               color: theme?.color.black,
               strokeWidth: 0,
             },
-            length: 400,
+            length: 500,
             physics: true,
           };
         }),
@@ -448,6 +450,20 @@ const ReferencePopup = ({
     }
   }, [controll]);
 
+  function splitString(input: string) {
+    const maxCharsPerLine = 8;
+    const maxLines = 4;
+    const result = [];
+
+    // Split the input string into chunks of 8 characters
+    for (let i = 0; i < input.length; i += maxCharsPerLine) {
+      result.push(input.substring(i, i + maxCharsPerLine));
+    }
+
+    // Limit the result to a maximum of 4 lines
+    return result.slice(0, maxLines).join("\n");
+  }
+
   return (
     <S.ReferencePopupWrapper>
       <S.ReferencePopupContainer>
@@ -493,7 +509,11 @@ const ReferencePopup = ({
                 background: theme?.color.chartBackground,
               }}
               options={{
-                layout: {},
+                layout: {
+                  hierarchical: {
+                    enabled: isTree,
+                  },
+                },
                 edges: {
                   color: theme?.color.white,
                 },
@@ -502,6 +522,7 @@ const ReferencePopup = ({
                   tooltipDelay: 0,
                   navigationButtons: true,
                 },
+                physics: isGravity,
                 manipulation: {
                   enabled: isEdit,
                   addNode: (nodeData: any, callback: Function) => {
@@ -641,6 +662,22 @@ const ReferencePopup = ({
                     }
               }
             />
+            <S.NodeOptionButton
+              style={{ bottom: 50, right: 55 }}
+              onClick={(e) => {
+                setIsGravity(!isGravity);
+              }}
+            >
+              {isGravity ? <GravityOn /> : <GravityOff />}
+            </S.NodeOptionButton>
+            <S.NodeOptionButton
+              style={{ bottom: 10, right: 95 }}
+              onClick={(e) => {
+                setIsTree(!isTree);
+              }}
+            >
+              {isTree ? <Tree /> : <Normal />}
+            </S.NodeOptionButton>
             <S.ChartEditButton
               onClick={async (e) => {
                 if (isEdit) {

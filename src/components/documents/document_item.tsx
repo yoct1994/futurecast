@@ -373,69 +373,6 @@ const DocumentItem = ({
           </S.RetryButton>
         </S.DocumentContainer>
       )}
-      {item && item.status !== "submitted" && item.children.length === 0 && (
-        <S.EmptyWrapper>
-          <S.EmptyContainer>There is no sub pages.</S.EmptyContainer>
-        </S.EmptyWrapper>
-      )}
-      <S.SubDocumentGrid
-        id={`Sub Documents`}
-        ref={index === -1 ? undefined : refs.current[4 * index + 1]}
-      >
-        {item ? (
-          item.stauts === "submitted" && item.children.length === 0 ? (
-            <>
-              <Skeleton height={"187px"} borderRadius="16px" />
-              <Skeleton height={"187px"} borderRadius="16px" />
-              <Skeleton height={"187px"} borderRadius="16px" />
-              <Skeleton height={"187px"} borderRadius="16px" />
-            </>
-          ) : item.children.length === 0 ? (
-            <></>
-          ) : (
-            (item.children as any[]).slice(0, moreNum).map((item, idx) => {
-              // console.log("sub document : ", item);
-
-              const uniqueReferences = (
-                item.document_references as any[]
-              ).filter((i, index) => {
-                return (
-                  (item.document_references as any[]).findIndex(
-                    (value) => value.type === i.type
-                  ) === index
-                );
-              });
-
-              for (var i = 0; i < uniqueReferences.length; i++) {
-                const refNum = (item.document_references as any[]).filter(
-                  (val) => val.type === uniqueReferences[i].type
-                ).length;
-
-                uniqueReferences[i] = {
-                  type: uniqueReferences[i].type,
-                  num: refNum,
-                };
-              }
-
-              return (
-                <SubPageItem
-                  index={idx}
-                  item={item}
-                  uniqueReferences={uniqueReferences}
-                  documentIdx={index}
-                />
-              );
-            })
-          )
-        ) : (
-          <>
-            <Skeleton height={"187px"} borderRadius="16px" />
-            <Skeleton height={"187px"} borderRadius="16px" />
-            <Skeleton height={"187px"} borderRadius="16px" />
-            <Skeleton height={"187px"} borderRadius="16px" />
-          </>
-        )}
-      </S.SubDocumentGrid>
       {item ? (
         item.children.length === 0 ? (
           <></>
@@ -517,7 +454,7 @@ const DocumentItem = ({
             id={`${
               item && item.content ? item.content.full_text : "NO CONTENTS"
             }`}
-            ref={index === -1 ? undefined : refs.current[4 * index + 2]}
+            ref={index === -1 ? undefined : refs.current[4 * index + 1]}
           >
             {/* <S.CustomFontMarkDown
             remarkPlugins={[remarkGfm]}
@@ -628,32 +565,35 @@ const DocumentItem = ({
           </S.AnswerContainer>
         </S.AnswerWrapper>
       )}
-      {resources
-        .filter(
-          (item) =>
-            item.type === "bar-chart" ||
-            item.type === "causal-graph" ||
-            item.type === "candle-chart" ||
-            item.type === "fan-chart"
-        )
-        .map((item, index) => {
-          return (
-            <BarChart
-              item={item}
-              key={index}
-              setPickIndex={setPickIndex}
-              index={index}
-              setPickRef={setPickRef}
-            />
-          );
-        })}
       <S.NewsWrapper>
         <S.NewsTitleWrapper
           id={`References`}
-          ref={index === -1 ? undefined : refs.current[4 * index + 3]}
+          ref={index === -1 ? undefined : refs.current[4 * index + 2]}
         >
           References
         </S.NewsTitleWrapper>
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          {resources
+            .filter(
+              (item) =>
+                item.type === "bar-chart" ||
+                item.type === "causal-graph" ||
+                item.type === "candle-chart" ||
+                item.type === "fan-chart"
+            )
+            .map((item, index) => {
+              return (
+                <BarChart
+                  item={item}
+                  key={index}
+                  setPickIndex={setPickIndex}
+                  index={index}
+                  setPickRef={setPickRef}
+                />
+              );
+            })}
+        </div>
+        <S.NewsTitleWrapper>Related Links</S.NewsTitleWrapper>
         {!isLoadingRef &&
           item &&
           item.status !== "submitted" &&
@@ -725,6 +665,74 @@ const DocumentItem = ({
             </S.SubDocumentViewMoreButton>
           </S.SubDocumentViewMore>
         )}
+      </S.NewsWrapper>
+      <S.NewsWrapper>
+        <S.NewsTitleWrapper
+          id={`Related Pages`}
+          ref={index === -1 ? undefined : refs.current[4 * index + 3]}
+        >
+          Related Pages
+        </S.NewsTitleWrapper>
+        {item && item.status !== "submitted" && item.children.length === 0 && (
+          <S.EmptyWrapper>
+            <S.EmptyContainer>There is no sub pages.</S.EmptyContainer>
+          </S.EmptyWrapper>
+        )}
+        <S.SubDocumentGrid id={`Sub Documents`}>
+          {item ? (
+            item.stauts === "submitted" && item.children.length === 0 ? (
+              <>
+                <Skeleton height={"187px"} borderRadius="16px" />
+                <Skeleton height={"187px"} borderRadius="16px" />
+                <Skeleton height={"187px"} borderRadius="16px" />
+                <Skeleton height={"187px"} borderRadius="16px" />
+              </>
+            ) : item.children.length === 0 ? (
+              <></>
+            ) : (
+              (item.children as any[]).slice(0, moreNum).map((item, idx) => {
+                // console.log("sub document : ", item);
+
+                const uniqueReferences = (
+                  item.document_references as any[]
+                ).filter((i, index) => {
+                  return (
+                    (item.document_references as any[]).findIndex(
+                      (value) => value.type === i.type
+                    ) === index
+                  );
+                });
+
+                for (var i = 0; i < uniqueReferences.length; i++) {
+                  const refNum = (item.document_references as any[]).filter(
+                    (val) => val.type === uniqueReferences[i].type
+                  ).length;
+
+                  uniqueReferences[i] = {
+                    type: uniqueReferences[i].type,
+                    num: refNum,
+                  };
+                }
+
+                return (
+                  <SubPageItem
+                    index={idx}
+                    item={item}
+                    uniqueReferences={uniqueReferences}
+                    documentIdx={index}
+                  />
+                );
+              })
+            )
+          ) : (
+            <>
+              <Skeleton height={"187px"} borderRadius="16px" />
+              <Skeleton height={"187px"} borderRadius="16px" />
+              <Skeleton height={"187px"} borderRadius="16px" />
+              <Skeleton height={"187px"} borderRadius="16px" />
+            </>
+          )}
+        </S.SubDocumentGrid>
       </S.NewsWrapper>
       <S.DocumentItemDivider>
         <S.DocumentLine />

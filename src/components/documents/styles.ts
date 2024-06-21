@@ -264,6 +264,19 @@ export const DocumentRightOl = styled.ol`
   }
 `;
 
+export const DocumentTwoDepthRightOl = styled.ol`
+  margin-left: 0px;
+  padding-left: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  li {
+    margin-left: 48px;
+    padding-left: 0px;
+    /* margin-bottom: 16px; */
+  }
+`;
+
 export const DocumentRightBarListContainer = styled.ul`
   width: 100%;
   /* height: 100%; */
@@ -284,6 +297,7 @@ export const DocumentQueryWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 100;
 `;
 
 export const QueryInputContainer = styled.div`
@@ -344,7 +358,7 @@ export const DocumentQueryContainer = styled.div`
   display: flex;
   line-height: 1;
   /* background-color: ; */
-  font-size: 28px;
+  font-size: 24px;
   color: ${({ theme }) => theme.color.black};
   font-family: "Pretendard-Bold";
   padding-top: 16px;
@@ -567,7 +581,6 @@ export const AnswerWrapper = styled.div`
   flex-direction: row;
   gap: 24px;
   margin-top: 40px;
-  margin-bottom: 40px;
 `;
 
 export const AnswerContainer = styled.div`
@@ -589,11 +602,11 @@ export const NewsWrapper = styled.div`
 `;
 
 export const NewsTitleWrapper = styled.div`
-  font-size: 28px;
+  font-size: 32px;
   font-family: "Pretendard-Bold";
   color: ${({ theme }) => theme.color.black};
   padding-top: 80px;
-  padding-bottom: 24px;
+  margin-bottom: 24px;
 `;
 
 export const NewsGrid = styled.div`
@@ -852,7 +865,6 @@ export const EmptyContainer = styled.div`
 
 export const BarChartWrapper = styled.div`
   width: 100%;
-  padding-top: 40px;
   box-sizing: border-box;
   display: flex;
   gap: 24px;

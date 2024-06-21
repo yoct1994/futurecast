@@ -235,6 +235,7 @@ export const updateDocument = async (
   content: {
     full_text: string;
     mentions: any[];
+    markdown_headers: [];
   } | null = null,
   query: {
     full_text: string;

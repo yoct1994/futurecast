@@ -25,19 +25,16 @@ import { ReactComponent as ArrowUp } from "../assets/UpArrow.svg";
 import { ReactComponent as ArrowUpDisable } from "../assets/ArrowUpDisable.svg";
 import { Mention, MentionsInput } from "react-mentions";
 import { Cookies } from "react-cookie";
-import generatePDF, { Margin, Resolution, usePDF } from "react-to-pdf";
+import { Margin, usePDF } from "react-to-pdf";
 import {
-  deleteDocument,
   deletePage,
   deleteReference,
   generateAI,
   getDocument,
   getDocumentInfo,
   getDocumentTreeData,
-  getNavBar,
   getSuggetion,
   makeNewDocument,
-  makePage,
   moveCollectionItem,
   updateDescription,
   updateDocument,
@@ -46,7 +43,6 @@ import "react-tooltip/dist/react-tooltip.css";
 import { Tooltip } from "react-tooltip";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
-  deleteIdValue,
   deleteItemsState,
   documentListState,
   isDarkModeState,
@@ -61,13 +57,14 @@ import DocumentItem from "../components/documents/document_item";
 import { Skeleton } from "primereact/skeleton";
 import * as SS from "../components/main/styles";
 import { ProgressSpinner } from "primereact/progressspinner";
-import { DndProvider, useDrop } from "react-dnd";
+import { useDrop } from "react-dnd";
 import { Toast } from "primereact/toast";
 import "../components/mention.css";
 import { Menu } from "primereact/menu";
-import { MenuItem, MenuItemCommandEvent } from "primereact/menuitem";
+import { MenuItem } from "primereact/menuitem";
 import { ThemeContext } from "styled-components";
-import ReferencePopup from "../components/documents/document_refrence/reference_popup";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 let container: any;
 
@@ -464,10 +461,6 @@ const Document = () => {
     setIsLoadingToc(!isLoadingToc);
   }, [scrollRefs, scrollRefs.current, isEdit]);
 
-  useEffect(() => {
-    console.log("scroll : :::: : : ", scrollRef.current);
-  }, [isEdit]);
-
   const queryStyle = {
     minHeight: 55,
     width: "100%",
@@ -597,6 +590,7 @@ const Document = () => {
                               {
                                 full_text: updateItem.data.content,
                                 mentions: [],
+                                markdown_headers: [],
                               },
                               null
                             ).then((res) => {
@@ -729,9 +723,22 @@ const Document = () => {
                   onClick={async () => {
                     setIsLoadingPDF(true);
                     setIsOpenView(true);
-                    setTimeout(() => {
-                      toPDF();
-                    }, 3000);
+                    const element = targetRef.current;
+                    console.log(element);
+                    const canvas = await html2canvas(element, {
+                      useCORS: true,
+                      onclone: (clonedDoc) => {
+                        // 필요한 스타일링 적용
+                        clonedDoc.querySelectorAll("*").forEach((node) => {
+                          const computedStyle = getComputedStyle(node);
+                          if (computedStyle.color.includes("color(")) {
+                            console.log(computedStyle);
+                          }
+                          // 다른 스타일 속성도 유사하게 처리
+                        });
+                      },
+                    });
+                    toPDF();
                     setTimeout(() => {
                       setIsLoadingPDF(false);
                       setIsOpenView(false);
@@ -768,7 +775,11 @@ const Document = () => {
             </S.DocumentHeaderButtonWrapper>
           </S.DocumentHeader>
           <S.DocumentContentWrapper isOpen={isOpen}>
-            <S.DocumentContentContianer ref={scrollRef}>
+            <S.DocumentContentContianer
+              ref={(ref) => {
+                scrollRef.current = ref;
+              }}
+            >
               <S.DocumentScrollWrapper
                 ref={targetRef}
                 style={
@@ -1091,6 +1102,48 @@ const Document = () => {
                               </S.DocumentRightBarText>
                               <S.DocumentRightOl>
                                 <S.DocumentRightBarText
+                                  key={`${scrollRefs.current[
+                                    4 * index + 1
+                                  ].current?.id
+                                    .replaceAll("#", "")
+                                    .replaceAll("*", "")}`}
+                                  isInterect={false}
+                                  onClick={() => {
+                                    console.log(
+                                      scrollRefs.current[4 * index + 2]
+                                    );
+                                    // item.current?.scrollIntoView({
+                                    //   behavior: "smooth",
+                                    // });
+                                    scrollRefs.current[
+                                      4 * index + 1
+                                    ].current?.scrollIntoView({
+                                      behavior: "smooth",
+                                    });
+                                  }}
+                                >
+                                  {/* {item?.nodeValue} */}
+                                  <div>{`${scrollRefs.current[
+                                    4 * index + 1
+                                  ].current?.id
+                                    .replaceAll("#", "")
+                                    .replaceAll("*", "")}`}</div>
+                                </S.DocumentRightBarText>
+                                <S.DocumentTwoDepthRightOl>
+                                  {documentList[
+                                    index
+                                  ].content.markdown_headers.map((i: any) => {
+                                    return (
+                                      <S.DocumentRightBarText
+                                        isInterect={false}
+                                      >
+                                        {/* {item?.nodeValue} */}
+                                        <div>{i.text}</div>
+                                      </S.DocumentRightBarText>
+                                    );
+                                  })}
+                                </S.DocumentTwoDepthRightOl>
+                                <S.DocumentRightBarText
                                   key={`${
                                     scrollRefs.current[4 * index + 1].current
                                       ?.id
@@ -1104,33 +1157,6 @@ const Document = () => {
                                     //   behavior: "smooth",
                                     // });
                                     scrollRefs.current[
-                                      4 * index + 1
-                                    ].current?.scrollIntoView({
-                                      behavior: "smooth",
-                                    });
-                                  }}
-                                >
-                                  {/* {item?.nodeValue} */}
-                                  <div>{`${
-                                    scrollRefs.current[4 * index + 1].current
-                                      ?.id
-                                  }`}</div>
-                                </S.DocumentRightBarText>
-                                <S.DocumentRightBarText
-                                  key={`${scrollRefs.current[
-                                    4 * index + 2
-                                  ].current?.id
-                                    .replaceAll("#", "")
-                                    .replaceAll("*", "")}`}
-                                  isInterect={false}
-                                  onClick={() => {
-                                    console.log(
-                                      scrollRefs.current[4 * index + 2]
-                                    );
-                                    // item.current?.scrollIntoView({
-                                    //   behavior: "smooth",
-                                    // });
-                                    scrollRefs.current[
                                       4 * index + 2
                                     ].current?.scrollIntoView({
                                       behavior: "smooth",
@@ -1138,11 +1164,10 @@ const Document = () => {
                                   }}
                                 >
                                   {/* {item?.nodeValue} */}
-                                  <div>{`${scrollRefs.current[
-                                    4 * index + 2
-                                  ].current?.id
-                                    .replaceAll("#", "")
-                                    .replaceAll("*", "")}`}</div>
+                                  <div>{`${
+                                    scrollRefs.current[4 * index + 2].current
+                                      ?.id
+                                  }`}</div>
                                 </S.DocumentRightBarText>
                                 <S.DocumentRightBarText
                                   key={`${
