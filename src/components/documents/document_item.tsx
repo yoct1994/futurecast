@@ -373,37 +373,6 @@ const DocumentItem = ({
           </S.RetryButton>
         </S.DocumentContainer>
       )}
-      {item ? (
-        item.children.length === 0 ? (
-          <></>
-        ) : (
-          item.children.length > 4 && (
-            <S.SubDocumentViewMore>
-              <S.SubDocumentViewMoreLine />
-              <S.SubDocumentViewMoreButton
-                ref={viewMoreRef}
-                onClick={(e) => {
-                  console.log("CLICK");
-                  if (viewMoreRef.current?.classList.contains("view_more")) {
-                    viewMoreRef.current?.classList.remove("view_more");
-                    setMoreNum(4);
-                  } else {
-                    viewMoreRef.current?.classList.add("view_more");
-                    setMoreNum(item.children.length);
-                  }
-                }}
-              >
-                <ChevronDown />
-                {viewMoreRef.current?.classList.contains("view_more")
-                  ? "CLOSE"
-                  : "VIEW MORE"}
-              </S.SubDocumentViewMoreButton>
-            </S.SubDocumentViewMore>
-          )
-        )
-      ) : (
-        <></>
-      )}
       {isEdit ? (
         <S.AnswerWrapper
           data-color-mode={isDarkMode ? "dark" : "light"}
@@ -733,6 +702,37 @@ const DocumentItem = ({
             </>
           )}
         </S.SubDocumentGrid>
+        {item ? (
+          item.children.length === 0 ? (
+            <></>
+          ) : (
+            item.children.length > 4 && (
+              <S.SubDocumentViewMore>
+                <S.SubDocumentViewMoreLine />
+                <S.SubDocumentViewMoreButton
+                  ref={viewMoreRef}
+                  onClick={(e) => {
+                    console.log("CLICK");
+                    if (viewMoreRef.current?.classList.contains("view_more")) {
+                      viewMoreRef.current?.classList.remove("view_more");
+                      setMoreNum(4);
+                    } else {
+                      viewMoreRef.current?.classList.add("view_more");
+                      setMoreNum(item.children.length);
+                    }
+                  }}
+                >
+                  <ChevronDown />
+                  {viewMoreRef.current?.classList.contains("view_more")
+                    ? "CLOSE"
+                    : "VIEW MORE"}
+                </S.SubDocumentViewMoreButton>
+              </S.SubDocumentViewMore>
+            )
+          )
+        ) : (
+          <></>
+        )}
       </S.NewsWrapper>
       <S.DocumentItemDivider>
         <S.DocumentLine />

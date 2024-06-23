@@ -63,8 +63,9 @@ import "../components/mention.css";
 import { Menu } from "primereact/menu";
 import { MenuItem } from "primereact/menuitem";
 import { ThemeContext } from "styled-components";
-import html2canvas from "html2canvas";
+import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
+import DocumentTree from "../components/documents/document_tree_item/document_tree";
 
 let container: any;
 
@@ -204,13 +205,15 @@ const Document = () => {
     getCollections();
   }, [treeData, isDarkMode]);
 
-  const { toPDF, targetRef } = usePDF({
-    method: "save",
-    page: {
-      margin: Margin.MEDIUM,
-    },
-    filename: `${id}.pdf`,
-  });
+  // const { toPDF, targetRef } = usePDF({
+  //   method: "save",
+  //   page: {
+  //     margin: Margin.MEDIUM,
+  //   },
+  //   filename: `${id}.pdf`,
+  // });
+
+  const targetRef = useRef<HTMLDivElement>(null);
 
   const [isLoadingPDF, setIsLoadingPDF] = useState(false);
 
@@ -427,7 +430,6 @@ const Document = () => {
 
   useEffect(() => {
     // scrollRefs.current = [];
-    scrollRef.current?.scrollTo(0, 0);
     // setNowWitch(0);
     const token = cookies.get("TOKEN");
     console.log(token);
@@ -455,6 +457,7 @@ const Document = () => {
 
     getDocumentData();
     getDocumentTree();
+    targetRef.current?.scrollTo(0, 0);
   }, [id]);
 
   useEffect(() => {
@@ -516,16 +519,7 @@ const Document = () => {
                   if (item === "#DIVIDER#") {
                     return <Divider />;
                   }
-                  return (
-                    <S.DocumentTreeText
-                      as={Link}
-                      to={`${
-                        item.id === "Main" ? "/" : `/document/${item.id}`
-                      }`}
-                    >
-                      {item.display}
-                    </S.DocumentTreeText>
-                  );
+                  return <DocumentTree item={item} />;
                 })
               )}
             </S.DocumentTreeContainer>
@@ -723,22 +717,57 @@ const Document = () => {
                   onClick={async () => {
                     setIsLoadingPDF(true);
                     setIsOpenView(true);
-                    const element = targetRef.current;
-                    console.log(element);
-                    const canvas = await html2canvas(element, {
-                      useCORS: true,
-                      onclone: (clonedDoc) => {
-                        // 필요한 스타일링 적용
-                        clonedDoc.querySelectorAll("*").forEach((node) => {
-                          const computedStyle = getComputedStyle(node);
-                          if (computedStyle.color.includes("color(")) {
-                            console.log(computedStyle);
-                          }
-                          // 다른 스타일 속성도 유사하게 처리
+                    window.scrollTo(0, 0);
+                    scrollRef.current?.scrollTo(0, 0);
+                    setTimeout(async () => {
+                      const element = targetRef.current;
+
+                      if (element) {
+                        element.scrollTo(0, 0);
+                        const pdf = new jsPDF("p", "mm", "a4");
+                        const pdfWidth = pdf.internal.pageSize.getWidth();
+                        const pdfHeight = pdf.internal.pageSize.getHeight();
+                        const padding = 10;
+                        const canvasWidth = element.scrollWidth;
+                        const canvasHeight = element.scrollHeight;
+
+                        const canvas = await html2canvas(element, {
+                          scrollX: 0,
+                          scrollY: 0,
+                          windowWidth: canvasWidth,
+                          windowHeight: canvasHeight,
+                          scale: 2,
                         });
-                      },
-                    });
-                    toPDF();
+
+                        const imgData = canvas.toDataURL("image/png");
+                        const imgProps = pdf.getImageProperties(imgData);
+                        const imgWidth = pdfWidth - 2 * padding;
+                        const imgHeight =
+                          (imgProps.height * pdfWidth) / imgProps.width -
+                          2 * padding;
+
+                        let heightLeft = imgHeight;
+                        let position = 0;
+
+                        while (heightLeft > 0) {
+                          pdf.addImage(
+                            imgData,
+                            "PNG",
+                            padding,
+                            padding + position,
+                            imgWidth,
+                            imgHeight
+                          );
+                          heightLeft -= pdfHeight - 2 * padding;
+                          position -= pdfHeight - 2 * padding;
+                          if (heightLeft > 0) {
+                            pdf.addPage();
+                          }
+                        }
+                        pdf.save(`${id}.pdf`);
+                      }
+                    }, 3000);
+
                     setTimeout(() => {
                       setIsLoadingPDF(false);
                       setIsOpenView(false);
@@ -782,13 +811,13 @@ const Document = () => {
             >
               <S.DocumentScrollWrapper
                 ref={targetRef}
-                style={
-                  isLoadingPDF
-                    ? {
-                        overflow: "visible",
-                      }
-                    : {}
-                }
+                // style={
+                //   isLoadingPDF
+                //     ? {
+                //         overflow: "visible",
+                //       }
+                //     : {}
+                // }
               >
                 <S.DocumentContents>
                   {!documents ? (
@@ -1130,18 +1159,23 @@ const Document = () => {
                                     .replaceAll("*", "")}`}</div>
                                 </S.DocumentRightBarText>
                                 <S.DocumentTwoDepthRightOl>
-                                  {documentList[
-                                    index
-                                  ].content.markdown_headers.map((i: any) => {
-                                    return (
-                                      <S.DocumentRightBarText
-                                        isInterect={false}
-                                      >
-                                        {/* {item?.nodeValue} */}
-                                        <div>{i.text}</div>
-                                      </S.DocumentRightBarText>
-                                    );
-                                  })}
+                                  {documentList[index] &&
+                                  documentList[index].content ? (
+                                    documentList[
+                                      index
+                                    ].content.markdown_headers.map((i: any) => {
+                                      return (
+                                        <S.DocumentRightBarText
+                                          isInterect={false}
+                                        >
+                                          {/* {item?.nodeValue} */}
+                                          <div>{i.text}</div>
+                                        </S.DocumentRightBarText>
+                                      );
+                                    })
+                                  ) : (
+                                    <></>
+                                  )}
                                 </S.DocumentTwoDepthRightOl>
                                 <S.DocumentRightBarText
                                   key={`${
@@ -1216,7 +1250,7 @@ const Document = () => {
           place="bottom"
         />
         <Toast ref={toast} />
-        {isLoading && (
+        {(isLoading || isLoadingPDF) && (
           <SS.LoadingWrapper>
             <ProgressSpinner color="#5661f6" />
           </SS.LoadingWrapper>

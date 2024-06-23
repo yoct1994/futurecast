@@ -17,6 +17,7 @@ import { ReactComponent as GravityOff } from "../../../assets/gravity-off.svg";
 import { ReactComponent as GravityOn } from "../../../assets/gravity-on.svg";
 import { ReactComponent as Normal } from "../../../assets/normal-algorithm.svg";
 import { ReactComponent as Tree } from "../../../assets/tree-algotithm.svg";
+import { Color } from "vis-network";
 
 type Props = {
   item: any;
@@ -464,6 +465,16 @@ const ReferencePopup = ({
     return result.slice(0, maxLines).join("\n");
   }
 
+  const getConnectedNodes = (nodeId: string) => {
+    const connectedEdges = graph!.edges.filter(
+      (edge) => edge.from === nodeId || edge.to === nodeId
+    );
+    const connectedNodeIds = connectedEdges.map((edge) =>
+      edge.from === nodeId ? edge.to : edge.from
+    );
+    return connectedNodeIds;
+  };
+
   return (
     <S.ReferencePopupWrapper>
       <S.ReferencePopupContainer>
@@ -507,6 +518,51 @@ const ReferencePopup = ({
               style={{
                 height: "100%",
                 background: theme?.color.chartBackground,
+              }}
+              events={{
+                selectNode: (event) => {
+                  const { nodes } = event;
+                  const selectedNodeId = nodes[0];
+                  const connectedNodeIds = getConnectedNodes(selectedNodeId);
+
+                  setGraph((prevGraph) => ({
+                    ...prevGraph!,
+                    nodes: prevGraph!.nodes.map((node) => ({
+                      ...node,
+                      color: {
+                        ...(node.color as Color),
+                        border:
+                          node.id === selectedNodeId ||
+                          connectedNodeIds.includes(node.id)
+                            ? "rgba(86, 97, 246, 1)"
+                            : "rgba(117, 117, 117, 1)",
+                      },
+                      font: {
+                        ...(node.font as any),
+                        color:
+                          selectedNodeId === node.id
+                            ? theme?.color.white
+                            : theme?.color.black,
+                      },
+                    })),
+                  }));
+                },
+                deselectNode: (params) => {
+                  setGraph((prevGraph) => ({
+                    ...prevGraph!,
+                    nodes: prevGraph!.nodes.map((node) => ({
+                      ...node,
+                      color: {
+                        ...(node.color as Color),
+                        border: "rgba(117, 117, 117, 1)",
+                      },
+                      font: {
+                        ...(node.font as any),
+                        color: theme?.color.black,
+                      },
+                    })),
+                  }));
+                },
               }}
               options={{
                 layout: {

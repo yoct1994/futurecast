@@ -48,10 +48,40 @@ export const DocumentTreeText = styled.div`
   color: ${({ theme }) => theme.color.black};
   font-family: "Pretendard-Regular";
   max-width: 200px;
-  overflow: hidden;
+  overflow-y: visible;
+  text-decoration: none;
+`;
+
+export const DocumentTreeTextContainer = styled.div`
+  max-width: 200px;
   white-space: nowrap;
   text-overflow: ellipsis;
   text-decoration: none;
+  overflow-x: hidden;
+`;
+
+export const DocumentTreeWrapper = styled.div`
+  position: relative;
+  max-width: 200px;
+`;
+
+export const TreeViewMoreWrapper = styled.div`
+  width: 300px;
+  background-color: ${({ theme }) => theme.color.white};
+  border: 1px solid rgba(233, 233, 233, 1);
+  border-radius: 5px;
+  position: absolute;
+  top: 24px;
+  left: -10px;
+  z-index: 20;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 7px;
+  padding-bottom: 7px;
 `;
 
 export const DocumentHeaderButtonWrapper = styled.div`
@@ -414,10 +444,11 @@ export const SubDocumentItem = styled.div`
   display: flex;
   padding-top: 24px;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   text-decoration: none;
   padding-left: 24px;
   padding-right: 24px;
+  padding-bottom: 24px;
   gap: 16px;
   border: 1px solid ${({ theme }) => theme.color.grey1};
   cursor: pointer;
@@ -466,7 +497,7 @@ export const QuerySendButton = styled.div<{ query: string }>`
 
 export const SubDocumentQuery = styled.div`
   width: calc((812px - 16px) / 2 - 48px);
-  font-size: 18px;
+  font-size: 14px;
   color: ${({ theme }) => theme.color.black};
   font-family: "Pretendard-SemiBold";
   overflow: hidden;
@@ -502,8 +533,8 @@ export const SubDocumentTagContainer = styled.div`
 export const SubDocumentTag = styled.div<{ index: number; type: string }>`
   padding-left: 12px;
   padding-right: 12px;
-  padding-top: 7.5px;
-  padding-bottom: 7.5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   font-size: 14px;
   font-family: "Pretendard-Regular";
   background-color: rgba(119, 119, 119, 0.1);
@@ -522,7 +553,36 @@ export const SubDocumentTag = styled.div<{ index: number; type: string }>`
       ? "rgba(131, 58, 180, 1)"
       : props.type === "search"
       ? "rgba(225, 48, 108, 1)"
+      : props.type === "view-more"
+      ? "rgba(175, 175, 175, 1)"
       : "rgba(221, 68, 35, 1)"};
+  position: relative;
+`;
+
+export const SubDocumentViewMoreWrapper = styled.div`
+  width: 300px;
+  background-color: ${({ theme }) => theme.color.white};
+  border: 1px solid rgba(233, 233, 233, 1);
+  position: absolute;
+  top: 32px;
+  left: -130px;
+  z-index: 20;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+`;
+
+export const SubDocumentViewMoreText = styled.div`
+  font-family: "Pretendard-Regular";
+  font-size: 13px;
+  text-align: left;
+  color: rgba(82, 82, 82, 1);
 `;
 
 export const SubDocumentViewMore = styled.div`
@@ -587,6 +647,10 @@ export const AnswerContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  * > h1 {
+    word-spacing: normal;
+    white-space: normal;
+  }
 `;
 
 export const CustomFontMarkDown = styled(Markdown)`
@@ -888,6 +952,8 @@ export const BarChart = styled.div`
   }
 `;
 
+export const ExportData = styled.div``;
+
 export const Cover = styled.div`
   width: 100%;
   height: 100%;
@@ -949,13 +1015,13 @@ export const CausalChart = styled.div<{
   }
 
   * > div.vis-network div.vis-navigation div.vis-button {
-    width: 24px;
-    height: 24px;
+    width: 27px;
+    height: 27px;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #e9e9e9;
-    background-position: 5px 5px;
+    background-position: 6.5px 6.5px;
     border-radius: 6px;
 
     &:hover {
@@ -1027,5 +1093,22 @@ export const CausalChart = styled.div<{
   }
   &:focus {
     outline: none;
+  }
+`;
+
+export const NodeOptionButton = styled.div`
+  width: 27px;
+  height: 27px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e9e9e9;
+  position: absolute;
+  cursor: pointer;
+  z-index: 200;
+
+  &:active {
+    background-color: rgba(204, 204, 204, 1);
   }
 `;

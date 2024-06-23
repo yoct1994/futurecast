@@ -5,6 +5,7 @@ import { AgChartOptions } from "ag-charts-community";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import NodeGraph, { Node } from "react-vis-graph-wrapper";
 import { AgCharts } from "ag-charts-enterprise";
+import { ReactComponent as Export } from "../../../assets/export-chart.svg";
 import { useDrag } from "react-dnd";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
@@ -41,6 +42,30 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
   AgCharts.setLicenseKey(
     "Using_this_{AG_Charts}_Enterprise_key_{AG-061368}_in_excess_of_the_licence_granted_is_not_permitted___Please_report_misuse_to_legal@ag-grid.com___For_help_with_changing_this_key_please_contact_info@ag-grid.com___{LG_AI_Research}_is_granted_a_{Single_Application}_Developer_License_for_the_application_{timeseries_forecasting}_only_for_{1}_Front-End_JavaScript_developer___All_Front-End_JavaScript_developers_working_on_{timeseries_forecasting}_need_to_be_licensed___{timeseries_forecasting}_has_not_been_granted_a_Deployment_License_Add-on___This_key_works_with_{AG_Charts}_Enterprise_versions_released_before_{10_June_2025}____[v3]_[02]_MTc0OTUxMDAwMDAwMA==fc9c0e0f2d32fb440d1a3642614c44b5"
   );
+
+  const downloadFile = () => {
+    const itemData = {
+      type: item.type,
+      values: item.values,
+    };
+
+    console.log(itemData);
+
+    const blob = new Blob([JSON.stringify(itemData)], {
+      type: "application/json",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${item.id}-${item.type}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     if (isEdit) {
@@ -98,12 +123,6 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
             },
           },
         ],
-        zoom: {
-          enableAxisDragging: false,
-          enablePanning: true,
-          enableScrolling: true,
-          enableSelecting: false,
-        },
         axes: [
           {
             type: "number",
@@ -320,9 +339,6 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
         legend: {
           enabled: false,
         },
-        zoom: {
-          enabled: false,
-        },
         axes: [
           {
             type: "ordinal-time",
@@ -457,12 +473,17 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
                 setPickIndex(index);
               }}
             />
-            <AgChartsReact
-              onChartReady={(chart) => {
-                console.log("options", chart.getOptions());
+            <AgChartsReact options={options} />
+            <S.NodeOptionButton
+              style={{ top: 10, right: 15 }}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                downloadFile();
               }}
-              options={options}
-            />
+            >
+              <Export fill={"black"} />
+            </S.NodeOptionButton>
           </S.BarChart>
         )}
       {item.type === "causal-graph" && (
@@ -556,6 +577,16 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
               }),
             }}
           />
+          <S.NodeOptionButton
+            style={{ top: 10, right: 15 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              downloadFile();
+            }}
+          >
+            <Export fill={"black"} />
+          </S.NodeOptionButton>
         </S.CausalChart>
       )}
     </S.BarChartWrapper>

@@ -347,6 +347,7 @@ const Menubar = ({ children }: Props) => {
                   const cookies = new Cookies();
                   await auth.signOut().then(async (res) => {
                     cookies.remove("TOKEN");
+                    window.location.replace("/login");
                   });
                   window.location.replace("/login");
                 }}
