@@ -386,7 +386,7 @@ const ReferencePopup = ({
               color: theme?.color.black,
               strokeWidth: 0,
             },
-            length: 500,
+            length: 550,
             physics: true,
           };
         }),
@@ -520,10 +520,39 @@ const ReferencePopup = ({
                 background: theme?.color.chartBackground,
               }}
               events={{
+                dragStart: (event) => {
+                  const { nodes } = event;
+                  const selectedNodeId = nodes[0];
+                  const connectedNodeIds = getConnectedNodes(selectedNodeId);
+                  console.log(connectedNodeIds);
+
+                  setGraph((prevGraph) => ({
+                    ...prevGraph!,
+                    nodes: prevGraph!.nodes.map((node) => ({
+                      ...node,
+                      color: {
+                        ...(node.color as Color),
+                        border:
+                          node.id === selectedNodeId ||
+                          connectedNodeIds.includes(node.id)
+                            ? "rgba(86, 97, 246, 1)"
+                            : "rgba(117, 117, 117, 1)",
+                      },
+                      font: {
+                        ...(node.font as any),
+                        color:
+                          selectedNodeId === node.id
+                            ? theme?.color.white
+                            : theme?.color.black,
+                      },
+                    })),
+                  }));
+                },
                 selectNode: (event) => {
                   const { nodes } = event;
                   const selectedNodeId = nodes[0];
                   const connectedNodeIds = getConnectedNodes(selectedNodeId);
+                  console.log(connectedNodeIds);
 
                   setGraph((prevGraph) => ({
                     ...prevGraph!,
