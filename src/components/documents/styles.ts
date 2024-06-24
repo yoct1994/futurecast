@@ -68,6 +68,7 @@ export const DocumentTreeWrapper = styled.div`
 export const TreeViewMoreWrapper = styled.div`
   width: 300px;
   background-color: ${({ theme }) => theme.color.white};
+  color: ${({ theme }) => theme.color.black};
   border: 1px solid rgba(233, 233, 233, 1);
   border-radius: 5px;
   position: absolute;
@@ -562,6 +563,7 @@ export const SubDocumentTag = styled.div<{ index: number; type: string }>`
 export const SubDocumentViewMoreWrapper = styled.div`
   width: 300px;
   background-color: ${({ theme }) => theme.color.white};
+  color: ${({ theme }) => theme.color.black};
   border: 1px solid rgba(233, 233, 233, 1);
   position: absolute;
   top: 32px;
