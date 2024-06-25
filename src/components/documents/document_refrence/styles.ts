@@ -12,6 +12,7 @@ import DarkAddNode from "../../../assets/node_graph_edit/dark/AddNode.svg";
 import DarkDelete from "../../../assets/node_graph_edit/dark/DeleteNode.svg";
 import DarkEdit from "../../../assets/node_graph_edit/dark/EditEdge.svg";
 import DarkBack from "../../../assets/node_graph_edit/dark/Back.svg";
+import Scrollbars from "react-custom-scrollbars";
 
 export const ReferencePopupWrapper = styled.div`
   width: 100%;
@@ -29,19 +30,23 @@ export const ReferencePopupWrapper = styled.div`
 `;
 
 export const ReferencePopupContainer = styled.div`
-  width: 1050px;
+  width: 1100px;
   height: 90vh;
   background-color: ${({ theme }) => theme.color.white};
   border-radius: 16px;
   box-sizing: border-box;
-  padding: 24px;
   box-shadow: 0px -8px 36px 0px rgba(0, 0, 0, 0.17);
-  overflow: scroll;
-  &::-webkit-scrollbar {
-    display: none;
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  & > * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+`;
+
+export const Scrollbar = styled.div`
+  padding: 14px 40px 14px 44px;
 `;
 
 export const ReferencePopupHeaderWrapper = styled.div`

@@ -3,7 +3,7 @@ const darkColor = {
   white: "rgba(25, 25, 25, 1)",
   black: "rgba(255, 255, 255, 1)",
   dim: "rgba(255, 255, 255, 0.1)",
-  divider: "rgba(255, 255, 255, 0.05)",
+  divider: "rgba(255, 255, 255, 0.1)",
   popupButton: "rgba(117, 117, 117, 1)",
   grey1: "rgba(39, 39, 39, 1)",
   grey2: "rgba(255, 255, 255, 0.05)",

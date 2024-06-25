@@ -5,12 +5,17 @@ import { auth } from "../utils/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Cookies } from "react-cookie";
 import { ReactComponent as Logo } from "../assets/Logo.svg";
+import { ReactComponent as LogoDark } from "../assets/LogoDark.svg";
+import { useRecoilValue } from "recoil";
+import { isDarkModeState } from "../recoil/recoil";
 
 const LoginPage = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const cookies = new Cookies();
+
+  const isDarkMode = useRecoilValue(isDarkModeState);
 
   useEffect(() => {
     const token = cookies.get("TOKEN");
@@ -23,9 +28,7 @@ const LoginPage = () => {
 
   return (
     <S.LoginWrapper>
-      <S.LogoImg>
-        <Logo />
-      </S.LogoImg>
+      <S.LogoImg>{isDarkMode ? <LogoDark /> : <Logo />}</S.LogoImg>
       <S.WelcomeText>Welcome!</S.WelcomeText>
       <S.LoginContainer>
         <Input placeholder="Email address" type="email" inputRef={emailRef} />

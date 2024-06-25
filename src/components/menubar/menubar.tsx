@@ -43,7 +43,6 @@ import PopupMenuItem from "../documents/menu/menu_item";
 import { auth } from "../../utils/firebase";
 import FolderItem from "../documents/menu/folder_item";
 import { User } from "firebase/auth";
-import { Root, Thumb } from "@radix-ui/react-switch";
 import { ThemeContext } from "styled-components";
 
 type Props = {

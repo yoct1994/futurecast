@@ -420,9 +420,7 @@ const DocumentItem = ({
             <AnswerLogo />
           </div>
           <S.AnswerContainer
-            id={`${
-              item && item.content ? item.content.full_text : "NO CONTENTS"
-            }`}
+            id={`${item && item.content ? "Answer" : "NO CONTENTS"}`}
             ref={index === -1 ? undefined : refs.current[4 * index + 1]}
           >
             {/* <S.CustomFontMarkDown

@@ -16,6 +16,7 @@ import {
 } from "../../../recoil/recoil";
 import { ThemeContext } from "styled-components";
 import MDEditor from "@uiw/react-md-editor";
+import { fontFamily } from "html2canvas/dist/types/css/property-descriptors/font-family";
 
 type Props = {
   item: any;
@@ -453,8 +454,9 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
       ) : (
         <S.MarkdownTheme>
           <MarkdownPreview
+            style={{ fontFamily: "Pretendard" }}
             wrapperElement={{
-              "data-color-mode": "light",
+              "data-color-mode": "dark",
             }}
             source={item.description ? item.description : "NO CONTENTS"}
           />

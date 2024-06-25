@@ -717,8 +717,8 @@ const Document = () => {
                   onClick={async () => {
                     setIsLoadingPDF(true);
                     setIsOpenView(true);
-                    window.scrollTo(0, 0);
-                    scrollRef.current?.scrollTo(0, 0);
+                    // window.scrollTo(0, 0);
+                    // scrollRef.current?.scrollTo(0, 0);
                     setTimeout(async () => {
                       const element = targetRef.current;
 
@@ -727,104 +727,47 @@ const Document = () => {
                         const pdf = new jsPDF("p", "mm", "a4");
                         const pdfWidth = pdf.internal.pageSize.getWidth();
                         const pdfHeight = pdf.internal.pageSize.getHeight();
-                        const padding = 10;
-                        const canvasWidth = element.scrollWidth;
-                        const canvasHeight = element.scrollHeight;
+                        const canvasWidth = element.scrollWidth + 500;
+                        const canvasHeight = element.scrollHeight + 500;
 
                         const canvas = await html2canvas(element, {
-                          scrollX: 0,
-                          scrollY: 0,
                           windowWidth: canvasWidth,
                           windowHeight: canvasHeight,
-                          scale: 2,
-                          useCORS: false,
-                          allowTaint: false,
-                          logging: true,
                         });
-                        const ua = navigator.userAgent.toLowerCase();
-                        const isSafari =
-                          ua.includes("safari") && !ua.includes("chrome");
 
-                        if (isSafari) {
-                          canvas.toBlob(async (blob) => {
-                            if (blob) {
-                              const url = URL.createObjectURL(blob);
+                        const imgData = canvas.toDataURL("image/png");
+                        const imgProps = pdf.getImageProperties(imgData);
+                        const imgWidth = pdfWidth;
+                        const imgHeight =
+                          (imgProps.height * pdfWidth) / imgProps.width;
 
-                              await new Promise((resolve, reject) => {
-                                const img = new Image();
-                                img.onload = () => {
-                                  const imgProps = pdf.getImageProperties(url);
-                                  const imgWidth = pdfWidth - 2 * padding;
-                                  const imgHeight =
-                                    (imgProps.height * pdfWidth) /
-                                      imgProps.width -
-                                    2 * padding;
+                        let heightLeft = imgHeight;
+                        let position = 0;
 
-                                  let heightLeft = imgHeight;
-                                  let position = 0;
-
-                                  while (heightLeft > 0) {
-                                    pdf.addImage(
-                                      url,
-                                      "PNG",
-                                      padding,
-                                      padding + position,
-                                      imgWidth,
-                                      imgHeight
-                                    );
-                                    heightLeft -= pdfHeight - 2 * padding;
-                                    position -= pdfHeight - 2 * padding;
-                                    if (heightLeft > 0) {
-                                      pdf.addPage();
-                                    }
-                                  }
-
-                                  URL.revokeObjectURL(url); // URL 객체 해제
-                                  resolve(null);
-                                };
-                                img.onerror = reject;
-                                img.src = url;
-                              });
-
-                              pdf.save(`${id}.pdf`);
-                            }
-                          }, "image/png");
-                        } else {
-                          const imgData = canvas.toDataURL("image/png");
-                          const imgProps = pdf.getImageProperties(imgData);
-                          const imgWidth = pdfWidth - 2 * padding;
-                          const imgHeight =
-                            (imgProps.height * pdfWidth) / imgProps.width -
-                            2 * padding;
-
-                          let heightLeft = imgHeight;
-                          let position = 0;
-
-                          while (heightLeft > 0) {
-                            pdf.addImage(
-                              imgData,
-                              "PNG",
-                              padding,
-                              padding + position,
-                              imgWidth,
-                              imgHeight
-                            );
-                            heightLeft -= pdfHeight - 2 * padding;
-                            position -= pdfHeight - 2 * padding;
-                            if (heightLeft > 0) {
-                              pdf.addPage();
-                            }
+                        while (heightLeft > 0) {
+                          pdf.addImage(
+                            imgData,
+                            "PNG",
+                            0,
+                            position,
+                            imgWidth,
+                            imgHeight
+                          );
+                          heightLeft -= pdfHeight;
+                          position -= pdfHeight;
+                          if (heightLeft > 0) {
+                            pdf.addPage();
                           }
-
-                          pdf.save(`${id}.pdf`);
                         }
+
+                        pdf.save(`${id}.pdf`);
+
+                        setTimeout(() => {
+                          setIsLoadingPDF(false);
+                          setIsOpenView(false);
+                        }, 2000);
                       }
                     }, 3000);
-
-                    setTimeout(() => {
-                      setIsLoadingPDF(false);
-                      setIsOpenView(false);
-                    }, 4000);
                   }}
                 />
                 <Delete

@@ -18,6 +18,7 @@ import { ReactComponent as GravityOn } from "../../../assets/gravity-on.svg";
 import { ReactComponent as Normal } from "../../../assets/normal-algorithm.svg";
 import { ReactComponent as Tree } from "../../../assets/tree-algotithm.svg";
 import { Color } from "vis-network";
+import Scrollbars from "react-custom-scrollbars";
 
 type Props = {
   item: any;
@@ -478,410 +479,416 @@ const ReferencePopup = ({
   return (
     <S.ReferencePopupWrapper>
       <S.ReferencePopupContainer>
-        <S.ReferencePopupHeaderWrapper>
-          <Close
-            style={{
-              cursor: "pointer",
-            }}
-            fill={theme?.color.black}
-            onClick={(e) => {
-              // e.stopPropagation();
-              setPickRef(null);
-            }}
-          />
-        </S.ReferencePopupHeaderWrapper>
-        <S.MarkdownTheme>
-          <MarkdownPreview
-            wrapperElement={{
-              "data-color-mode": "light",
-            }}
-            source={item.description ? item.description : "NO CONTENTS"}
-          />
-        </S.MarkdownTheme>
-        {options &&
-          (item.type === "bar-chart" ||
-            item.type === "candle-chart" ||
-            item.type === "fan-chart") && (
-            <S.BarChart>
-              <AgChartsReact
-                onChartReady={(chart) => {
-                  console.log("options", chart.getOptions());
+        <Scrollbars autoHide>
+          <S.Scrollbar>
+            <S.ReferencePopupHeaderWrapper>
+              <Close
+                style={{
+                  cursor: "pointer",
                 }}
-                options={options}
+                fill={theme?.color.black}
+                onClick={(e) => {
+                  // e.stopPropagation();
+                  setPickRef(null);
+                }}
               />
-            </S.BarChart>
-          )}
-        {item.type === "causal-graph" && (
-          <S.CausalChart isDarkMode={isDarkMode}>
-            <NodeGraph
-              ref={nodeRef}
-              style={{
-                height: "100%",
-                background: theme?.color.chartBackground,
-              }}
-              events={{
-                dragStart: (event) => {
-                  const { nodes } = event;
-                  const selectedNodeId = nodes[0];
-                  const connectedNodeIds = getConnectedNodes(selectedNodeId);
-                  console.log(connectedNodeIds);
+            </S.ReferencePopupHeaderWrapper>
+            <S.MarkdownTheme>
+              <MarkdownPreview
+                wrapperElement={{
+                  "data-color-mode": "light",
+                }}
+                source={item.description ? item.description : "NO CONTENTS"}
+              />
+            </S.MarkdownTheme>
+            {options &&
+              (item.type === "bar-chart" ||
+                item.type === "candle-chart" ||
+                item.type === "fan-chart") && (
+                <S.BarChart>
+                  <AgChartsReact
+                    onChartReady={(chart) => {
+                      console.log("options", chart.getOptions());
+                    }}
+                    options={options}
+                  />
+                </S.BarChart>
+              )}
+            {item.type === "causal-graph" && (
+              <S.CausalChart isDarkMode={isDarkMode}>
+                <NodeGraph
+                  ref={nodeRef}
+                  style={{
+                    height: "100%",
+                    background: theme?.color.chartBackground,
+                  }}
+                  events={{
+                    dragStart: (event) => {
+                      const { nodes } = event;
+                      const selectedNodeId = nodes[0];
+                      const connectedNodeIds =
+                        getConnectedNodes(selectedNodeId);
+                      console.log(connectedNodeIds);
 
-                  setGraph((prevGraph) => ({
-                    ...prevGraph!,
-                    nodes: prevGraph!.nodes.map((node) => ({
-                      ...node,
-                      color: {
-                        ...(node.color as Color),
-                        border:
-                          node.id === selectedNodeId ||
-                          connectedNodeIds.includes(node.id)
-                            ? "rgba(86, 97, 246, 1)"
-                            : "rgba(117, 117, 117, 1)",
+                      setGraph((prevGraph) => ({
+                        ...prevGraph!,
+                        nodes: prevGraph!.nodes.map((node) => ({
+                          ...node,
+                          color: {
+                            ...(node.color as Color),
+                            border:
+                              node.id === selectedNodeId ||
+                              connectedNodeIds.includes(node.id)
+                                ? "rgba(86, 97, 246, 1)"
+                                : "rgba(117, 117, 117, 1)",
+                          },
+                          font: {
+                            ...(node.font as any),
+                            color:
+                              selectedNodeId === node.id
+                                ? theme?.color.white
+                                : theme?.color.black,
+                          },
+                        })),
+                      }));
+                    },
+                    selectNode: (event) => {
+                      const { nodes } = event;
+                      const selectedNodeId = nodes[0];
+                      const connectedNodeIds =
+                        getConnectedNodes(selectedNodeId);
+                      console.log(connectedNodeIds);
+
+                      setGraph((prevGraph) => ({
+                        ...prevGraph!,
+                        nodes: prevGraph!.nodes.map((node) => ({
+                          ...node,
+                          color: {
+                            ...(node.color as Color),
+                            border:
+                              node.id === selectedNodeId ||
+                              connectedNodeIds.includes(node.id)
+                                ? "rgba(86, 97, 246, 1)"
+                                : "rgba(117, 117, 117, 1)",
+                          },
+                          font: {
+                            ...(node.font as any),
+                            color:
+                              selectedNodeId === node.id
+                                ? theme?.color.white
+                                : theme?.color.black,
+                          },
+                        })),
+                      }));
+                    },
+                    deselectNode: (params) => {
+                      setGraph((prevGraph) => ({
+                        ...prevGraph!,
+                        nodes: prevGraph!.nodes.map((node) => ({
+                          ...node,
+                          color: {
+                            ...(node.color as Color),
+                            border: "rgba(117, 117, 117, 1)",
+                          },
+                          font: {
+                            ...(node.font as any),
+                            color: theme?.color.black,
+                          },
+                        })),
+                      }));
+                    },
+                  }}
+                  options={{
+                    layout: {
+                      hierarchical: {
+                        enabled: isTree,
                       },
-                      font: {
-                        ...(node.font as any),
-                        color:
-                          selectedNodeId === node.id
-                            ? theme?.color.white
-                            : theme?.color.black,
-                      },
-                    })),
-                  }));
-                },
-                selectNode: (event) => {
-                  const { nodes } = event;
-                  const selectedNodeId = nodes[0];
-                  const connectedNodeIds = getConnectedNodes(selectedNodeId);
-                  console.log(connectedNodeIds);
+                    },
+                    edges: {
+                      color: theme?.color.white,
+                    },
+                    interaction: {
+                      zoomView: true,
+                      tooltipDelay: 0,
+                      navigationButtons: true,
+                    },
+                    physics: isGravity,
+                    manipulation: {
+                      enabled: isEdit,
+                      addNode: (nodeData: any, callback: Function) => {
+                        const label = prompt("Input node label");
 
-                  setGraph((prevGraph) => ({
-                    ...prevGraph!,
-                    nodes: prevGraph!.nodes.map((node) => ({
-                      ...node,
-                      color: {
-                        ...(node.color as Color),
-                        border:
-                          node.id === selectedNodeId ||
-                          connectedNodeIds.includes(node.id)
-                            ? "rgba(86, 97, 246, 1)"
-                            : "rgba(117, 117, 117, 1)",
-                      },
-                      font: {
-                        ...(node.font as any),
-                        color:
-                          selectedNodeId === node.id
-                            ? theme?.color.white
-                            : theme?.color.black,
-                      },
-                    })),
-                  }));
-                },
-                deselectNode: (params) => {
-                  setGraph((prevGraph) => ({
-                    ...prevGraph!,
-                    nodes: prevGraph!.nodes.map((node) => ({
-                      ...node,
-                      color: {
-                        ...(node.color as Color),
-                        border: "rgba(117, 117, 117, 1)",
-                      },
-                      font: {
-                        ...(node.font as any),
-                        color: theme?.color.black,
-                      },
-                    })),
-                  }));
-                },
-              }}
-              options={{
-                layout: {
-                  hierarchical: {
-                    enabled: isTree,
-                  },
-                },
-                edges: {
-                  color: theme?.color.white,
-                },
-                interaction: {
-                  zoomView: true,
-                  tooltipDelay: 0,
-                  navigationButtons: true,
-                },
-                physics: isGravity,
-                manipulation: {
-                  enabled: isEdit,
-                  addNode: (nodeData: any, callback: Function) => {
-                    const label = prompt("Input node label");
+                        if (label) {
+                          if (label === "") {
+                            return;
+                          }
 
-                    if (label) {
-                      if (label === "") {
-                        return;
-                      }
+                          const id = uuidv4();
+                          nodeData.label = label;
+                          nodeData.shape = "circle";
+                          nodeData.margin = {
+                            left: 10,
+                            right: 10,
+                          };
+                          nodeData.color = {
+                            border: "rgba(86, 97, 246, 1)",
+                            background: theme?.color.white1,
+                            highlight: {
+                              border: "rgba(86, 97, 246, 1)",
+                              background: "rgba(86, 97, 246, 1)",
+                            },
+                          };
+                          nodeData.font = {
+                            size: 14,
+                            color: theme?.color.black,
+                          };
+                          nodeData.borderWidth = 2;
+                          nodeData.id = id;
 
-                      const id = uuidv4();
-                      nodeData.label = label;
-                      nodeData.shape = "circle";
-                      nodeData.margin = {
-                        left: 10,
-                        right: 10,
-                      };
-                      nodeData.color = {
-                        border: "rgba(86, 97, 246, 1)",
-                        background: theme?.color.white1,
-                        highlight: {
-                          border: "rgba(86, 97, 246, 1)",
-                          background: "rgba(86, 97, 246, 1)",
-                        },
-                      };
-                      nodeData.font = {
-                        size: 14,
-                        color: theme?.color.black,
-                      };
-                      nodeData.borderWidth = 2;
-                      nodeData.id = id;
+                          setGraph((i) => {
+                            i?.nodes.push(nodeData);
+                            return i;
+                          });
 
-                      setGraph((i) => {
-                        i?.nodes.push(nodeData);
-                        return i;
-                      });
-
-                      callback(nodeData);
-                    }
-                  },
-                  editEdge: (edgeData: any, callback: Function) => {
-                    setGraph((i) => {
-                      const idx = i?.edges.findIndex(
-                        (it) => it.id === edgeData.id
-                      );
-
-                      if (i && idx) {
-                        i.edges[idx] = edgeData;
-                      }
-
-                      return i;
-                    });
-
-                    callback(edgeData);
-                  },
-                  addEdge: (edgeData: any, callback: Function) => {
-                    const id = uuidv4();
-                    console.log(edgeData);
-                    edgeData.id = id;
-                    edgeData.color = {
-                      color: theme?.color.black,
-                      highlight: "rgba(86, 97, 246, 1)",
-                    };
-                    edgeData.font = {
-                      color: theme?.color.black,
-                      strokeWidth: 0,
-                    };
-                    edgeData.length = 200;
-
-                    setGraph((i) => {
-                      i?.edges.push(edgeData);
-                      return i;
-                    });
-
-                    callback(edgeData);
-                  },
-                  editNode: (nodeData: any, callback: Function) => {
-                    console.log(nodeData);
-
-                    const label = prompt("Input other label");
-
-                    if (label) {
-                      if (label === "") {
-                        return;
-                      }
-                      setGraph((i) => {
-                        const idx = i?.nodes.findIndex(
-                          (it) => it.id === nodeData.id
-                        );
-
-                        if (i && idx) {
-                          i.nodes[idx] = nodeData;
+                          callback(nodeData);
                         }
+                      },
+                      editEdge: (edgeData: any, callback: Function) => {
+                        setGraph((i) => {
+                          const idx = i?.edges.findIndex(
+                            (it) => it.id === edgeData.id
+                          );
 
-                        return i;
-                      });
+                          if (i && idx) {
+                            i.edges[idx] = edgeData;
+                          }
 
-                      nodeData.label = label;
-                    }
-                    callback(nodeData);
-                  },
-                  deleteNode: (deleteNode: any, callback: Function) => {
-                    setGraph((i) => {
-                      if (i) {
-                        i.nodes = i.nodes.filter(
-                          (it) => it.id !== deleteNode.id
-                        );
-                      }
+                          return i;
+                        });
 
-                      return i;
-                    });
-
-                    callback(deleteNode);
-                  },
-                  deleteEdge: (deleteEdge: any, callback: Function) => {
-                    setGraph((i) => {
-                      if (i) {
-                        i.edges = i.edges.filter(
-                          (it) => it.id !== deleteEdge.id
-                        );
-                      }
-
-                      return i;
-                    });
-
-                    callback(deleteEdge);
-                  },
-                  initiallyActive: true,
-                },
-              }}
-              graph={
-                graph
-                  ? graph
-                  : {
-                      edges: [],
-                      nodes: [],
-                    }
-              }
-            />
-            <S.NodeOptionButton
-              style={{ bottom: 50, right: 55 }}
-              onClick={(e) => {
-                setIsGravity(!isGravity);
-              }}
-            >
-              {isGravity ? <GravityOn /> : <GravityOff />}
-            </S.NodeOptionButton>
-            <S.NodeOptionButton
-              style={{ bottom: 10, right: 95 }}
-              onClick={(e) => {
-                setIsTree(!isTree);
-              }}
-            >
-              {isTree ? <Tree /> : <Normal />}
-            </S.NodeOptionButton>
-            <S.ChartEditButton
-              onClick={async (e) => {
-                if (isEdit) {
-                  if (graph) {
-                    await updateNodeGraph(
-                      item.id,
-                      graph?.edges.map((item) => {
-                        return {
-                          label: item.label ? item.label : "",
-                          value: 0,
-                          source: item.from,
-                          target: item.to,
-                          type: "dummy",
-                          additional_kwargs: {},
+                        callback(edgeData);
+                      },
+                      addEdge: (edgeData: any, callback: Function) => {
+                        const id = uuidv4();
+                        console.log(edgeData);
+                        edgeData.id = id;
+                        edgeData.color = {
+                          color: theme?.color.black,
+                          highlight: "rgba(86, 97, 246, 1)",
                         };
-                      }),
-                      graph.nodes.map((item) => {
-                        return {
-                          additional_kwargs: {},
-                          id: item.id,
-                          label: item.label ? item.label : "",
-                          type: "dummy",
-                          value: 0,
+                        edgeData.font = {
+                          color: theme?.color.black,
+                          strokeWidth: 0,
                         };
-                      }),
-                      item.description
-                    ).then(async (res) => {
-                      if (res.status === 200) {
-                        await getDocument();
-                      }
-                    });
+                        edgeData.length = 200;
+
+                        setGraph((i) => {
+                          i?.edges.push(edgeData);
+                          return i;
+                        });
+
+                        callback(edgeData);
+                      },
+                      editNode: (nodeData: any, callback: Function) => {
+                        console.log(nodeData);
+
+                        const label = prompt("Input other label");
+
+                        if (label) {
+                          if (label === "") {
+                            return;
+                          }
+                          setGraph((i) => {
+                            const idx = i?.nodes.findIndex(
+                              (it) => it.id === nodeData.id
+                            );
+
+                            if (i && idx) {
+                              i.nodes[idx] = nodeData;
+                            }
+
+                            return i;
+                          });
+
+                          nodeData.label = label;
+                        }
+                        callback(nodeData);
+                      },
+                      deleteNode: (deleteNode: any, callback: Function) => {
+                        setGraph((i) => {
+                          if (i) {
+                            i.nodes = i.nodes.filter(
+                              (it) => it.id !== deleteNode.id
+                            );
+                          }
+
+                          return i;
+                        });
+
+                        callback(deleteNode);
+                      },
+                      deleteEdge: (deleteEdge: any, callback: Function) => {
+                        setGraph((i) => {
+                          if (i) {
+                            i.edges = i.edges.filter(
+                              (it) => it.id !== deleteEdge.id
+                            );
+                          }
+
+                          return i;
+                        });
+
+                        callback(deleteEdge);
+                      },
+                      initiallyActive: true,
+                    },
+                  }}
+                  graph={
+                    graph
+                      ? graph
+                      : {
+                          edges: [],
+                          nodes: [],
+                        }
                   }
-                }
-                console.log(graph);
-                setIsEdit(!isEdit);
-              }}
-            >
-              {isEdit ? <Add /> : <Edit />}
-              <S.ChartEditText>{isEdit ? "SAVE" : "EDIT"}</S.ChartEditText>
-            </S.ChartEditButton>
-          </S.CausalChart>
-        )}
-        {item.type === "candle-chart" && (
-          <S.ChartControllerWrapper>
-            <S.ChartController>
-              <S.ControllButton
-                select={controll === "1D"}
-                onClick={() => {
-                  setControll("1D");
-                }}
-              >
-                1D
-              </S.ControllButton>
-              <S.Divider />
-              <S.ControllButton
-                select={controll === "5D"}
-                onClick={() => {
-                  setControll("5D");
-                }}
-              >
-                5D
-              </S.ControllButton>
-              <S.Divider />
-              <S.ControllButton
-                select={controll === "1M"}
-                onClick={() => {
-                  setControll("1M");
-                }}
-              >
-                1M
-              </S.ControllButton>
-              <S.Divider />
-              <S.ControllButton
-                select={controll === "6M"}
-                onClick={() => {
-                  setControll("6M");
-                }}
-              >
-                6M
-              </S.ControllButton>
-              <S.Divider />
-              <S.ControllButton
-                select={controll === "YTD"}
-                onClick={() => {
-                  setControll("YTD");
-                }}
-              >
-                YTD
-              </S.ControllButton>
-              <S.Divider />
-              <S.ControllButton
-                select={controll === "1Y"}
-                onClick={() => {
-                  setControll("1Y");
-                }}
-              >
-                1Y
-              </S.ControllButton>
-              <S.Divider />
-              <S.ControllButton
-                select={controll === "5Y"}
-                onClick={() => {
-                  setControll("5Y");
-                }}
-              >
-                5Y
-              </S.ControllButton>
-              <S.Divider />
-              <S.ControllButton
-                select={controll === "All"}
-                onClick={() => {
-                  setControll("All");
-                }}
-              >
-                All
-              </S.ControllButton>
-            </S.ChartController>
-          </S.ChartControllerWrapper>
-        )}
+                />
+                <S.NodeOptionButton
+                  style={{ bottom: 50, right: 55 }}
+                  onClick={(e) => {
+                    setIsGravity(!isGravity);
+                  }}
+                >
+                  {isGravity ? <GravityOn /> : <GravityOff />}
+                </S.NodeOptionButton>
+                <S.NodeOptionButton
+                  style={{ bottom: 10, right: 95 }}
+                  onClick={(e) => {
+                    setIsTree(!isTree);
+                  }}
+                >
+                  {isTree ? <Tree /> : <Normal />}
+                </S.NodeOptionButton>
+                <S.ChartEditButton
+                  onClick={async (e) => {
+                    if (isEdit) {
+                      if (graph) {
+                        await updateNodeGraph(
+                          item.id,
+                          graph?.edges.map((item) => {
+                            return {
+                              label: item.label ? item.label : "",
+                              value: 0,
+                              source: item.from,
+                              target: item.to,
+                              type: "dummy",
+                              additional_kwargs: {},
+                            };
+                          }),
+                          graph.nodes.map((item) => {
+                            return {
+                              additional_kwargs: {},
+                              id: item.id,
+                              label: item.label ? item.label : "",
+                              type: "dummy",
+                              value: 0,
+                            };
+                          }),
+                          item.description
+                        ).then(async (res) => {
+                          if (res.status === 200) {
+                            await getDocument();
+                          }
+                        });
+                      }
+                    }
+                    console.log(graph);
+                    setIsEdit(!isEdit);
+                  }}
+                >
+                  {isEdit ? <Add /> : <Edit />}
+                  <S.ChartEditText>{isEdit ? "SAVE" : "EDIT"}</S.ChartEditText>
+                </S.ChartEditButton>
+              </S.CausalChart>
+            )}
+            {item.type === "candle-chart" && (
+              <S.ChartControllerWrapper>
+                <S.ChartController>
+                  <S.ControllButton
+                    select={controll === "1D"}
+                    onClick={() => {
+                      setControll("1D");
+                    }}
+                  >
+                    1D
+                  </S.ControllButton>
+                  <S.Divider />
+                  <S.ControllButton
+                    select={controll === "5D"}
+                    onClick={() => {
+                      setControll("5D");
+                    }}
+                  >
+                    5D
+                  </S.ControllButton>
+                  <S.Divider />
+                  <S.ControllButton
+                    select={controll === "1M"}
+                    onClick={() => {
+                      setControll("1M");
+                    }}
+                  >
+                    1M
+                  </S.ControllButton>
+                  <S.Divider />
+                  <S.ControllButton
+                    select={controll === "6M"}
+                    onClick={() => {
+                      setControll("6M");
+                    }}
+                  >
+                    6M
+                  </S.ControllButton>
+                  <S.Divider />
+                  <S.ControllButton
+                    select={controll === "YTD"}
+                    onClick={() => {
+                      setControll("YTD");
+                    }}
+                  >
+                    YTD
+                  </S.ControllButton>
+                  <S.Divider />
+                  <S.ControllButton
+                    select={controll === "1Y"}
+                    onClick={() => {
+                      setControll("1Y");
+                    }}
+                  >
+                    1Y
+                  </S.ControllButton>
+                  <S.Divider />
+                  <S.ControllButton
+                    select={controll === "5Y"}
+                    onClick={() => {
+                      setControll("5Y");
+                    }}
+                  >
+                    5Y
+                  </S.ControllButton>
+                  <S.Divider />
+                  <S.ControllButton
+                    select={controll === "All"}
+                    onClick={() => {
+                      setControll("All");
+                    }}
+                  >
+                    All
+                  </S.ControllButton>
+                </S.ChartController>
+              </S.ChartControllerWrapper>
+            )}
+          </S.Scrollbar>
+        </Scrollbars>
       </S.ReferencePopupContainer>
     </S.ReferencePopupWrapper>
   );

@@ -161,6 +161,9 @@ export const DocumentScrollWrapper = styled.div`
   width: 100%;
   /* height: 100%; */
   flex: 1;
+  background-color: ${({ theme }) => theme.color.white};
+  margin-left: 20px;
+  margin-right: 20px;
   overflow-y: scroll;
   /* overflow-x: hidden; */
   &::-webkit-scrollbar {
@@ -177,6 +180,7 @@ export const DocumentContents = styled.div`
   width: 812px;
   height: 100%;
   box-sizing: border-box;
+  background-color: ${({ theme }) => theme.color.white};
 `;
 
 export const DocumentLoadingArea = styled.div`
@@ -247,7 +251,7 @@ export const DocumentRightBarText = styled.li<{ isInterect: boolean }>`
 `;
 
 export const DocumentRightBarTextNoneHover = styled.li<{ isInterect: boolean }>`
-  width: 250px;
+  width: 200px;
   /* line-height: 20px; */
   height: 18px;
   /* background-color: grey; */
@@ -805,6 +809,7 @@ export const SkeletonLoadingContainer = styled.div`
 `;
 
 export const MarkdownTheme = styled.div`
+  font-family: "Pretendard-Regular";
   background: ${(props) => props.theme.color.white} !important;
   background-color: ${({ theme }) => theme.color.white} !important;
   color: ${(props) => props.theme.color.black};
