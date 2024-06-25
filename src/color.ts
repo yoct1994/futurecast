@@ -13,7 +13,7 @@ const darkColor = {
   menu: "rgba(39, 39, 39, 1)",
   desc: "rgba(255, 255, 255, 0.5)",
   white1: "rgba(39, 39, 39, 1)",
-  chartLine: "rgba(233, 233, 233, 0.5)",
+  chartLine: "blue",
 };
 
 const lightColor = {
