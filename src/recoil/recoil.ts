@@ -71,3 +71,8 @@ export const referencesState = atom<any[]>({
   default: [],
   key: "reference_state",
 });
+
+export const isLoadingPDFState = atom<boolean>({
+  default: false,
+  key: "is_loading_pdf_state",
+});

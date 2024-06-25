@@ -48,6 +48,7 @@ import {
   isDarkModeState,
   isEditDocumentState,
   isLoadingNavState,
+  isLoadingPDFState,
   menubarOpenState,
   showDeleteModal,
   treeDataState,
@@ -85,8 +86,6 @@ const Document = () => {
   const menuRef = useRef<Menu>(null);
 
   const [isLoadingToc, setIsLoadingToc] = useState<boolean>(false);
-
-  // const [nowWitch, setNowWitch] = useState<number>(0);
 
   const [query, setQuery] = useState("");
 
@@ -215,7 +214,7 @@ const Document = () => {
 
   const targetRef = useRef<HTMLDivElement>(null);
 
-  const [isLoadingPDF, setIsLoadingPDF] = useState(false);
+  const [isLoadingPDF, setIsLoadingPDF] = useRecoilState(isLoadingPDFState);
 
   const handleDrop = useCallback(
     (item: any) => {
@@ -737,8 +736,8 @@ const Document = () => {
                           windowWidth: canvasWidth,
                           windowHeight: canvasHeight,
                           scale: 2,
-                          useCORS: true,
-                          allowTaint: true,
+                          useCORS: false,
+                          allowTaint: false,
                           logging: true,
                         });
                         const ua = navigator.userAgent.toLowerCase();
@@ -746,36 +745,49 @@ const Document = () => {
                           ua.includes("safari") && !ua.includes("chrome");
 
                         if (isSafari) {
-                          canvas.toBlob((blob) => {
+                          canvas.toBlob(async (blob) => {
                             if (blob) {
                               const url = URL.createObjectURL(blob);
 
-                              const imgProps = pdf.getImageProperties(url);
-                              const imgWidth = pdfWidth - 2 * padding;
-                              const imgHeight =
-                                (imgProps.height * pdfWidth) / imgProps.width -
-                                2 * padding;
+                              await new Promise((resolve, reject) => {
+                                const img = new Image();
+                                img.onload = () => {
+                                  const imgProps = pdf.getImageProperties(url);
+                                  const imgWidth = pdfWidth - 2 * padding;
+                                  const imgHeight =
+                                    (imgProps.height * pdfWidth) /
+                                      imgProps.width -
+                                    2 * padding;
 
-                              let heightLeft = imgHeight;
-                              let position = 0;
+                                  let heightLeft = imgHeight;
+                                  let position = 0;
 
-                              while (heightLeft > 0) {
-                                pdf.addImage(
-                                  url,
-                                  "PNG",
-                                  padding,
-                                  padding + position,
-                                  imgWidth,
-                                  imgHeight
-                                );
-                                heightLeft -= pdfHeight - 2 * padding;
-                                position -= pdfHeight - 2 * padding;
-                                if (heightLeft > 0) {
-                                  pdf.addPage();
-                                }
-                              }
+                                  while (heightLeft > 0) {
+                                    pdf.addImage(
+                                      url,
+                                      "PNG",
+                                      padding,
+                                      padding + position,
+                                      imgWidth,
+                                      imgHeight
+                                    );
+                                    heightLeft -= pdfHeight - 2 * padding;
+                                    position -= pdfHeight - 2 * padding;
+                                    if (heightLeft > 0) {
+                                      pdf.addPage();
+                                    }
+                                  }
+
+                                  URL.revokeObjectURL(url); // URL 객체 해제
+                                  resolve(null);
+                                };
+                                img.onerror = reject;
+                                img.src = url;
+                              });
+
+                              pdf.save(`${id}.pdf`);
                             }
-                          });
+                          }, "image/png");
                         } else {
                           const imgData = canvas.toDataURL("image/png");
                           const imgProps = pdf.getImageProperties(imgData);
@@ -802,8 +814,9 @@ const Document = () => {
                               pdf.addPage();
                             }
                           }
+
+                          pdf.save(`${id}.pdf`);
                         }
-                        pdf.save(`${id}.pdf`);
                       }
                     }, 3000);
 

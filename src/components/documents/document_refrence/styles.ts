@@ -115,7 +115,7 @@ export const BarChart = styled.div`
 export const CausalChart = styled.div<{ isDarkMode: boolean }>`
   width: 100%;
   height: 665px;
-  background-color: ${({ theme }) => theme.color.white};
+  /* background-color: ${({ theme }) => theme.color.white}; */
   border: 1px solid ${({ theme }) => theme.color.divider};
   box-sizing: border-box;
   border-radius: 8px;

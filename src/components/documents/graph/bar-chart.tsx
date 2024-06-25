@@ -11,6 +11,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   isDarkModeState,
   isEditDocumentState,
+  isLoadingPDFState,
   updateItemsState,
 } from "../../../recoil/recoil";
 import { ThemeContext } from "styled-components";
@@ -30,6 +31,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
   const isEdit = useRecoilValue(isEditDocumentState);
   const [content, setContent] = useState("");
   const setUpdateItems = useSetRecoilState(updateItemsState);
+  const isLoadingPDF = useRecoilValue(isLoadingPDFState);
 
   const [{}, drag] = useDrag(() => ({
     type: "ITEM",
@@ -512,7 +514,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
               interaction: {
                 zoomView: false,
                 tooltipDelay: 0,
-                navigationButtons: true,
+                navigationButtons: !isLoadingPDF,
               },
               manipulation: {
                 enabled: false,
