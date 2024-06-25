@@ -246,6 +246,25 @@ export const DocumentRightBarText = styled.li<{ isInterect: boolean }>`
   }
 `;
 
+export const DocumentRightBarTextNoneHover = styled.li<{ isInterect: boolean }>`
+  width: 250px;
+  /* line-height: 20px; */
+  height: 18px;
+  /* background-color: grey; */
+  font-size: 16px;
+  font-family: ${(props) =>
+    props.isInterect ? "Pretendard-Bold" : "Pretendard-Regular"};
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-lines: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; // 원하는 라인수
+  -webkit-box-orient: vertical;
+  /* list-style-type: circle; */
+  color: ${(props) =>
+    props.isInterect ? props.theme.color.black : props.theme.color.desc};
+`;
+
 export const HeaderButton = styled.div``;
 
 export const CollectionItem = styled.div<{ idx: number; length: number }>`

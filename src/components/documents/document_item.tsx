@@ -562,7 +562,12 @@ const DocumentItem = ({
               );
             })}
         </div>
-        <S.NewsTitleWrapper>Related Links</S.NewsTitleWrapper>
+        <S.NewsTitleWrapper
+          id={`Related Links`}
+          ref={index === -1 ? undefined : refs.current[4 * index + 3]}
+        >
+          Related Links
+        </S.NewsTitleWrapper>
         {!isLoadingRef &&
           item &&
           item.status !== "submitted" &&
@@ -638,7 +643,7 @@ const DocumentItem = ({
       <S.NewsWrapper>
         <S.NewsTitleWrapper
           id={`Related Pages`}
-          ref={index === -1 ? undefined : refs.current[4 * index + 3]}
+          ref={index === -1 ? undefined : refs.current[4 * index + 4]}
         >
           Related Pages
         </S.NewsTitleWrapper>

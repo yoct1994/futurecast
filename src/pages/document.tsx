@@ -391,6 +391,7 @@ const Document = () => {
               Math.random(),
               Math.random(),
               Math.random(),
+              Math.random(),
               Math.random()
             );
             const dataDoc = JSON.parse(doc.data);
@@ -1217,12 +1218,12 @@ const Document = () => {
                                       index
                                     ].content.markdown_headers.map((i: any) => {
                                       return (
-                                        <S.DocumentRightBarText
+                                        <S.DocumentRightBarTextNoneHover
                                           isInterect={false}
                                         >
                                           {/* {item?.nodeValue} */}
                                           <div>{i.text}</div>
-                                        </S.DocumentRightBarText>
+                                        </S.DocumentRightBarTextNoneHover>
                                       );
                                     })
                                   ) : (
@@ -1278,6 +1279,32 @@ const Document = () => {
                                   {/* {item?.nodeValue} */}
                                   <div>{`${
                                     scrollRefs.current[4 * index + 3].current
+                                      ?.id
+                                  }`}</div>
+                                </S.DocumentRightBarText>
+                                <S.DocumentRightBarText
+                                  key={`${
+                                    scrollRefs.current[4 * index + 4].current
+                                      ?.id
+                                  }`}
+                                  isInterect={false}
+                                  onClick={() => {
+                                    console.log(
+                                      scrollRefs.current[4 * index + 4]
+                                    );
+                                    // item.current?.scrollIntoView({
+                                    //   behavior: "smooth",
+                                    // });
+                                    scrollRefs.current[
+                                      4 * index + 4
+                                    ].current?.scrollIntoView({
+                                      behavior: "smooth",
+                                    });
+                                  }}
+                                >
+                                  {/* {item?.nodeValue} */}
+                                  <div>{`${
+                                    scrollRefs.current[4 * index + 4].current
                                       ?.id
                                   }`}</div>
                                 </S.DocumentRightBarText>
