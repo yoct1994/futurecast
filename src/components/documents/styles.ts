@@ -58,6 +58,7 @@ export const DocumentTreeTextContainer = styled.div`
   text-overflow: ellipsis;
   text-decoration: none;
   overflow-x: hidden;
+  color: ${({ theme }) => theme.color.black};
 `;
 
 export const DocumentTreeWrapper = styled.div`
