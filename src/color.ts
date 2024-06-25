@@ -13,6 +13,7 @@ const darkColor = {
   menu: "rgba(39, 39, 39, 1)",
   desc: "rgba(255, 255, 255, 0.5)",
   white1: "rgba(39, 39, 39, 1)",
+  chartLine: "rgba(233, 233, 233, 0.5)",
 };
 
 const lightColor = {
@@ -30,6 +31,7 @@ const lightColor = {
   menu: "rgba(247, 247, 247, 1)",
   desc: "rgba(117, 117, 117, 1)",
   white1: "rgba(255, 255, 255, 1)",
+  chartLine: "rgba(233, 233, 233, 1)",
 };
 
 export const darkTheme = {

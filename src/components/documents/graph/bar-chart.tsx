@@ -143,7 +143,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
             position: "bottom",
             line: {
               width: 1,
-              color: "#E9E9E9",
+              color: theme?.color.chartWhite,
             },
             gridLine: {
               enabled: true,
@@ -194,7 +194,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
             position: "right",
             line: {
               width: 1,
-              color: "#E9E9E9",
+              color: theme?.color.chartWhite,
             },
             gridLine: {
               style: [
@@ -213,7 +213,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
             },
             line: {
               width: 1,
-              color: "#E9E9E9",
+              color: theme?.color.chartWhite,
             },
             gridLine: {
               style: [
@@ -346,7 +346,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
             position: "bottom",
             line: {
               width: 1,
-              color: "#E9E9E9",
+              color: theme?.color.chartWhite,
             },
             gridLine: {
               style: [
@@ -362,7 +362,7 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
             position: "right",
             line: {
               width: 1,
-              color: "#E9E9E9",
+              color: theme?.color.chartWhite,
             },
             gridLine: {
               style: [

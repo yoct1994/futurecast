@@ -737,31 +737,70 @@ const Document = () => {
                           windowWidth: canvasWidth,
                           windowHeight: canvasHeight,
                           scale: 2,
+                          useCORS: true,
+                          allowTaint: true,
+                          logging: true,
                         });
+                        const ua = navigator.userAgent.toLowerCase();
+                        const isSafari =
+                          ua.includes("safari") && !ua.includes("chrome");
 
-                        const imgData = canvas.toDataURL("image/png");
-                        const imgProps = pdf.getImageProperties(imgData);
-                        const imgWidth = pdfWidth - 2 * padding;
-                        const imgHeight =
-                          (imgProps.height * pdfWidth) / imgProps.width -
-                          2 * padding;
+                        if (isSafari) {
+                          canvas.toBlob((blob) => {
+                            if (blob) {
+                              const url = URL.createObjectURL(blob);
 
-                        let heightLeft = imgHeight;
-                        let position = 0;
+                              const imgProps = pdf.getImageProperties(url);
+                              const imgWidth = pdfWidth - 2 * padding;
+                              const imgHeight =
+                                (imgProps.height * pdfWidth) / imgProps.width -
+                                2 * padding;
 
-                        while (heightLeft > 0) {
-                          pdf.addImage(
-                            imgData,
-                            "PNG",
-                            padding,
-                            padding + position,
-                            imgWidth,
-                            imgHeight
-                          );
-                          heightLeft -= pdfHeight - 2 * padding;
-                          position -= pdfHeight - 2 * padding;
-                          if (heightLeft > 0) {
-                            pdf.addPage();
+                              let heightLeft = imgHeight;
+                              let position = 0;
+
+                              while (heightLeft > 0) {
+                                pdf.addImage(
+                                  url,
+                                  "PNG",
+                                  padding,
+                                  padding + position,
+                                  imgWidth,
+                                  imgHeight
+                                );
+                                heightLeft -= pdfHeight - 2 * padding;
+                                position -= pdfHeight - 2 * padding;
+                                if (heightLeft > 0) {
+                                  pdf.addPage();
+                                }
+                              }
+                            }
+                          });
+                        } else {
+                          const imgData = canvas.toDataURL("image/png");
+                          const imgProps = pdf.getImageProperties(imgData);
+                          const imgWidth = pdfWidth - 2 * padding;
+                          const imgHeight =
+                            (imgProps.height * pdfWidth) / imgProps.width -
+                            2 * padding;
+
+                          let heightLeft = imgHeight;
+                          let position = 0;
+
+                          while (heightLeft > 0) {
+                            pdf.addImage(
+                              imgData,
+                              "PNG",
+                              padding,
+                              padding + position,
+                              imgWidth,
+                              imgHeight
+                            );
+                            heightLeft -= pdfHeight - 2 * padding;
+                            position -= pdfHeight - 2 * padding;
+                            if (heightLeft > 0) {
+                              pdf.addPage();
+                            }
                           }
                         }
                         pdf.save(`${id}.pdf`);
