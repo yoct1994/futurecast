@@ -454,7 +454,6 @@ const BarChart = ({ item, setPickRef, index, setPickIndex }: Props) => {
       ) : (
         <S.MarkdownTheme>
           <MarkdownPreview
-            style={{ fontFamily: "Pretendard" }}
             wrapperElement={{
               "data-color-mode": "dark",
             }}
