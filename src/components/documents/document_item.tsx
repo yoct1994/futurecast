@@ -548,7 +548,7 @@ const DocumentItem = ({
               item.type === "fan-chart"
           ).length === 0 ? (
             <S.EmptyWrapper>
-              <S.EmptyContainer>There is no content</S.EmptyContainer>
+              <S.EmptyContainer>There is no content.</S.EmptyContainer>
             </S.EmptyWrapper>
           ) : (
             resources
@@ -585,7 +585,7 @@ const DocumentItem = ({
             (item, index) => item.type === "search" || item.type === "news"
           ).length === 0 && (
             <S.EmptyWrapper>
-              <S.EmptyContainer>There is no content</S.EmptyContainer>
+              <S.EmptyContainer>There is no content.</S.EmptyContainer>
             </S.EmptyWrapper>
           )}
         <S.NewsGrid>
