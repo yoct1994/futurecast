@@ -166,7 +166,7 @@ const MainPage = () => {
               <S.AssetText>
                 예측상황을 AI에게 설명하고
                 <br />
-                AI의 분석 결과를 기다리세요
+                AI의 분석 결과를 기다리세요.
               </S.AssetText>
             </S.AssetImageContainer>
             <S.AssetImageContainer>
@@ -176,7 +176,7 @@ const MainPage = () => {
               <S.AssetText>
                 추가 질문이 있다면
                 <br />
-                검색창으로 드래그앤 드롭 하세요
+                검색창으로 드래그앤 드롭 하세요.
               </S.AssetText>
             </S.AssetImageContainer>
           </S.AssetContianer>

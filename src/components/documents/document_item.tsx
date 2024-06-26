@@ -318,7 +318,7 @@ const DocumentItem = ({
       ) : (
         <S.DocumentContainer
           id={item ? `Query:${item.query.full_text}` : ""}
-          ref={index === -1 ? undefined : refs.current[4 * index + 0]}
+          ref={index === -1 ? undefined : refs.current[5 * index + 0]}
         >
           <S.DocumentQueryContainer>
             {item ? item.query.full_text : <Skeleton height={"24px"} />}
@@ -421,7 +421,7 @@ const DocumentItem = ({
           </div>
           <S.AnswerContainer
             id={`${item && item.content ? "Answer" : "NO CONTENTS"}`}
-            ref={index === -1 ? undefined : refs.current[4 * index + 1]}
+            ref={index === -1 ? undefined : refs.current[5 * index + 1]}
           >
             {/* <S.CustomFontMarkDown
             remarkPlugins={[remarkGfm]}
@@ -535,34 +535,46 @@ const DocumentItem = ({
       <S.NewsWrapper>
         <S.NewsTitleWrapper
           id={`References`}
-          ref={index === -1 ? undefined : refs.current[4 * index + 2]}
+          ref={index === -1 ? undefined : refs.current[5 * index + 2]}
         >
           References
         </S.NewsTitleWrapper>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          {resources
-            .filter(
-              (item) =>
-                item.type === "bar-chart" ||
-                item.type === "causal-graph" ||
-                item.type === "candle-chart" ||
-                item.type === "fan-chart"
-            )
-            .map((item, index) => {
-              return (
-                <BarChart
-                  item={item}
-                  key={index}
-                  setPickIndex={setPickIndex}
-                  index={index}
-                  setPickRef={setPickRef}
-                />
-              );
-            })}
+          {resources.filter(
+            (item) =>
+              item.type === "bar-chart" ||
+              item.type === "causal-graph" ||
+              item.type === "candle-chart" ||
+              item.type === "fan-chart"
+          ).length === 0 ? (
+            <S.EmptyWrapper>
+              <S.EmptyContainer>There is no content</S.EmptyContainer>
+            </S.EmptyWrapper>
+          ) : (
+            resources
+              .filter(
+                (item) =>
+                  item.type === "bar-chart" ||
+                  item.type === "causal-graph" ||
+                  item.type === "candle-chart" ||
+                  item.type === "fan-chart"
+              )
+              .map((item, index) => {
+                return (
+                  <BarChart
+                    item={item}
+                    key={index}
+                    setPickIndex={setPickIndex}
+                    index={index}
+                    setPickRef={setPickRef}
+                  />
+                );
+              })
+          )}
         </div>
         <S.NewsTitleWrapper
           id={`Related Links`}
-          ref={index === -1 ? undefined : refs.current[4 * index + 3]}
+          ref={index === -1 ? undefined : refs.current[5 * index + 3]}
         >
           Related Links
         </S.NewsTitleWrapper>
@@ -641,7 +653,7 @@ const DocumentItem = ({
       <S.NewsWrapper>
         <S.NewsTitleWrapper
           id={`Related Pages`}
-          ref={index === -1 ? undefined : refs.current[4 * index + 4]}
+          ref={index === -1 ? undefined : refs.current[5 * index + 4]}
         >
           Related Pages
         </S.NewsTitleWrapper>

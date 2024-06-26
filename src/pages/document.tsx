@@ -1116,78 +1116,88 @@ const Document = () => {
                                 key={index}
                                 isInterect={false}
                                 onClick={() => {
-                                  console.log(item);
-                                  item.current?.scrollIntoView({
-                                    behavior: "smooth",
-                                  });
+                                  // console.log(item);
+                                  // item.current?.scrollIntoView({
+                                  //   behavior: "smooth",
+                                  // });
+                                  console.log(scrollRefs.current);
                                 }}
                               >
                                 {/* {item?.nodeValue} */}
                                 {item.current?.id.substring(6)}
                               </S.DocumentRightBarText>
                               <S.DocumentRightOl>
-                                <S.DocumentRightBarText
-                                  key={`${scrollRefs.current[
-                                    4 * index + 1
-                                  ].current?.id
-                                    .replaceAll("#", "")
-                                    .replaceAll("*", "")}`}
-                                  isInterect={false}
-                                  onClick={() => {
-                                    console.log(
-                                      scrollRefs.current[4 * index + 2]
-                                    );
-                                    // item.current?.scrollIntoView({
-                                    //   behavior: "smooth",
-                                    // });
-                                    scrollRefs.current[
-                                      4 * index + 1
-                                    ].current?.scrollIntoView({
-                                      behavior: "smooth",
-                                    });
-                                  }}
-                                >
-                                  {/* {item?.nodeValue} */}
-                                  <div>{`${scrollRefs.current[
-                                    4 * index + 1
-                                  ].current?.id
-                                    .replaceAll("#", "")
-                                    .replaceAll("*", "")}`}</div>
-                                </S.DocumentRightBarText>
-                                <S.DocumentTwoDepthRightOl>
-                                  {documentList[index] &&
-                                  documentList[index].content ? (
-                                    documentList[
-                                      index
-                                    ].content.markdown_headers.map((i: any) => {
-                                      return (
-                                        <S.DocumentRightBarTextNoneHover
-                                          isInterect={false}
-                                        >
-                                          {/* {item?.nodeValue} */}
-                                          <div>{i.text}</div>
-                                        </S.DocumentRightBarTextNoneHover>
-                                      );
-                                    })
-                                  ) : (
-                                    <></>
-                                  )}
-                                </S.DocumentTwoDepthRightOl>
+                                {scrollRefs.current[5 * index + 1].current
+                                  ?.id === "NO CONTENTS" ? (
+                                  <></>
+                                ) : (
+                                  <>
+                                    <S.DocumentRightBarText
+                                      key={`${scrollRefs.current[
+                                        5 * index + 1
+                                      ].current?.id
+                                        .replaceAll("#", "")
+                                        .replaceAll("*", "")}`}
+                                      isInterect={false}
+                                      onClick={() => {
+                                        console.log(
+                                          scrollRefs.current[5 * index + 2]
+                                        );
+                                        // item.current?.scrollIntoView({
+                                        //   behavior: "smooth",
+                                        // });
+                                        scrollRefs.current[
+                                          5 * index + 1
+                                        ].current?.scrollIntoView({
+                                          behavior: "smooth",
+                                        });
+                                      }}
+                                    >
+                                      {/* {item?.nodeValue} */}
+                                      <div>{`${scrollRefs.current[
+                                        5 * index + 1
+                                      ].current?.id
+                                        .replaceAll("#", "")
+                                        .replaceAll("*", "")}`}</div>
+                                    </S.DocumentRightBarText>
+                                    <S.DocumentTwoDepthRightOl>
+                                      {documentList[index] &&
+                                      documentList[index].content ? (
+                                        documentList[
+                                          index
+                                        ].content.markdown_headers.map(
+                                          (i: any) => {
+                                            return (
+                                              <S.DocumentRightBarTextNoneHover
+                                                isInterect={false}
+                                              >
+                                                {/* {item?.nodeValue} */}
+                                                <div>{i.text}</div>
+                                              </S.DocumentRightBarTextNoneHover>
+                                            );
+                                          }
+                                        )
+                                      ) : (
+                                        <></>
+                                      )}
+                                    </S.DocumentTwoDepthRightOl>
+                                  </>
+                                )}
                                 <S.DocumentRightBarText
                                   key={`${
-                                    scrollRefs.current[4 * index + 1].current
+                                    scrollRefs.current[5 * index + 2].current
                                       ?.id
                                   }`}
                                   isInterect={false}
                                   onClick={() => {
                                     console.log(
-                                      scrollRefs.current[4 * index + 1]
+                                      scrollRefs.current[5 * index + 2]
                                     );
                                     // item.current?.scrollIntoView({
                                     //   behavior: "smooth",
                                     // });
                                     scrollRefs.current[
-                                      4 * index + 2
+                                      5 * index + 2
                                     ].current?.scrollIntoView({
                                       behavior: "smooth",
                                     });
@@ -1195,25 +1205,25 @@ const Document = () => {
                                 >
                                   {/* {item?.nodeValue} */}
                                   <div>{`${
-                                    scrollRefs.current[4 * index + 2].current
+                                    scrollRefs.current[5 * index + 2].current
                                       ?.id
                                   }`}</div>
                                 </S.DocumentRightBarText>
                                 <S.DocumentRightBarText
                                   key={`${
-                                    scrollRefs.current[4 * index + 3].current
+                                    scrollRefs.current[5 * index + 3].current
                                       ?.id
                                   }`}
                                   isInterect={false}
                                   onClick={() => {
                                     console.log(
-                                      scrollRefs.current[4 * index + 3]
+                                      scrollRefs.current[5 * index + 3]
                                     );
                                     // item.current?.scrollIntoView({
                                     //   behavior: "smooth",
                                     // });
                                     scrollRefs.current[
-                                      4 * index + 3
+                                      5 * index + 3
                                     ].current?.scrollIntoView({
                                       behavior: "smooth",
                                     });
@@ -1221,33 +1231,34 @@ const Document = () => {
                                 >
                                   {/* {item?.nodeValue} */}
                                   <div>{`${
-                                    scrollRefs.current[4 * index + 3].current
+                                    scrollRefs.current[5 * index + 3].current
                                       ?.id
                                   }`}</div>
                                 </S.DocumentRightBarText>
                                 <S.DocumentRightBarText
                                   key={`${
-                                    scrollRefs.current[4 * index + 4].current
+                                    scrollRefs.current[5 * index + 4].current
                                       ?.id
                                   }`}
                                   isInterect={false}
                                   onClick={() => {
                                     console.log(
-                                      scrollRefs.current[4 * index + 4]
+                                      scrollRefs.current[5 * index + 4]
                                     );
+                                    console.log("test");
                                     // item.current?.scrollIntoView({
                                     //   behavior: "smooth",
                                     // });
-                                    scrollRefs.current[
-                                      4 * index + 4
-                                    ].current?.scrollIntoView({
-                                      behavior: "smooth",
-                                    });
+                                    // scrollRefs.current[
+                                    //   5 * index + 4
+                                    // ].current?.scrollIntoView({
+                                    //   behavior: "smooth",
+                                    // });
                                   }}
                                 >
                                   {/* {item?.nodeValue} */}
                                   <div>{`${
-                                    scrollRefs.current[4 * index + 4].current
+                                    scrollRefs.current[5 * index + 4].current
                                       ?.id
                                   }`}</div>
                                 </S.DocumentRightBarText>

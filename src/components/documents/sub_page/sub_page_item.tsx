@@ -55,8 +55,8 @@ const SubPageItem = ({ index, item, uniqueReferences, documentIdx }: Props) => {
               {`${
                 value.type === "news"
                   ? "News"
-                  : value.type === "casual-graph"
-                  ? "Casual Graph"
+                  : value.type === "causal-graph"
+                  ? "Causal Graph"
                   : value.type === "candle-chart"
                   ? "Candle Chart"
                   : value.type === "fan-chart"

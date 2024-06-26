@@ -44,15 +44,15 @@ const ReferenceItem = ({ index, item, documentIdx }: Props) => {
         }
       }}
     >
-      <S.NewsContentContainer>
-        <S.NewsTitleText>
+      <S.NewsContentContainer type={item.type}>
+        <S.NewsTitleText type={item.type}>
           {item.type === "news"
             ? item.data.title
             : item.result
             ? item.result.title
             : ""}
         </S.NewsTitleText>
-        <S.NewsContentText>
+        <S.NewsContentText type={item.type}>
           {item.type === "news"
             ? item.data.summary
             : item.result

@@ -469,8 +469,8 @@ export const SubDocumentItem = styled.div`
   display: flex;
   padding-top: 24px;
   flex-direction: column;
-  justify-content: space-between;
   text-decoration: none;
+  justify-content: space-between;
   padding-left: 24px;
   padding-right: 24px;
   padding-bottom: 24px;
@@ -553,19 +553,20 @@ export const SubDocumentTagContainer = styled.div`
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
+  height: calc(24px * 2 + 4px);
 `;
 
 export const SubDocumentTag = styled.div<{ index: number; type: string }>`
   padding-left: 12px;
   padding-right: 12px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  height: 24px;
   font-size: 14px;
   font-family: "Pretendard-Regular";
   background-color: rgba(119, 119, 119, 0.1);
   border-radius: 4px;
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 3.5px;
   color: ${(props) =>
     props.type === "news"
@@ -720,18 +721,24 @@ export const NewsItem = styled.div`
   position: relative;
 `;
 
-export const NewsContentContainer = styled.div`
+export const NewsContentContainer = styled.div<{ type: string }>`
   padding: 16px;
   display: flex;
-  width: calc(((812px - 16px) / 2) - 136px);
+  width: ${(props) =>
+    props.type === "news"
+      ? "calc(((812px - 16px) / 2) - 136px)"
+      : "calc(((812px - 16px) / 2))"};
   flex-direction: column;
   gap: 8px;
   /* align-items: center; */
   justify-content: center;
 `;
 
-export const NewsTitleText = styled.div`
-  width: calc(((812px - 16px) / 2) - 168px);
+export const NewsTitleText = styled.div<{ type: string }>`
+  width: ${(props) =>
+    props.type === "news"
+      ? "calc(((812px - 16px) / 2) - 168px)"
+      : "calc(((812px - 16px) / 2)))"};
   font-size: 16px;
   font-family: "Pretendard-SemiBold";
   max-lines: 2;
@@ -743,9 +750,12 @@ export const NewsTitleText = styled.div`
   color: ${({ theme }) => theme.color.black};
 `;
 
-export const NewsContentText = styled.div`
-  width: calc(((812px - 16px) / 2) - 168px);
-  font-size: 16px;
+export const NewsContentText = styled.div<{ type: string }>`
+  width: ${(props) =>
+    props.type === "news"
+      ? "calc(((812px - 16px) / 2) - 168px)"
+      : "calc(((812px - 16px) / 2)))"};
+  font-size: 14px;
   font-family: "Pretendard-Regular";
   max-lines: 2;
   overflow: hidden;
@@ -753,7 +763,7 @@ export const NewsContentText = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 2; // 원하는 라인수
   -webkit-box-orient: vertical;
-  color: ${({ theme }) => theme.color.black};
+  color: ${({ theme }) => theme.color.desc};
 `;
 
 export const NewsImage = styled.img`

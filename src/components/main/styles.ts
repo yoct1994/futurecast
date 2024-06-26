@@ -210,6 +210,7 @@ export const QuerySendButton = styled.div<{ query: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 `;
 
 export const SuggestionsContainer = styled.div`
