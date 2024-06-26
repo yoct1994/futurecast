@@ -89,7 +89,9 @@ const Menubar = ({ children }: Props) => {
             console.log("data : ", data);
             if (data.detail === "Token expired") {
               await auth.signOut().then((res) => {
-                cookies.remove("TOKEN");
+                cookies.remove("TOKEN", {
+                  path: "/",
+                });
                 window.location.href = "/login";
               });
             }
@@ -344,9 +346,24 @@ const Menubar = ({ children }: Props) => {
                 }}
                 onClick={async () => {
                   const cookies = new Cookies();
-                  await auth.signOut().then(async (res) => {
-                    cookies.remove("TOKEN");
-                    window.location.replace("/login");
+                  console.log("LOGOUT");
+                  try {
+                    await auth
+                      .signOut()
+                      .then(async (res) => {
+                        cookies.remove("TOKEN", {
+                          path: "/",
+                        });
+                        window.location.replace("/login");
+                      })
+                      .catch((err) => {
+                        console.log("error", err);
+                      });
+                  } catch (e) {
+                    console.log("error", e);
+                  }
+                  cookies.remove("TOKEN", {
+                    path: "/",
                   });
                   window.location.replace("/login");
                 }}
@@ -361,12 +378,22 @@ const Menubar = ({ children }: Props) => {
               className={cookies.get("is_dark_mode") ? "dark_mode" : ""}
               onCheckedChange={(e) => {
                 console.log("click");
+                cookies.remove("is_dark_mode", {
+                  path: "/",
+                });
+                cookies.remove("is_dark_mode", {
+                  path: "/",
+                });
                 if (isDarkMode) {
                   setIsDarkMode(false);
-                  cookies.set("is_dark_mode", false);
+                  cookies.set("is_dark_mode", false, {
+                    path: "/",
+                  });
                 } else {
                   setIsDarkMode(true);
-                  cookies.set("is_dark_mode", true);
+                  cookies.set("is_dark_mode", true, {
+                    path: "/",
+                  });
                 }
               }}
             >
