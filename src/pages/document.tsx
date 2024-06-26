@@ -723,7 +723,7 @@ const Document = () => {
                       const element = targetRef.current;
 
                       if (element) {
-                        element.scrollTo(0, 0);
+                        // element.scrollTo(0, 0);
                         const pdf = new jsPDF("p", "mm", "a4");
                         const pdfWidth = pdf.internal.pageSize.getWidth();
                         const pdfHeight = pdf.internal.pageSize.getHeight();
